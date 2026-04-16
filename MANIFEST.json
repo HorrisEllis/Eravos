@@ -1,0 +1,82 @@
+{
+  "name": "eravos",
+  "version": "0.0.1",
+  "description": "Relationship intelligence dashboard. Delta-driven onboarding. AI oracle. P2P sync via no-IP DHCP. Jaa-backed. E2E encrypted vault. Duo and solo modes.",
+  "layer": "application",
+  "type": "pwa",
+  "status": "specification",
+  "license": "MIT",
+  "dependencies": {
+    "planned": [
+      "jaa (P2P file sync, vault)",
+      "nexus-bridge at :3747 (AI oracle, WebRTC signaling)",
+      "nexus-hub (vault federation)"
+    ]
+  },
+
+  "uuid": "eravos-relationship-intelligence-000-000000000001",
+  "hookId": "eravos.app:eravos-relationship-intelligence:er001",
+  "bridgePort": 3747,
+
+  "plannedModules": {
+    "auth": {
+      "uuid": "eravos-auth-00000000-0000-4000-a000-000000000001",
+      "hookId": "eravos.auth:eravos-auth-001:a0001",
+      "status": "planned",
+      "features": ["invite code", "duo linking", "E2E key exchange"]
+    },
+    "oracle": {
+      "uuid": "eravos-oracle-0000000-0000-4000-a000-000000000002",
+      "hookId": "eravos.oracle:eravos-oracle-001:o0002",
+      "status": "planned",
+      "features": ["AI via bridge", "delta-driven context", "communication translation"]
+    },
+    "p2p": {
+      "uuid": "eravos-p2p-00000000-0000-4000-a000-000000000003",
+      "hookId": "eravos.p2p:eravos-p2p-001:p0003",
+      "status": "planned",
+      "features": ["no-IP DHCP style", "WebRTC via bridge", "Jaa file sync"]
+    },
+    "feelings": {
+      "uuid": "eravos-feelings-000000-0000-4000-a000-000000000004",
+      "hookId": "eravos.feelings:eravos-feelings-001:f0004",
+      "status": "planned",
+      "features": ["somatic check-in", "NVC needs finder", "relational pulse"]
+    },
+    "vault": {
+      "uuid": "eravos-vault-0000000-0000-4000-a000-000000000005",
+      "hookId": "eravos.vault:eravos-vault-001:v0005",
+      "status": "planned",
+      "features": ["E2E encrypted", "Jaa-backed", "couple-sync"]
+    },
+    "onboarding": {
+      "uuid": "eravos-onboarding-0000-4000-a000-000000000006",
+      "hookId": "eravos.onboarding:eravos-onboarding-001:b0006",
+      "status": "planned",
+      "inputs": ["attachment_style", "love_language", "empathy_type", "depth_metric", "intensity_metric", "philosophy_on_love"]
+    }
+  },
+
+  "specifications": [
+    { "file": "Eravors-Auth-Connection-Architecture.docx", "status": "complete" },
+    { "file": "Eravors-Developer-Reference.docx",          "status": "complete" },
+    { "file": "Eravors-Psychology-Audit.docx",             "status": "complete" },
+    { "file": "Eravors-Roadmap.docx",                      "status": "complete" },
+    { "file": "Eravors-User-Manual.docx",                  "status": "complete" }
+  ],
+
+  "shipped": [
+    { "file": "index.html", "description": "PWA shell, theme only" },
+    { "file": "Eravos.md",  "description": "Core concept spec" }
+  ],
+
+  "knownIssues": [
+    {
+      "id": "er-001",
+      "severity": "critical",
+      "description": "Zero production code. Full specification exists but nothing is built.",
+      "status": "open",
+      "fix": "Phase 1 bootstrapping"
+    }
+  ]
+}
