@@ -1,0 +1,43 @@
+{
+  "id": "growth",
+  "location": "tabs/relational/growth/ (growth.html, growth.css, growth.js)",
+  "dom_ids_exposed": [
+    "grow-cat",
+    "grow-feel",
+    "grow-what",
+    "grow-why",
+    "growth-ideas-card",
+    "growth-ideas-output",
+    "growth-list",
+    "growth-stats-line",
+    "panel-growth",
+    "qloop-answer-*",
+    "qloop-input",
+    "qloop-list",
+    "qloop-stats-line"
+  ],
+  "owned_hooks": [
+    "renderGrowth",
+    "saveGrowth",
+    "clearGrowthForm",
+    "deleteGrowth",
+    "generateGrowthIdeas",
+    "suggestQuestion",
+    "askQuestion",
+    "answerQuestion",
+    "renderQuestionLoops"
+  ],
+  "shared_hooks_called": [
+    "callAI",
+    "getPrimingPrefix",
+    "emitSync",
+    "_escHtml",
+    "log"
+  ],
+  "bus_events_listened": [
+    "growth:seed_requested"
+  ],
+  "status": "split \u2014 folder-per-tab per \u00a75.9/\u00a75.12; growthFromRupture (still in kernel.js, owned by Rupture) now emits growth:seed_requested instead of reaching into this tab's DOM directly \u2014 same sovereignty fix as Feelings\u2192Oracle/Poetry. Found and fixed: askQuestion()/answerQuestion() called raw sendP2P({type:'question:new'/'question:answer', loop/answer}) directly, bypassing emitSync's envelope wrapping \u2014 loop/answer landed at the top level instead of inside `data`, so the question:new/question:answer gates (shared/eravos-kernel.js) read ev.data.loop as undefined. Confirmed via test: threw on delivery and wrote an undefined entry into eravors_question_loops before throwing. Now uses emitSync, which also restores queue-on-failure for these two message types. Direct request (screenshots comparing this tab against Grammar/Hard Talk): the real logging form used to be hidden behind a '+ Log Growth' toggle button, which made the tab read as an empty box on first view despite having real structured fields underneath. openGrowthForm()/growth-form removed \u2014 the form is inline and always visible now, same pattern Grammar/Hard Talk already used. growth-stats (a card grid) replaced with growth-stats-line (a simple count, same pattern as Grammar's '0 shared' / Hard Talk's '0 named \u00b7 0 returned to'). qloop-stats-line added for the same reason on the question-loops section.",
+  "category": "relational",
+  "has_subtabs": false
+}

@@ -1,0 +1,52 @@
+<!-- eravos tab: cocreate · category: creating -->
+<!-- served by api/server.js at GET /api/tabs/cocreate -->
+<div class="panel" id="panel-cocreate">
+    <div class="g2" style="margin-bottom:18px">
+      <div class="card">
+        <div class="card-title">🤝 CO-CREATION ENGINE</div>
+        <label class="fl">Your name</label><input type="text" id="person1" placeholder="Your name..." style="margin-bottom:10px">
+        <label class="fl">Partner's name</label><input type="text" id="person2" placeholder="Partner / collaborator..." style="margin-bottom:10px">
+        <label class="fl">Project / Vision Seed</label>
+        <textarea id="cocreate-seed" rows="3" placeholder="What are you creating together?"></textarea>
+        <label class="fl mt12">Framework</label>
+        <select id="cocreate-framework">
+          <option value="gottman">Gottman Method</option>
+          <option value="attachment">Attachment Theory</option>
+          <option value="eft">EFT</option>
+          <option value="imago">Imago</option>
+          <option value="polyvagal">Polyvagal</option>
+          <option value="nonviolent">NVC</option>
+          <option value="somatic">Somatic</option>
+          <option value="jungian">Jungian</option>
+          <option value="design">Design Thinking</option>
+          <option value="emergent">Emergent Strategy</option>
+        </select>
+        <button class="btn p mt12" onclick="generateCoCreate()">✦ Co-Create</button>
+      </div>
+      <div class="card">
+        <div class="card-title">🌱 EMERGENCE MAP</div>
+        <div id="cocreate-output" class="ai-out" style="min-height:280px;font-size:.92rem"><em class="small">Your collaborative vision...</em></div>
+        <div class="flex gap8 mt12">
+          <button class="btn g" onclick="saveToVault('cocreation',getEl('cocreate-output'))">💾 Save</button>
+          <button class="btn g" onclick="copyEl('cocreate-output')">📋 Copy</button>
+          <button class="btn g" onclick="sendToCodex('cocreate-output','Co-Creation')">📖 Codex</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🎴 CONVERSATION CARDS</div>
+      <div class="flex gap12 wrap ac" style="margin-bottom:12px">
+        <select id="card-deck" style="max-width:180px">
+          <option value="intimacy">Intimacy</option>
+          <option value="dreams">Dreams & Vision</option>
+          <option value="conflict">Repair</option>
+          <option value="gratitude">Gratitude</option>
+          <option value="creativity">Creativity</option>
+          <option value="erotic">Erotic Energy</option>
+          <option value="shadow">Shadow Work</option>
+        </select>
+        <button class="btn p" onclick="drawCard()">🎴 Draw Card</button>
+      </div>
+      <div id="card-output" class="ai-out" style="min-height:70px;font-size:1rem;font-style:normal"><em class="small">Draw a card...</em></div>
+    </div>
+  </div>

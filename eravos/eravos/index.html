@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Eravos</title>
+<link rel="manifest" href="app.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Eravos">
+<!-- Android/Chrome: mobile-web-app-capable is legacy (display:standalone in
+     the manifest above supersedes it) but costs nothing to include for
+     older WebViews. theme-color already covers the modern Android path. -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#ff6a00">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="shared/vendor/leaflet/leaflet.css">
+<!-- Real, direct fix for a real, confirmed gap: --fd/--fb in
+     shared/eravos-kernel.css have always named 'Cinzel Decorative' and
+     'Cormorant Garamond' as the real display/body fonts, but neither
+     font was ever actually loaded anywhere -- confirmed by diffing
+     against an independently-uploaded older copy of this repo too:
+     zero @font-face, zero local font files, zero font <link> in either
+     version. Every browser has been silently falling back to a generic
+     system serif this whole time, which loses every ornate detail the
+     CSS was actually designed around -- very likely the real cause of
+     "looks more square, less fancy."
+     Honest tradeoff, not hidden: this sandbox's own network egress is
+     blocked from fonts.googleapis.com/fonts.gstatic.com (confirmed
+     directly, HTTP 403), so the real font files couldn't be downloaded
+     and bundled locally from here the way shared/vendor/leaflet/ above
+     is. This CDN link is the real, working fix for now -- it will load
+     correctly wherever this actually runs (a real browser with real
+     internet access). To fully self-host it later: download the two
+     families' real .woff2 files, drop them in a new shared/fonts/
+     folder, replace this link with real @font-face rules pointing at
+     them, remove this comment. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
+<link rel="stylesheet" href="shared/eravos-kernel.css">
+<!-- Phase F fluid layer. Purely additive: no ids move, no handlers change.
+     Deleting this line returns the three tabs to the previous look with zero
+     functional difference (§5.12 -- the UI is disposable). -->
+<link rel="stylesheet" href="shared/eravos-fluid.css">
+</head>
+<body>
+
+
+<!-- PARTICLES -->
+<div id="particles"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     LOGIN SCREEN
+═══════════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-bg"></div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       HOMEPAGE — shown to signed-out visitors before the login card.
+       Real, direct request: "a homepage for when you're not signed in,
+       explaining why it's different than other apps." Reuses this same
+       file's own established design tokens (--fire/--amber/--dark/--fd/
+       --fb from eravos-kernel.css) rather than inventing new colors or
+       fonts -- the goal is one consistent visual language, not a second
+       one bolted on for marketing. Every feature named below is real
+       and built (checked against the actual tab list), not aspirational.
+       ══════════════════════════════════════════════════════════════════
+       2026-08-12: tagline/lede reframed around distance, at direct
+       request. Checked against Phase M (PHASEMAP) before writing anything
+       — Phase M ("Long distance, everyday": couch party, passive
+       presence, slow letters, etc.) is entirely unbuilt, all items
+       unchecked. Nothing from it is named here. The one real,
+       already-shipped capability that actually serves distance directly
+       is co-creation-relay's device-to-device sync, which was never
+       location-bound to begin with — the copy says that, and only that.
+       ══════════════════════════════════════════════════════════════════ -->
+  <div id="homepage" class="homepage">
+    <div class="hp-hero">
+      <div class="login-fire" style="margin:0 auto 18px">🔥</div>
+      <div class="hp-title">Eravos</div>
+      <div class="hp-tagline">Built for the distance between you — a private, self-hosted space for two people to actually understand each other</div>
+      <p class="hp-lede">
+        Not a habit tracker with a couple's skin on it. Not a chatbot pretending to be your relationship.
+        Eravos is a co-creation space — <em>relational intelligence</em>, not relationship surveillance —
+        for two people who want to grow closer on purpose, together, without a company reading their feelings.
+        Everything here syncs directly device-to-device, so it works exactly the same whether you're across
+        the room or across an ocean — distance was never the thing standing between understanding each other.
+      </p>
+      <div class="hp-cta-row">
+        <button class="btn-login hp-cta" onclick="showLoginCard()">✦ Enter the Space</button>
+        <button class="btn g hp-cta-secondary" onclick="document.getElementById('hp-features').scrollIntoView({behavior:'smooth'})">See what's inside ↓</button>
+      </div>
+    </div>
+
+    <div class="hp-section hp-philosophy">
+      <div class="hp-section-title">Us vs. the problem — never each other</div>
+      <p class="hp-philosophy-body">
+        Most apps built for couples quietly put you on opposite teams — who logged in more, who initiated less,
+        a scoreboard dressed up as insight. Eravos is built on the opposite premise: the two of you are never
+        the problem. Whatever's actually hard — a rupture, a pattern, a need that's gone unspoken — <em>that's</em>
+        the thing you're both working against, together. Nothing here is designed to keep score.
+      </p>
+      <div class="hp-pillars">
+        <div class="hp-pillar">
+          <div class="hp-pillar-icon">🕊</div>
+          <div class="hp-pillar-title">Nudge, never demand</div>
+          <div class="hp-pillar-body">Eravos suggests. It never insists. Every prompt is skippable, every share is optional, every "no" is a complete answer.</div>
+        </div>
+        <div class="hp-pillar">
+          <div class="hp-pillar-icon">🔒</div>
+          <div class="hp-pillar-title">Solo until invited</div>
+          <div class="hp-pillar-body">The whole app works alone first. Nothing about you is shared until you choose to share it — and choosing later never erases what came before.</div>
+        </div>
+        <div class="hp-pillar">
+          <div class="hp-pillar-icon">🏠</div>
+          <div class="hp-pillar-title">Self-hosted, actually private</div>
+          <div class="hp-pillar-body">Runs on your own machine. Your data lives on your device, not a company's server. No ads, no analytics, nothing to sell.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hp-section" id="hp-features">
+      <div class="hp-section-title">What's actually inside</div>
+      <div class="hp-feature-grid">
+        <div class="hp-feature"><div class="hp-feature-icon">✦</div><div class="hp-feature-name">The Oracle</div><div class="hp-feature-desc">A guide for your feelings and creative process — never writes love for you, only helps you find and say your own.</div></div>
+        <div class="hp-feature"><div class="hp-feature-icon">⚔</div><div class="hp-feature-name">Sparring</div><div class="hp-feature-desc">First thought, best thought. A timed, no-editing space for raw honesty — solo or with your partner.</div></div>
+        <div class="hp-feature"><div class="hp-feature-icon">⚡</div><div class="hp-feature-name">Rupture &amp; Repair</div><div class="hp-feature-desc">A blame-free space to log what happened, what you need, and what's yours to own — built for repair, not being right.</div></div>
+        <div class="hp-feature"><div class="hp-feature-icon">🌡</div><div class="hp-feature-name">Relational Health</div><div class="hp-feature-desc">A living field that reflects the real state of things — connection, safety, desire, growth — not a number to game.</div></div>
+        <div class="hp-feature"><div class="hp-feature-icon">💗</div><div class="hp-feature-name">Feeling Intelligence</div><div class="hp-feature-desc">Log what you feel, find the need underneath it, and choose — always your choice — whether to share it.</div></div>
+        <div class="hp-feature"><div class="hp-feature-icon">💬</div><div class="hp-feature-name">Chat &amp; Presence</div><div class="hp-feature-desc">Real conversation, plus knowing where your partner is in the app and being able to join them there — opt-in, two-sided, and never remembered after the moment passes.</div></div>
+        <div class="hp-feature"><div class="hp-feature-icon">🕸</div><div class="hp-feature-name">Co-Creation</div><div class="hp-feature-desc">When you're both in, the space syncs directly between your two devices — no matter the distance, no third-party server ever sees it.</div></div>
+        <div class="hp-feature"><div class="hp-feature-icon">💗</div><div class="hp-feature-name">Meaning Archive</div><div class="hp-feature-desc">Photos, video, and journal entries — the moments worth keeping, added by either of you, kept together in one place.</div></div>
+      </div>
+    </div>
+
+    <div class="hp-final-cta">
+      <div class="hp-section-title" style="margin-bottom:16px">Ready to begin?</div>
+      <button class="btn-login hp-cta" onclick="showLoginCard()">✦ Enter the Space</button>
+    </div>
+  </div>
+
+  <div class="login-box" id="login-box" style="display:none">
+    <div class="login-fire">🔥</div>
+    <!-- The raven mask/tears/crack SVG that used to live here was removed
+         entirely, not hidden -- personal visual content for one specific
+         person, already inert (display:none) before this, its CSS/JS
+         support already removed from eravos-kernel.css/.js. -->
+    <div class="login-title">Eravos</div>
+    <div class="login-sub">✦ YOUR SACRED CO-CREATION SPACE ✦</div>
+    <!-- login tab bar removed — Enter the Space button is the only action -->
+    <div id="login-form">
+      <div class="login-field"><label>Username or Email</label><input type="text" id="l-user" placeholder="your username"></div>
+      <div class="login-field"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="login-error" id="login-error" style="display:none"></div>
+      <button class="btn-login" onclick="doLogin()">✦ Enter the Space</button>
+      <div class="hp-back-link" onclick="showForgotPassword()" style="margin-top:10px;text-align:center">Forgot your password?</div>
+      <div class="login-footer">Your sacred space.</div>
+      <!-- The register form below has existed and been complete this whole
+           time — invite banner, paste-a-link field, mode select, all of it.
+           NOTHING EVER SHOWED IT. The tab bar that used to reveal it was
+           removed, applyRegState() looks for #register-tab-btn which did not
+           exist, and the admin toggle calls setRegistrationEnabled() which
+           was never defined. Three separate breaks in one path, so the
+           feature was invisible rather than broken-looking (§0.1). -->
+      <button class="btn g" id="register-tab-btn" style="display:none;width:100%;margin-top:10px"
+              onclick="showRegisterForm()">Create an account</button>
+      <div class="hp-back-link" onclick="showHomepage()">← Back</div>
+    </div>
+    <div id="register-form" style="display:none">
+      <div id="reg-invite-banner" style="display:none;padding:10px 14px;margin-bottom:14px;border:1px solid var(--border);border-radius:10px;background:var(--glass);font-family:var(--fb);font-size:.92rem;color:var(--amber)">
+        ✦ You're joining from an invite — you'll be connected once you create your account.
+      </div>
+      <!-- Manual invite entry (§ real gap, not cosmetic): the hash-based
+           detectPendingInvite() below only ever fires for someone who
+           clicked or scanned a link/QR that landed with #pair=... already
+           in the address bar. Someone who was texted a bare link, or typed
+           it in by hand, or whose scanner stripped the fragment, had no
+           way in from this screen at all. The 8-character code ALONE can
+           never be enough (see eravos-pairing.js scan() — it also needs
+           the peer id, which only lives in the full link/extended code, by
+           design, so a photographed code can't reveal who made it) — so
+           this accepts the full invite link or the dot-joined extended
+           code, same as Pairing.parse() already does, not the bare code.
+           Always visible now, not collapsed behind a toggle -- someone
+           arriving to redeem an invite is exactly as common a reason to
+           be on this screen as someone signing up fresh, so it shouldn't
+           need discovering. -->
+      <div id="reg-invite-paste" style="margin-bottom:14px">
+        <label style="display:block;margin-bottom:6px;font-family:var(--fb);font-size:.8rem;color:var(--dim)">Have an invite link or code?</label>
+        <input type="text" id="r-invite-input" placeholder="Paste the invite link, or the full code (not just 8 characters)" style="width:100%" onkeydown="if(event.key==='Enter'){event.preventDefault();applyPastedInvite();}">
+        <button type="button" class="btn g" style="margin-top:6px;width:100%" onclick="applyPastedInvite()">Apply invite</button>
+        <div class="login-error" id="r-invite-error" style="display:none;margin-top:6px"></div>
+      </div>
+      <div class="login-field"><label>Your Name</label><input type="text" id="r-name" placeholder="What do you like to be called?"></div>
+      <div class="login-field"><label>Email</label><input type="email" id="r-email" placeholder="you@example.com"></div>
+      <div class="login-field"><label>Password</label><input type="password" id="r-pass" placeholder="8+ characters"></div>
+      <div class="login-field"><label>Are you using this solo or with a partner?</label>
+        <select id="r-mode"><option value="solo">Solo</option><option value="duo">With Partner</option></select>
+      </div>
+      <!-- Password recovery, opt-in per account (§ new gap: the only reset
+           path was "ask whoever holds the admin account" -- which doesn't
+           work when the admin is the one locked out, and there's no other
+           admin to ask). Checking this lets the OTHER account on this
+           device use Forgot password? on the login screen -- they still
+           have to prove it's really them by entering their own real
+           password before anything about this account changes. Off by
+           default, same as registration itself defaults closed -- this is
+           a real consent choice, not assumed. -->
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:16px">
+        <input type="checkbox" id="r-recovery" style="width:16px;height:16px;margin-top:2px;accent-color:var(--fire);cursor:pointer">
+        <span class="small" style="color:var(--dim);line-height:1.5">Let your partner reset your password if you lose it (they'll need to verify their own password first)</span>
+      </label>
+      <div class="login-error" id="reg-error" style="display:none"></div>
+      <button class="btn-login" onclick="doRegister()">✦ Begin Your Journey</button>
+      <div class="hp-back-link" onclick="showLoginForm()">← I already have an account</div>
+    </div>
+
+    <!-- ── FORGOT PASSWORD — recover via partner ─────────────────────────
+         Only reaches accounts that opted in (recoveryViaPartner, set at
+         registration or later from Settings > Admin > Edit). The other
+         account has to prove it's really them with their own real
+         password before the locked account's password changes -- not a
+         bare "type a name to confirm" reset. -->
+    <div id="forgot-form" style="display:none">
+      <p class="small" style="color:var(--dim);margin-bottom:14px;line-height:1.6">If your partner allowed recovery when they set up their account, they can verify their own password to reset yours.</p>
+      <div class="login-field"><label>Your username or email</label><input type="text" id="fp-user" placeholder="your username" onkeydown="if(event.key==='Enter'){event.preventDefault();startPartnerRecovery();}"></div>
+      <div class="login-error" id="fp-error" style="display:none"></div>
+      <button class="btn-login" onclick="startPartnerRecovery()">Continue</button>
+      <div class="hp-back-link" onclick="showLoginForm()">← Back to sign in</div>
+
+      <div id="fp-recover-panel" style="display:none;margin-top:18px;padding-top:16px;border-top:1px solid var(--border2)">
+        <p class="small" id="fp-recover-intro" style="color:var(--dim);margin-bottom:12px;line-height:1.6"></p>
+        <div class="login-field"><label id="fp-partner-label">Partner's password</label><input type="password" id="fp-partner-pass" placeholder="••••••••"></div>
+        <div class="login-field"><label>New password for the locked account</label><input type="password" id="fp-new-pass" placeholder="8+ characters"></div>
+        <div class="login-error" id="fp-recover-error" style="display:none"></div>
+        <button class="btn-login" onclick="completePartnerRecovery()">Reset password</button>
+      </div>
+    </div>
+
+  </div><!-- end login-box -->
+
+</div><!-- end login-screen -->
+
+<!-- ═══════════════════════════════════════════════════════
+     ONBOARDING MODAL — runs once on first login
+═══════════════════════════════════════════════════════ -->
+<div id="onboarding-modal" style="position:fixed;inset:0;z-index:9800;background:var(--scrim);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center">
+  <div style="max-width:540px;width:94vw;max-height:90vh;overflow-y:auto;background:linear-gradient(160deg,var(--sheet),var(--sheet-deep));border:1px solid var(--line-fire);border-radius:20px;padding:32px 28px">
+
+    <!-- Progress -->
+    <div class="flex jb ac" style="margin-bottom:8px">
+      <div style="font-family:var(--fd);font-size:.75rem;color:var(--amber)" id="ob-title">Welcome</div>
+      <div style="font-family:var(--fm);font-size:.6rem;color:var(--dim)" id="ob-progress">1 / 10</div>
+    </div>
+    <div style="height:3px;background:var(--border2);border-radius:2px;margin-bottom:24px">
+      <div id="ob-progress-bar" style="height:100%;background:var(--fire);border-radius:2px;transition:width .4s;width:10%"></div>
+    </div>
+
+    <!-- Steps container -->
+    <div id="ob-steps-container"></div>
+
+    <!-- Navigation -->
+    <div class="flex jb ac" style="margin-top:24px">
+      <button class="btn g" id="ob-back-btn" onclick="obBack()" style="display:none">← Back</button>
+      <div style="flex:1"></div>
+      <button class="btn g" onclick="obSkipAll()" style="font-size:.72rem;margin-right:10px;opacity:.75" id="ob-skip-all-btn">Skip all of this</button>
+      <button class="btn g" onclick="obSkip()" style="font-size:.72rem;margin-right:10px" id="ob-skip-btn">Skip</button>
+      <button class="btn p" id="ob-next-btn" onclick="obNext()">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PRIMING MODAL
+═══════════════════════════════════════════════════════ -->
+<div id="priming-modal">
+  <div id="priming-box">
+    <div class="priming-header">
+      <div class="priming-title">⚡ PRIMING SYSTEM</div>
+      <button class="btn g" onclick="closePriming()">✕ Close</button>
+    </div>
+    <p class="small italic" style="margin-bottom:18px">Prime the AI's emotional-creative state before any generation. This shapes tone, depth, and approach across all tabs.</p>
+    <div class="prime-grid" id="prime-grid"></div>
+    <hr class="sep">
+    <div class="card-title">✏ CUSTOM PRIME</div>
+    <div class="custom-prime-row">
+      <div style="flex:0 0 80px">
+        <label class="fl">Emoji</label>
+        <input type="text" id="cp-emoji" placeholder="🌊" style="max-width:70px">
+      </div>
+      <div style="flex:1;min-width:120px">
+        <label class="fl">Name</label>
+        <input type="text" id="cp-name" placeholder="Deep Ocean">
+      </div>
+      <div style="flex:3;min-width:180px">
+        <label class="fl">Prompt Modifier</label>
+        <input type="text" id="cp-desc" placeholder="Speak from the deep, slow, tidal, ancient...">
+      </div>
+      <button class="btn p" onclick="addCustomPrime()" style="flex-shrink:0">+ Add</button>
+    </div>
+    <hr class="sep">
+    <div class="flex gap12 wrap mt12">
+      <button class="btn p" onclick="applyPriming()">⚡ Apply Selected</button>
+      <button class="btn g" onclick="clearPriming()">Clear Priming</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     FEELINGS MODAL
+═══════════════════════════════════════════════════════ -->
+<div id="feeling-modal">
+  <div id="feeling-box" style="max-width:520px;width:95vw;max-height:90vh;overflow-y:auto">
+
+    <!-- Step indicator -->
+    <div class="flex jb ac" style="margin-bottom:8px">
+      <div class="priming-title" id="gff-title">💗 HOW ARE YOU FEELING?</div>
+      <button class="btn g" onclick="closeFeelingModal()" style="font-size:.75rem">✕</button>
+    </div>
+    <div id="gff-steps" class="flex gap4" style="margin-bottom:20px">
+      <div class="gff-step active" data-step="0"></div>
+      <div class="gff-step" data-step="1"></div>
+      <div class="gff-step" data-step="2"></div>
+      <div class="gff-step" data-step="3"></div>
+      <div class="gff-step" data-step="4"></div>
+    </div>
+
+    <!-- Step 0: Feeling wheel -->
+    <div class="gff-pane" id="gff-pane-0">
+      <p class="small italic" style="margin-bottom:16px;color:var(--dim)">Pick what resonates. One is enough. You can always skip.</p>
+      <!-- Search sits ABOVE the grid: the vocabulary went 18 -> 62 in Phase 1,
+           and 62 tiles is more scanning than someone in distress should have
+           to do to say how they are. -->
+      <input type="text" id="feeling-search" class="feeling-search"
+             placeholder="search, or scroll — or just write your own below"
+             oninput="filterFeelingSectors()" autocomplete="off">
+      <div class="feeling-sectors" id="feeling-sectors"></div>
+      <div style="margin-top:16px">
+        <label class="fl">Intensity</label>
+        <div class="flex ac gap12">
+          <input type="range" id="feeling-intensity" min="1" max="10" value="5" style="flex:1">
+          <span id="gff-intensity-label" style="font-family:var(--fm);font-size:.75rem;color:var(--amber);min-width:24px">5</span>
+        </div>
+      </div>
+      <div class="flex gap10 mt20">
+        <button class="btn p" onclick="gffNext(0)">Continue →</button>
+        <button class="btn g" onclick="gffSkipToSave()" style="font-size:.75rem">Just save feeling</button>
+      </div>
+    </div>
+
+    <!-- Step 1: Where in your body? -->
+    <div class="gff-pane" id="gff-pane-1" style="display:none">
+      <p class="small" style="color:var(--dim);margin-bottom:18px;line-height:1.7">Your body knows before your mind does. Where do you feel this?</p>
+      <div class="flex gap8 wrap" id="gff-body-chips">
+        <button class="gff-chip" data-val="chest" onclick="gffSelectChip(this,'body')">Chest / Heart</button>
+        <button class="gff-chip" data-val="throat" onclick="gffSelectChip(this,'body')">Throat</button>
+        <button class="gff-chip" data-val="belly" onclick="gffSelectChip(this,'body')">Belly / Gut</button>
+        <button class="gff-chip" data-val="head" onclick="gffSelectChip(this,'body')">Head / Mind</button>
+        <button class="gff-chip" data-val="shoulders" onclick="gffSelectChip(this,'body')">Shoulders</button>
+        <button class="gff-chip" data-val="whole" onclick="gffSelectChip(this,'body')">Whole Body</button>
+        <button class="gff-chip" data-val="numb" onclick="gffSelectChip(this,'body')">I can't feel it</button>
+      </div>
+      <div class="flex gap10 mt20">
+        <button class="btn p" onclick="gffNext(1)">Continue →</button>
+        <button class="btn g" onclick="gffBack(1)" style="font-size:.75rem">← Back</button>
+        <button class="btn g" onclick="gffSkipToSave()" style="font-size:.75rem">Skip</button>
+      </div>
+    </div>
+
+    <!-- Step 2: What's underneath? -->
+    <div class="gff-pane" id="gff-pane-2" style="display:none">
+      <p class="small" style="color:var(--dim);margin-bottom:10px;line-height:1.7">Every feeling points to a need. Which of these resonates?</p>
+      <div class="flex gap8 wrap" id="gff-need-chips">
+        <button class="gff-chip" data-val="connection" onclick="gffSelectChip(this,'need')">Connection</button>
+        <button class="gff-chip" data-val="safety" onclick="gffSelectChip(this,'need')">Safety</button>
+        <button class="gff-chip" data-val="understanding" onclick="gffSelectChip(this,'need')">Understanding</button>
+        <button class="gff-chip" data-val="space" onclick="gffSelectChip(this,'need')">Space / Rest</button>
+        <button class="gff-chip" data-val="love" onclick="gffSelectChip(this,'need')">To Feel Loved</button>
+        <button class="gff-chip" data-val="seen" onclick="gffSelectChip(this,'need')">To Be Seen</button>
+        <button class="gff-chip" data-val="autonomy" onclick="gffSelectChip(this,'need')">Autonomy</button>
+        <button class="gff-chip" data-val="play" onclick="gffSelectChip(this,'need')">Play / Aliveness</button>
+        <button class="gff-chip" data-val="clarity" onclick="gffSelectChip(this,'need')">Clarity</button>
+        <button class="gff-chip" data-val="unknown" onclick="gffSelectChip(this,'need')">I'm not sure yet</button>
+      </div>
+      <div class="flex gap10 mt20">
+        <button class="btn p" onclick="gffNext(2)">Continue →</button>
+        <button class="btn g" onclick="gffBack(2)" style="font-size:.75rem">← Back</button>
+        <button class="btn g" onclick="gffSkipToSave()" style="font-size:.75rem">Skip</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Ready to express? -->
+    <div class="gff-pane" id="gff-pane-3" style="display:none">
+      <p class="small" style="color:var(--dim);margin-bottom:18px;line-height:1.7">You don't have to do anything with this feeling right now. What feels right?</p>
+      <div class="fc gap10">
+        <button class="btn p fw" onclick="gffChoosePath('express')">💌 Express this to my partner</button>
+        <button class="btn fw" onclick="gffChoosePath('oracle')">🔮 Get guidance from the Oracle</button>
+        <button class="btn fw" onclick="gffChoosePath('journal')">📝 Write about it privately</button>
+        <button class="btn fw" onclick="gffChoosePath('grounding')">🌿 I need grounding first</button>
+        <button class="btn g fw" onclick="gffChoosePath('hold')">✦ Just hold it quietly for now</button>
+      </div>
+      <div class="flex gap10 mt16">
+        <button class="btn g" onclick="gffBack(3)" style="font-size:.75rem">← Back</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Closing / safety request -->
+    <div class="gff-pane" id="gff-pane-4" style="display:none">
+      <div id="gff-closing-content">
+        <!-- Filled dynamically based on path chosen -->
+      </div>
+      <div class="flex gap10 mt16 wrap">
+        <button class="btn p" onclick="gffComplete()">💗 Save & Close</button>
+        <button class="btn g" onclick="gffBack(4)" style="font-size:.75rem">← Back</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PIPELINE MODAL
+═══════════════════════════════════════════════════════ -->
+<div id="pipeline-modal">
+  <div id="pipeline-box">
+    <div class="flex jb ac" style="margin-bottom:20px">
+      <div class="priming-title">💬 EXPRESSION</div>
+      <button class="btn g" onclick="closePipelineModal()">✕</button>
+    </div>
+    <p class="small italic" style="margin-bottom:16px">Choose how to express your feeling. The AI will help you craft the right form of expression.</p>
+    <p class="small" style="color:var(--dim);margin-bottom:16px">Looking for poetry or a letter? Those live in Messages → Compose now, alongside sending. Oracle perspective is the 🔮 button right next to this one.</p>
+    <div class="fc gap12" id="pipeline-steps"></div>
+    <div id="pipeline-output" class="ai-out mt16" style="min-height:100px;display:none"></div>
+    <div class="flex gap12 mt12 wrap" id="pipeline-actions"></div>
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border2)">
+      <button class="btn g fw" onclick="closePipelineModal();openMessagesModal()">📬 View what she's expressed to you</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MESSAGES + POKE — one consolidated popup, not a full-screen page
+     (that was tried and reverted — too much for what's meant to be
+     quick to open and close) and not a side panel (§ no side panels).
+     Centered modal, same convention as #pipeline-modal. Poke folded in
+     here too, rather than staying a separate tab — retired as a tab
+     entirely; its full functionality (all three tiers with
+     descriptions, need signal, history) lives in this one surface now.
+     Lives in the persistent shell, not lazy-loaded like a tab, so its
+     elements always exist in the DOM — the messages/poke pipeline
+     functions in shared/eravos-kernel.js no longer need to guard
+     against "what if this isn't mounted yet" for anything reachable
+     only from here.
+═══════════════════════════════════════════════════════════════════ -->
+<div id="messages-modal">
+  <div id="messages-modal-box">
+    <div class="flex jb ac" style="margin-bottom:16px">
+      <div class="priming-title">💌 MESSAGES & POKE</div>
+      <button class="btn g" onclick="closeMessagesModal()">✕</button>
+    </div>
+
+    <!-- Incoming message overlay (shown when a message arrives) -->
+    <div id="msg-incoming-overlay" style="display:none;position:fixed;inset:0;z-index:9600;background:var(--scrim);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:20px">
+      <div style="background:linear-gradient(135deg,var(--tint-fire),var(--sheet));border:1px solid var(--fire);border-radius:20px;width:min(500px,96vw);padding:36px;text-align:center;box-shadow:0 0 80px var(--tint-rose)">
+        <div style="font-size:2.5rem;margin-bottom:12px" id="msg-overlay-icon">💌</div>
+        <div style="font-family:var(--fm);font-size:.65rem;letter-spacing:.2em;color:var(--fire);margin-bottom:6px" id="msg-overlay-from">FROM YOUR LOVE</div>
+        <div style="font-family:var(--fb);font-size:.8rem;color:var(--amber);font-style:italic;margin-bottom:20px;line-height:1.6">"Your needs are valid. Nothing you say stems from neediness. Nothing you send will be judged or be too much."</div>
+        <div id="msg-overlay-text" style="font-family:var(--fb);font-size:1.1rem;line-height:1.85;color:var(--text);margin-bottom:24px;white-space:pre-wrap"></div>
+        <div id="msg-overlay-feeling" style="display:none;padding:8px 14px;border:1px solid var(--border2);border-radius:8px;margin-bottom:16px;font-size:.85rem;color:var(--dim)"></div>
+        <div id="msg-overlay-countdown" style="font-family:var(--fm);font-size:.7rem;color:var(--dim);margin-bottom:16px"></div>
+        <button id="msg-overlay-ack" class="btn p" onclick="acknowledgeMessage()" style="display:none;width:100%">💗 Acknowledge — I receive this</button>
+        <button id="msg-overlay-save" class="btn g" onclick="saveIncomingToVault()" style="display:none;width:100%;margin-top:8px">💾 Save to Vault</button>
+      </div>
+    </div>
+
+    <div class="g2">
+      <!-- LEFT: Compose + Poke -->
+      <div class="fc gap16">
+
+        <div class="card">
+          <div class="card-title">✍ COMPOSE</div>
+          <div class="flex gap6 mb14" style="flex-wrap:wrap">
+            <button id="msgtype-text"    class="msg-type-btn active" onclick="setMsgType('text')">✍ Message</button>
+            <button id="msgtype-love"    class="msg-type-btn" onclick="setMsgType('love')">💌 Love Letter</button>
+            <button id="msgtype-feeling" class="msg-type-btn" onclick="setMsgType('feeling')">💗 Feeling Share</button>
+            <button id="msgtype-need"    class="msg-type-btn" onclick="setMsgType('need')">🫀 Need</button>
+            <button id="msgtype-poem"    class="msg-type-btn" onclick="setMsgType('poem')">📜 Poem</button>
+          </div>
+          <div id="msg-type-hint" class="small" style="color:var(--dim);margin-bottom:12px;font-style:italic;line-height:1.6">A message that arrives with space. Your partner can't reply for 10 minutes — this is for receiving, not reacting.</div>
+          <div id="msg-feeling-attach" style="display:none;margin-bottom:12px;padding:10px 14px;border:1px solid var(--border2);border-radius:10px;background:var(--glass)">
+            <div class="small" style="color:var(--cyan);font-family:var(--fm);font-size:.62rem;letter-spacing:.15em;margin-bottom:6px">ATTACH CURRENT FEELING</div>
+            <div id="msg-feeling-preview" style="font-size:.95rem;color:var(--amber)">— no feeling set —</div>
+            <button class="btn g" style="margin-top:8px;font-size:.75rem;padding:4px 10px" onclick="openFeelingModal()">Change feeling</button>
+          </div>
+          <label class="fl" id="msg-compose-label">Your message</label>
+          <textarea id="msg-compose" rows="5" placeholder="Write from your heart. This will arrive with space and care..."></textarea>
+          <div id="msg-oracle-tools" style="display:none;margin-top:10px;padding:10px;border:1px solid var(--border2);border-radius:8px;background:var(--glass)">
+            <div class="small" style="color:var(--cyan);font-family:var(--fm);font-size:.62rem;letter-spacing:.12em;margin-bottom:8px">✦ ORACLE COACHING — helps you write it, doesn't write it for you</div>
+            <div class="flex gap8 wrap">
+              <button class="btn g" style="font-size:.78rem" onclick="generateLoveLetter()">💌 Letter coaching</button>
+              <button class="btn g" style="font-size:.78rem" onclick="generateLovePoem()">📜 Poem coaching</button>
+              <button class="btn g" style="font-size:.78rem" onclick="generateAffirmation()">✨ Affirmation coaching</button>
+            </div>
+            <div id="msg-oracle-generating" class="small italic" style="color:var(--dim);margin-top:8px;display:none">✦ Oracle thinking...</div>
+            <div id="msg-oracle-guidance" style="display:none;margin-top:10px;padding:12px;border-radius:8px;background:var(--bg2);white-space:pre-wrap;font-size:.88rem;line-height:1.6"></div>
+          </div>
+          <div class="flex gap10 mt14 wrap">
+            <button class="btn p" onclick="sendMessage()">💌 Send</button>
+            <button class="btn g" onclick="saveDraftMessage()">📝 Draft</button>
+            <button class="btn g" onclick="clearCompose()">✕</button>
+          </div>
+          <div id="msg-send-status" class="small italic" style="color:var(--dim);margin-top:10px;min-height:16px"></div>
+        </div>
+
+        <div class="card" id="msg-draft-card" style="display:none">
+          <div class="card-title" style="font-size:.72rem">📝 DRAFT</div>
+          <div id="msg-draft-preview" class="small" style="color:var(--dim);font-style:italic;margin-bottom:10px"></div>
+          <div class="flex gap8">
+            <button class="btn g" style="font-size:.78rem" onclick="loadDraft()">Load Draft</button>
+            <button class="btn g" style="font-size:.78rem" onclick="deleteDraft()">✕ Discard</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">💛 POKE · ATTENTION SYSTEM</div>
+          <p class="small" style="color:var(--dim);margin-bottom:14px;line-height:1.6">A graduated system for checking in. The urgency tiers are real — don't cry wolf.</p>
+          <div class="fc gap10">
+            <div class="poke-tier soft">
+              <div class="poke-tier-header"><span class="poke-tier-icon">💛</span><div><div class="poke-tier-name">Soft Poke</div><div class="poke-tier-desc">Low urgency. Vibration only.</div></div></div>
+              <div class="flex gap8 mt10 wrap">
+                <button class="btn" onclick="sendPoke('soft')">💛 Send</button>
+                <button class="btn g" onclick="sendPokeWithMsg('soft')">+ Custom</button>
+              </div>
+            </div>
+            <div class="poke-tier attention">
+              <div class="poke-tier-header"><span class="poke-tier-icon">💌</span><div><div class="poke-tier-name">Attention Request</div><div class="poke-tier-desc">Medium urgency. Sound notification.</div></div></div>
+              <div class="flex gap8 mt10 wrap">
+                <button class="btn" onclick="sendPoke('attention')">💌 Send</button>
+                <button class="btn g" onclick="sendPokeWithMsg('attention')">+ Custom</button>
+              </div>
+            </div>
+            <div class="poke-tier urgent">
+              <div class="poke-tier-header"><span class="poke-tier-icon">🔴</span><div><div class="poke-tier-name">Urgent — Use Sparingly</div><div class="poke-tier-desc">Full-screen alert. 10s lock. Real emergencies only.</div></div></div>
+              <button class="btn d" style="margin-top:10px" onclick="sendPoke('urgent')">🔴 Send Urgent Alert</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🫀 WHAT I NEED RIGHT NOW</div>
+          <p class="small" style="color:var(--dim);margin-bottom:14px">A soft presence signal. Visible on your partner's screen.</p>
+          <div class="fc gap8">
+            <button class="btn need-signal-btn" onclick="setNeedSignal('A little bit of love')">💗 A little bit of love</button>
+            <button class="btn need-signal-btn" onclick="setNeedSignal('Just some attention')">👁 Just some attention</button>
+            <button class="btn need-signal-btn" onclick="setNeedSignal('Some space right now')">🌑 Some space right now</button>
+            <button class="btn need-signal-btn" onclick="setNeedSignal('I don't know')">🌫 I don't know</button>
+            <button class="btn g" onclick="setNeedSignal('')">✕ Clear signal</button>
+          </div>
+          <div id="need-signal-status" class="small italic" style="color:var(--amber);margin-top:12px;min-height:18px"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Inbox + logs -->
+      <div class="fc gap16">
+        <div class="card">
+          <div class="card-title">📤 SENT</div>
+          <div id="msg-sent-list" class="fc gap8" style="max-height:180px;overflow-y:auto">
+            <p class="small italic" style="color:var(--dim)">Messages you've sent will appear here.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📬 INBOX <span id="inbox-badge" style="display:none;background:var(--fire2);color:var(--text);font-size:.6rem;padding:2px 6px;border-radius:10px;margin-left:6px;font-family:var(--fm)"></span></div>
+          <div class="flex gap8 mb12" style="flex-wrap:wrap">
+            <button class="btn g" style="font-size:.72rem;padding:4px 10px" onclick="filterInbox('all')">All</button>
+            <button class="btn g" style="font-size:.72rem;padding:4px 10px" onclick="filterInbox('text')">📝 Notes</button>
+            <button class="btn g" style="font-size:.72rem;padding:4px 10px" onclick="filterInbox('love')">💌 Love</button>
+            <button class="btn g" style="font-size:.72rem;padding:4px 10px" onclick="filterInbox('feeling')">💗 Feelings</button>
+            <button class="btn g" style="font-size:.72rem;padding:4px 10px" onclick="filterInbox('need')">🫀 Needs</button>
+            <button class="btn g" style="font-size:.72rem;padding:4px 10px" onclick="filterInbox('poke')">💛 Pokes</button>
+          </div>
+          <div id="msg-inbox-list" class="fc gap10" style="max-height:300px;overflow-y:auto">
+            <p class="small italic" style="color:var(--dim)">Messages from your partner appear here.</p>
+          </div>
+          <button class="btn g" style="margin-top:10px;font-size:.75rem;width:100%" onclick="markAllRead()">✓ Mark all read</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="font-size:.72rem">📬 POKE HISTORY</div>
+          <div id="poke-history-list" class="fc gap8" style="max-height:160px;overflow-y:auto">
+            <p class="small italic" style="color:var(--dim)">Pokes sent and received appear here.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="font-size:.72rem">💗 PARTNER'S FEELING</div>
+          <div id="msg-partner-feeling-display" class="small" style="color:var(--dim);font-style:italic">Partner's feeling will appear here when they set it.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     RELATIONAL MIRROR — solutions-oriented reflection prompt. Shared
+     modal (persistent shell), invoked from two places (GFF's express
+     path, Rupture repair) rather than being its own tab (§16.4 — a
+     question, not a new noun in the system). Centered modal, same
+     convention as #pipeline-modal / #messages-modal.
+═══════════════════════════════════════════════════════════════════ -->
+<div id="mirror-modal">
+  <div id="mirror-modal-box">
+    <div class="priming-title" style="margin-bottom:6px">💭 A Reflection (optional)</div>
+    <p class="small italic" style="color:var(--dim);margin-bottom:16px">Answer either, both, or neither. This is about what could help — not about assigning blame.</p>
+    <label class="fl">What could they do to show up for you better next time?</label>
+    <textarea id="mirror-q1" rows="2" placeholder="Optional..."></textarea>
+    <label class="fl mt12">What would have helped you in that moment?</label>
+    <textarea id="mirror-q2" rows="2" placeholder="Optional..."></textarea>
+    <div class="flex gap10 mt16 wrap">
+      <button class="btn p" onclick="submitRelationalMirror(true)">💗 Share with partner</button>
+      <button class="btn g" onclick="submitRelationalMirror(false)">🔒 Keep private</button>
+      <button class="btn g" onclick="skipRelationalMirrorPrompt()">Skip</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MEANING ARCHIVE — auto-surface offer, shared modal (persistent
+     shell), same centered convention as #mirror-modal/#pipeline-modal.
+     Fires on the receiving side after a love note/poem/feeling-share
+     arrives (see receiveMessage()'s own comment for why receiving side,
+     not sending side).
+═══════════════════════════════════════════════════════════════════ -->
+<div id="meaning-add-modal">
+  <div id="meaning-add-modal-box">
+    <div class="priming-title" style="margin-bottom:6px">💗 Add this to your Meaning Archive?</div>
+    <p class="small italic" style="color:var(--dim);margin-bottom:12px" id="meaning-add-preview"></p>
+    <div id="meaning-decline-form" style="display:none;margin-bottom:12px">
+      <label class="fl">It's okay if it's not your cup of tea, but it helps to say why — constructive, not critical:</label>
+      <textarea id="meaning-decline-reason" rows="2" placeholder="Optional..."></textarea>
+      <label class="fl mt8">How loved did this make you feel? (optional, 1–10)</label>
+      <input type="number" id="meaning-decline-rating" min="1" max="10">
+      <button class="btn p mt8" onclick="submitMeaningDecline()">Submit</button>
+    </div>
+    <div id="meaning-add-accept-row">
+      <label class="fl">Gratitude note (optional)</label>
+      <input type="text" id="meaning-add-gratitude" placeholder="What are you grateful for here...">
+      <div class="flex gap10 mt12 wrap">
+        <button class="btn p" onclick="confirmAddToMeaning()">💗 Add it</button>
+        <button class="btn g" onclick="openMeaningDeclineForm()">Not this one</button>
+        <button class="btn g" onclick="closeMeaningAddPrompt()">Skip</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     LOVE LETTER FULL-SCREEN DISPLAY
+═══════════════════════════════════════════════════════ -->
+<div id="love-letter-display">
+  <div id="love-letter-inner">
+    <div style="font-size:2.5rem;margin-bottom:24px;filter:drop-shadow(0 0 20px var(--fire2))">💌</div>
+    <div id="love-letter-text"></div>
+    <div id="love-letter-from"></div>
+    <div class="flex gap12 jc">
+      <button class="btn p" onclick="saveLetterToVault()">🗂 Save to Vault</button>
+      <button class="btn g" onclick="closeLoveLetter()">✕ Close</button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- ═══════════════════════════════════════════════════════
+     MAIN APP
+═══════════════════════════════════════════════════════ -->
+<!-- APP POPOUT removed — was a right-edge slide-in side panel for
+     Messages (opened from the header bell). That was replaced by a
+     full standalone page (messages.html), which was itself replaced —
+     "didn't want messages to be the whole screen just a popup." Final
+     shape: the bell opens a small dropdown (showNotifDropdown(),
+     shared/eravos-kernel.js) with a few recent messages and a button
+     into #messages-modal, a centered popup that also folds in what
+     used to be the separate Poke tab. See openMessagesModal()'s own
+     comment for the full history. -->
+
+<div id="app">
+
+  <!-- HEADER -->
+  <header id="header">
+    <div id="fire-logo" style="display:flex;align-items:center;justify-content:center;width:54px;height:54px;font-size:42px;animation:flameDance 1.5s ease-in-out infinite alternate;filter:drop-shadow(0 0 12px var(--fire)) drop-shadow(0 0 30px var(--fire2));cursor:default;user-select:none">🔥</div>
+    <!-- The raven mask/tears/crack header logo that used to live here
+         was removed entirely -- personal visual content, and its
+         hiding CSS (#raven-logo{display:none}) was already removed
+         from eravos-kernel.css, so leaving the markup would have made
+         it start showing by default instead of staying hidden. -->
+    <div id="title-block">
+      <h1>Eravos</h1>
+      <div class="tagline">✦ CO-CREATION · LOVE · INTERDEPENDENCE · EMERGENCE ✦</div>
+      <div id="header-version-display" style="font-family:var(--fm);font-size:.58rem;letter-spacing:.1em;color:var(--dim);opacity:.6;margin-top:2px" title="If this doesn't match the version you just unzipped, you're looking at a stale build or cache — see Settings → System → Clear Cache">…</div>
+    </div>
+    <div id="header-right">
+      <div id="user-display" class="flex ac gap8">
+        <div style="position:relative;cursor:pointer;display:flex;align-items:center" id="notif-bell-trigger" onclick="showNotifDropdown()" title="Messages">
+          <div id="notif-bell" style="font-size:1.3rem;line-height:1;filter:drop-shadow(0 0 6px var(--amber));transition:filter .2s" onmouseenter="this.style.filter='drop-shadow(0 0 10px var(--fire))'" onmouseleave="this.style.filter='drop-shadow(0 0 6px var(--amber))'">🔔</div>
+          <div id="notif-badge" style="display:none;position:absolute;top:-5px;right:-5px;width:18px;height:18px;border-radius:50%;background:var(--fire2);border:2px solid var(--dark);font-family:var(--fm);font-size:.55rem;color:var(--text);align-items:center;justify-content:center;line-height:1;z-index:10">0</div>
+        </div>
+        <!-- P2P connection indicator -->
+        <div id="header-p2p-indicator" title="Partner connection" style="display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:12px;border:1px solid var(--panel2);cursor:default;transition:border-color .3s">
+          <span id="header-p2p-dot" style="width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0;transition:background .4s,box-shadow .4s"></span>
+          <span id="header-p2p-label" style="font-family:var(--fm);font-size:.55rem;color:var(--dim);letter-spacing:.08em;transition:color .3s">—</span>
+        </div>
+        <button class="btn g" onclick="openCommHub()" title="Reach out to partner" style="font-size:.75rem;padding:5px 10px">💌</button>
+        <div class="user-avatar" id="user-avatar" onclick="showUserMenu()" style="position:relative">?<span id="user-avatar-status-dot" class="user-avatar-status-dot" style="display:none"></span></div>
+        <span id="user-name-display" style="font-family:var(--fm);font-size:.7rem;color:var(--dim)"></span>
+      </div>
+      <div id="mode-selector" style="display:flex;align-items:center;gap:2px;background:var(--scrim-soft);border:1px solid var(--border2);border-radius:20px;padding:2px">
+        <button class="mode-pill" id="mode-pill-solo" onclick="requestModeSwitch('solo')" title="Solo mode — personal space">SOLO</button>
+        <button class="mode-pill" id="mode-pill-duo"  onclick="requestModeSwitch('duo')"  title="Co-Creation — shared with partner">CO-CREATE</button>
+      </div>
+      <button class="btn g" onclick="openPriming()">⚡ Prime</button>
+    </div>
+  </header>
+
+  <!-- ── USER MENU DROPDOWN ──────────────────────────────────────────── -->
+  <!-- Priming and mode-switch removed from here — both already have a
+       more prominent header-level control (the "⚡ Prime" button and
+       the SOLO/DUO mode-selector pills just above), so this dropdown
+       doesn't need to duplicate them. -->
+  <div id="user-menu-dropdown">
+    <div class="ume-header">
+      <div class="ume-avatar" id="ume-avatar-inner" style="position:relative">?<span id="ume-avatar-status-dot" class="user-avatar-status-dot" style="display:none"></span></div>
+      <div>
+        <div class="ume-name">You</div>
+        <div class="ume-mode">SOLO MODE</div>
+      </div>
+    </div>
+    <div class="ume-sep"></div>
+    <button class="ume-item" onclick="closeUserMenu();location.href='profile.html'">
+      <span class="ume-icon">👤</span> Profile
+    </button>
+    <button class="ume-item" id="ume-dnd-item" onclick="toggleDND()">
+      <span class="ume-icon">🔕</span> <span id="ume-dnd-label">Do Not Disturb</span>
+    </button>
+    <div class="ume-sep"></div>
+    <button class="ume-item ume-danger" onclick="doSignOut()">
+      <span class="ume-icon">→</span> Sign Out
+    </button>
+  </div>
+
+  <!-- ── NOTIFICATION DROPDOWN — small anchored dropdown, same pattern
+       as the user menu above. Not a side panel (§ no side panels): this
+       doesn't slide in from an edge or take a height-spanning slice of
+       the screen, it's a small popover anchored under the bell that
+       disappears on outside click, same as any dropdown menu. ── -->
+  <div id="notif-dropdown">
+    <div class="ume-header" style="padding:10px 12px">
+      <div style="font-family:var(--fd);font-size:.85rem;color:var(--amber)">💌 Recent Messages</div>
+    </div>
+    <div class="ume-sep"></div>
+    <div id="notif-dropdown-list" style="max-height:320px;overflow-y:auto;padding:4px 6px"></div>
+    <div class="ume-sep"></div>
+    <button class="ume-item" style="justify-content:center;color:var(--amber)" onclick="closeNotifDropdown();openMessagesModal()">
+      View All Messages →
+    </button>
+  </div>
+
+  <!-- ── SIGN OUT OVERLAY ─────────────────────────────────────────────── -->
+  <div id="signout-overlay">
+    <div class="signout-box">
+      <div class="signout-fire">🔥</div>
+      <div class="signout-title">Leaving the space?</div>
+      <div class="signout-sub">Your feelings, history, and everything sacred stays right here.</div>
+      <div class="flex gap12" style="margin-top:28px;justify-content:center">
+        <button class="signout-btn-cancel" onclick="cancelSignOut()">Stay</button>
+        <button class="signout-btn-confirm" onclick="confirmSignOut()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODE SWITCH CONFIRMATION MODAL ─────────────────────────── -->
+  <div id="mode-switch-modal">
+    <div class="msm-box">
+      <span class="msm-icon" id="msm-icon">⇄</span>
+      <div class="msm-title" id="msm-title">Switch mode?</div>
+      <div class="msm-body" id="msm-body">This will change how Eravos stores and shares your data.</div>
+      <div class="msm-actions">
+        <button class="msm-cancel" onclick="cancelModeSwitch()">Stay</button>
+        <button class="msm-confirm" id="msm-confirm-btn" onclick="confirmModeSwitch()">Switch</button>
+      </div>
+    </div>
+  </div>
+  <div id="priming-indicator" onclick="openPriming()">
+    <span style="font-size:1.1rem" id="prime-active-emoji">✦</span>
+    <div>
+      <div class="prime-active-badge">PRIMING ACTIVE: <span id="prime-active-name">None</span></div>
+      <div class="small" id="prime-active-desc">Click to change priming state</div>
+    </div>
+    <span style="margin-left:auto;color:var(--dim);font-size:.8rem">⚡ Edit</span>
+  </div>
+
+  <!-- CONNECTION AMBIENT — a standing, glanceable answer to "when did we
+       last actually connect", without having to remember to check. ADHD
+       time-blindness means "I'll check in later" quietly turns into never;
+       this makes the gap itself visible instead of relying on memory. -->
+  <div id="connection-ambient" onclick="requestConnectionLinkUp()" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 14px;margin:6px 0;border-radius:12px;background:var(--glass);border:1px solid var(--border);font-size:.82rem">
+    <span id="conn-ambient-icon">🌙</span>
+    <span id="conn-ambient-text" style="color:var(--dim)">Checking connection...</span>
+  </div>
+
+  <!-- QUICK CAPTURE — the single biggest ADHD accommodation this app can
+       make: a thought loses its charge in the time it takes to navigate
+       to "the right tab" and find the right form. This is always one tap
+       away from anywhere, and defaults to just capturing the words —
+       sorting it into the right place is optional, not a precondition. -->
+  <button id="quick-capture-fab" onclick="openQuickCapture()" title="Quick capture (nothing to lose)">✎</button>
+  <div id="quick-capture-modal">
+    <div class="qc-box">
+      <div class="qc-title">Catch it before it's gone</div>
+      <textarea id="qc-text" rows="4" placeholder="Whatever it is, right now..." autofocus></textarea>
+      <div class="qc-types">
+        <button class="qc-type" data-type="thought" onclick="saveQuickCapture('thought')">💭 Thought</button>
+        <button class="qc-type" data-type="feeling" onclick="saveQuickCapture('feeling')">💗 Feeling</button>
+        <button class="qc-type" data-type="need" onclick="saveQuickCapture('need')">🎯 Need</button>
+        <button class="qc-type" data-type="friction" onclick="saveQuickCapture('friction')">⚡ Friction</button>
+      </div>
+      <div class="qc-actions">
+        <button class="msm-cancel" onclick="closeQuickCapture()">Never mind</button>
+        <button class="msm-confirm" onclick="saveQuickCapture('thought')">Just save it →</button>
+      </div>
+      <div class="small" style="color:var(--dim);margin-top:10px">Goes straight to the Vault. Sort it later, or don't — capturing it matters more than filing it.</div>
+    </div>
+  </div>
+
+  <!-- FEELINGS BAR -->
+  <div id="feelings-bar">
+    <canvas id="feeling-mini-canvas" width="72" height="72" onclick="openFeelingModal()"></canvas>
+    <div class="feeling-state">
+      <div class="feeling-label">CURRENT FEELING</div>
+      <div class="feeling-name" id="feeling-display-name">Tap to set...</div>
+      <div class="feeling-intensity-row">
+        <div class="feeling-dots" id="feeling-dots-display"></div>
+        <span class="small" id="feeling-intensity-label"></span>
+      </div>
+      <div class="feeling-body" id="feeling-body-text">Your felt state shapes everything the oracle offers.</div>
+    </div>
+    <div class="fc gap8">
+      <div class="feeling-send-row">
+        <button class="btn-express" onclick="openFeelingModal()">💗 Set Feeling</button>
+        <button class="btn-express" onclick="openPipelineModal()">💌 Express</button>
+        <button class="btn-express" onclick="openExpressionPicker()">✨ Say it</button>
+        <button class="btn-express" onclick="feelingToOracle()">🔮 Oracle</button>
+      </div>
+      <div class="feeling-send-row" id="partner-feeling-row" style="display:none">
+        <div id="partner-box" class="partner-box">
+          <div class="partner-box-header">💫 PARTNER</div>
+          <div class="partner-box-row">
+            <span class="partner-box-label">Feeling</span>
+            <span id="partner-box-feeling" class="partner-box-val">–</span>
+          </div>
+          <div class="partner-box-row">
+            <span class="partner-box-label">Status</span>
+            <span id="partner-box-status" class="partner-box-val">–</span>
+          </div>
+          <div class="partner-box-row">
+            <span class="partner-box-label">Need</span>
+            <span id="partner-box-need" class="partner-box-val">–</span>
+          </div>
+          <div class="partner-box-row">
+            <span class="partner-box-label">Signal</span>
+            <span id="partner-box-signal" class="partner-box-val">–</span>
+          </div>
+        </div>
+        <div id="relational-health-field" class="relational-health-field">
+          <div class="relational-health-header">💫 RELATIONAL FIELD</div>
+          <div class="relational-health-visual">
+            <div id="relational-health-glow" class="relational-health-glow"></div>
+            <div id="relational-health-score" class="relational-health-score">100%</div>
+          </div>
+          <div id="relational-health-label" class="small" style="color:var(--dim);text-align:center;margin-top:6px">Nothing weighing on it right now</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TICKER -->
+  <!-- Phase D — presence in the shell, not only inside Chat. Quiet by
+       design: it says where they are without pulling you out of where you
+       are. Hidden entirely when there is nothing to say. -->
+
+  <!-- One-time invite prompt. Both buttons silence it FOREVER — being asked
+       repeatedly whether you have a partner yet is its own small cruelty.
+       Pairing stays available in Settings. -->
+  <div class="modal" id="expression-modal">
+    <div class="modal-inner ip-inner">
+      <h3 class="ip-title">Say it</h3>
+      <p class="ip-body">Grouped by what you're trying to say, and searchable by meaning rather than
+        by the emoji's name. Every one shows its words — sending one can set your feeling too.</p>
+      <input type="text" id="expr-search" placeholder="search by meaning — &quot;held&quot;, &quot;miss you&quot;, &quot;need space&quot;" autocomplete="off" oninput="renderExpressionPicker()">
+      <label style="display:flex;align-items:center;gap:10px;margin-bottom:12px;cursor:pointer">
+        <input type="checkbox" id="expr-set-feeling" style="width:16px;height:16px;accent-color:var(--fire)">
+        <span class="small" style="color:var(--dim)">also set my feeling from what I send</span>
+      </label>
+      <div id="expr-picker" style="max-height:46vh;overflow-y:auto"></div>
+      <div class="ip-acts"><button class="btn ghost" onclick="closeExpressionPicker()">Close</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="cocreation-modal">
+    <div class="modal-inner ip-inner">
+      <h3 class="ip-title">How do you want to share this?</h3>
+      <p class="ip-body">Asked once, now, because this is the only moment these questions are live.
+        Everything here is in Settings afterwards, and this will not ask again.</p>
+      <div id="cocreation-questions" style="max-height:52vh;overflow-y:auto"></div>
+      <div class="ip-acts">
+        <button class="btn p" onclick="saveCoCreationAsk()">That's right</button>
+        <button class="btn ghost" onclick="skipCoCreationAsk()">Use the defaults</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="invite-prompt">
+    <div class="modal-inner ip-inner">
+      <h3 class="ip-title">Is there someone you're building this with?</h3>
+      <p class="ip-body">Eravos works completely on your own — the vault, the codex, the
+        lattice, all of it. Sharing it with someone is optional, and you can do it later
+        from Settings at any time. If you're both already using Eravos on your own,
+        connecting doesn't erase either of your histories — everything you've each
+        already kept stays exactly as it was, this just adds the shared space on top.</p>
+      <div class="ip-acts">
+        <button class="btn p" onclick="dismissInvitePrompt('invite');openInvitePartner()">Invite them</button>
+        <button class="btn" onclick="dismissInvitePrompt('riding-solo')">I'm riding solo</button>
+        <button class="btn ghost" onclick="dismissInvitePrompt('skip')">Skip</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="invite-modal">
+    <div class="modal-inner ip-inner">
+      <h3 class="ip-title">Invite your partner</h3>
+      <div id="invite-qr" class="iv-qr"></div>
+      <!-- The code is ALWAYS shown under the QR as a confirmation glance
+           (does this match what's on their screen) — it is NOT sufficient
+           to paste alone: it's missing the peer id and relay address that
+           redeemInviteCode() needs to know which device to connect to.
+           Was presented as an equally-weighted "Copy code" button right
+           next to "Copy link," with copy literally saying "enter this
+           code in their app" — the single most natural reading of that
+           led straight to redeemInviteCode()'s "that's just the
+           8-character code" error, every time, for anyone who took the
+           button at its word. Copy link is the one reliable path here —
+           and as of 2026-08-25, this box is deliberately styled to look
+           NOT worth copying (small, dashed, muted) after a real
+           screenshot showed someone doing exactly that. -->
+      <p class="iv-label">⚠ glance only, do not send — confirms you're both looking at the same invite</p>
+      <div class="iv-code-confirm-only" id="invite-code">…</div>
+      <div class="ip-acts" style="margin-bottom:10px">
+        <button class="btn p" onclick="copyInviteLink()">📋 Copy link (send them this)</button>
+      </div>
+      <p class="iv-label" style="opacity:.6;margin-top:-4px">The code above is not enough on its own — send the link.</p>
+      <input class="iv-link" id="invite-link" readonly onclick="this.select()">
+      <p class="iv-expiry" id="invite-origin-warning" style="color:var(--rose)" hidden></p>
+      <p class="iv-expiry" id="invite-expiry"></p>
+      <!-- §GAP found 2026-08-25 — separate from the relay code above,
+           deliberately not merged into it: that code connects two DEVICES
+           in real time; this one (eravos-db, real, server-side) creates a
+           durable, encrypted, shared couple record that survives either
+           device being offline. Hidden entirely when there's no server
+           session to generate one from — see showInvitePartner()'s own
+           comment for why a code that cannot possibly redeem must not be
+           shown at all. This one genuinely works pasted alone — it keeps
+           the prominent .iv-code style AND gets a real copy button, since
+           unlike the relay code above, copying just this text is correct. -->
+      <div id="invite-account-section" hidden style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+        <p class="iv-label">✦ this code works on its own — for data that stays in sync even when you're not both online</p>
+        <div class="iv-code" id="invite-account-code">…</div>
+        <div class="ip-acts" style="margin-bottom:0">
+          <button class="btn" onclick="copyAccountInviteCode()">📋 Copy this code</button>
+        </div>
+      </div>
+      <!-- "Send by email" opens the SENDER's own mail app via a mailto:
+           link -- it does not deliver anything itself (§ always
+           self-hosted, no third-party send). That depends on a
+           configured mail client, which a lot of phones and PWAs don't
+           have wired up -- when it doesn't fire, the copy buttons above
+           are the reliable path: copy the code or link, send it however
+           you two already talk. -->
+      <p class="iv-label" style="margin-top:4px">or send by email — opens your own mail app; if nothing happens, use Copy above instead</p>
+      <input class="iv-email" id="invite-email" type="email" placeholder="their email — optional" autocomplete="off">
+      <div class="ip-acts">
+        <button class="btn" onclick="emailInvitePartner()">Send by email</button>
+        <button class="btn ghost" onclick="revokeInvitePartner()">Revoke</button>
+        <button class="btn ghost" onclick="closeInvitePartner()">Close</button>
+      </div>
+      <hr class="sep" style="margin:18px 0 14px">
+      <!-- Reciprocal path, real gap (matches the homepage's own promise:
+           "if you're both already using Eravos on your own, connecting
+           doesn't erase either of your histories" -- nothing implemented
+           that until redeemInviteCode() in eravos-kernel.js). This is for
+           the case where THEY sent YOU a code -- generating one above and
+           redeeming one below are different, unrelated actions that just
+           happen to both be about pairing, so both live on this one
+           screen rather than making someone hunt for the second one. -->
+      <p class="iv-label">already have a code from them?</p>
+      <input class="iv-link" id="invite-redeem-input" placeholder="paste their invite link or code" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();redeemInviteFromModal();}">
+      <div class="ip-acts">
+        <button class="btn p" onclick="redeemInviteFromModal()">Connect with their code</button>
+      </div>
+      <div class="login-error" id="invite-redeem-error" style="display:none;margin-top:6px"></div>
+    </div>
+  </div>
+
+  <div id="presence-bar">
+    <span id="presence-line" hidden></span>
+    <button id="presence-follow" type="button" onclick="togglePresenceFollow()" hidden>go with them</button>
+  </div>
+  <div id="ticker"><div id="ticker-inner"></div></div>
+
+  <!-- STATUS BAR — James only (hidden for partner). Used to also show
+       "AI: –" / "Partner: –" status-items here — removed both: the AI
+       one wasn't asked for and its errors were confusing to see next to
+       partner status; the Partner one duplicated the always-visible
+       header pill (#header-p2p-indicator) exactly, just in a second
+       place, which read as inconsistency rather than redundancy when
+       the two updated at slightly different times. One partner-status
+       display now (the header pill); this bar is just the clock. -->
+  <div id="status-bar">
+    <div style="margin-left:auto;font-family:var(--fm);font-size:.68rem;color:var(--dim)" id="session-clock">–</div>
+  </div>
+
+  <!-- TABS -->
+  <!-- ── CATEGORY NAV ── -->
+  <nav id="cat-nav">
+    <button class="cat-btn active" id="cat-relational" data-cat="relational">💫 Relational</button>
+    <button class="cat-btn" id="cat-communication" data-cat="communication">📡 Communication</button>
+    <button class="cat-btn" id="cat-creating" data-cat="creating">✨ Creating</button>
+    <button class="cat-btn" id="cat-space" data-cat="space">🗂 Space</button>
+    <button class="cat-btn" id="cat-system" data-cat="system">⚙ System</button>
+  </nav>
+
+  <!-- ── SUBTAB ROWS ── -->
+  <div id="subtabs-relational" class="subtab-row">
+    <button class="subtab active" data-tab="oracle"><span class="subtab-icon">✦</span><span class="subtab-label">Oracle</span></button>
+    <button class="subtab" data-tab="feelings"><span class="subtab-icon">💗</span><span class="subtab-label">Feelings</span></button>
+    <button class="subtab" data-tab="relational"><span class="subtab-icon">🤝</span><span class="subtab-label">Bond</span></button>
+    <button class="subtab" data-tab="rupture"><span class="subtab-icon">⚡</span><span class="subtab-label">Rupture</span></button>
+    <button class="subtab" data-tab="sparring"><span class="subtab-icon">⚔</span><span class="subtab-label">Sparring</span></button>
+    <button class="subtab" data-tab="growth"><span class="subtab-icon">🌱</span><span class="subtab-label">Growth</span></button>
+    <button class="subtab" data-tab="grammar"><span class="subtab-icon">⌘</span><span class="subtab-label">Grammar</span></button>
+    <button class="subtab" data-tab="hardtalk"><span class="subtab-icon">❢</span><span class="subtab-label">Hard Talk</span></button>
+    <button class="subtab" data-tab="goals"><span class="subtab-icon">◰</span><span class="subtab-label">Goals</span></button>
+    <button class="subtab" data-tab="desires"><span class="subtab-icon">◈</span><span class="subtab-label">Desires</span></button>
+    <button class="subtab" data-tab="triggers"><span class="subtab-icon">🌊</span><span class="subtab-label">Triggers</span></button>
+    <button class="subtab" data-tab="commitments"><span class="subtab-icon">🤝</span><span class="subtab-label">Commitments</span></button>
+    <button class="subtab" data-tab="struggles"><span class="subtab-icon">💗</span><span class="subtab-label">Struggles</span></button>
+  </div>
+
+  <div id="subtabs-communication" class="subtab-row" style="display:none">
+    <button class="subtab" data-tab="chat"><span class="subtab-icon">✎</span><span class="subtab-label">Chat</span></button>
+    <button class="subtab" data-tab="needs"><span class="subtab-icon">🫀</span><span class="subtab-label">Needs</span></button>
+    <button class="subtab" data-tab="planner"><span class="subtab-icon">📅</span><span class="subtab-label">Planner</span></button>
+  </div>
+
+  <div id="subtabs-creating" class="subtab-row" style="display:none">
+    <button class="subtab" data-tab="poetry"><span class="subtab-icon">📜</span><span class="subtab-label">Poetry</span></button>
+    <button class="subtab" data-tab="canvas"><span class="subtab-icon">🖊</span><span class="subtab-label">Canvas</span></button>
+    <button class="subtab" data-tab="mutator"><span class="subtab-icon">🎨</span><span class="subtab-label">Mutator</span></button>
+    <button class="subtab" data-tab="mythos"><span class="subtab-icon">✸</span><span class="subtab-label">Mythos</span></button>
+    <button class="subtab" data-tab="rituals"><span class="subtab-icon">🕯</span><span class="subtab-label">Rituals</span></button>
+    <button class="subtab" data-tab="music"><span class="subtab-icon">🎵</span><span class="subtab-label">Mood</span></button>
+    <button class="subtab" data-tab="cocreate"><span class="subtab-icon">🤝</span><span class="subtab-label">Co-Create</span></button>
+    <button class="subtab" data-tab="ideas"><span class="subtab-icon">💡</span><span class="subtab-label">Ideas</span></button>
+    <button class="subtab" data-tab="meaning"><span class="subtab-icon">💗</span><span class="subtab-label">Meaning</span></button>
+  </div>
+
+  <div id="subtabs-space" class="subtab-row" style="display:none">
+    <button class="subtab" data-tab="codex"><span class="subtab-icon">📖</span><span class="subtab-label">Codex</span></button>
+    <button class="subtab" data-tab="vault"><span class="subtab-icon">🗂</span><span class="subtab-label">Vault</span></button>
+    <button class="subtab" data-tab="lattice"><span class="subtab-icon">🕸</span><span class="subtab-label">Lattice</span></button>
+  </div>
+
+  <div id="subtabs-system" class="subtab-row" style="display:none">
+    <button class="subtab" data-tab="settings"><span class="subtab-icon">⚙</span><span class="subtab-label">Options</span></button>
+    <button class="subtab" data-tab="roadmap"><span class="subtab-icon">🗺</span><span class="subtab-label">Roadmap</span></button>
+    <button class="subtab" data-tab="admin"><span class="subtab-icon">🛠</span><span class="subtab-label">Admin</span></button>
+    <button class="subtab" data-tab="console"><span class="subtab-icon">📟</span><span class="subtab-label">Console</span></button>
+  </div>
+
+  <!-- hidden tabs shim for backward compat -->
+  <nav id="tabs" style="display:none">
+    <button class="tab active" data-tab="oracle">✦ Oracle</button>
+    <button class="tab" data-tab="feelings">💗 Feelings</button>
+    <button class="tab" data-tab="relational">🤝 Relational</button>
+    <button class="tab" data-tab="rupture">⚡ Rupture</button>
+    <button class="tab" data-tab="growth">🌱 Growth</button>
+    <button class="tab" data-tab="ideas">💡 Ideas</button>
+    <button class="tab" data-tab="poetry">📜 Poetry</button>
+    <button class="tab" data-tab="rituals">🕯 Rituals</button>
+    <button class="tab" data-tab="cocreate">🤝 Co-Create</button>
+    <button class="tab" data-tab="codex">📖 Codex</button>
+    <button class="tab" data-tab="mythos">✨ Mythos</button>
+    <button class="tab" data-tab="mutator">🎨 Mutator</button>
+    <button class="tab" data-tab="music">🎵 Mood</button>
+    <button class="tab" data-tab="canvas">🖊 Canvas</button>
+    <button class="tab" data-tab="vault">🗂 Vault</button>
+    <button class="tab" data-tab="settings">⚙ Options</button>
+    <button class="tab" data-tab="sparring">⚔ Sparring</button>
+    <button class="tab" data-tab="call">📞 Call</button>
+    <button class="tab" data-tab="console">📟 Console</button>
+  </nav>
+
+  <!-- ── ORACLE ── -->
+  
+  <div id="panel-mount"></div>
+  <div id="settings-subtab-mount"></div>
+
+
+</div><!-- /app -->
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     FLOATING "INVITE TO SPAR" BUTTON — reachable from any tab, per
+     direct request. Only in duo mode (no partner to invite in solo).
+     Sends the invite with sensible defaults and navigates to the
+     Sparring tab, where the match's own UI (setup stage, then the
+     live turn feed) takes over.
+
+     v-menu: this was a single-purpose spar-invite button. Now a real
+     menu -- one always-visible entry point for real partner
+     interaction (chat, spar, a quick poke), not just spar specifically.
+     Same duo-mode-only visibility as before (see setViewMode's own
+     spar-invite-fab.style.display toggle, unchanged).
+═══════════════════════════════════════════════════════════════════ -->
+<div id="partner-fab-wrap" style="display:none">
+  <div id="partner-fab-menu" class="partner-fab-menu">
+    <button class="pfm-item" onclick="_fabRequirePartner(openMessagesModal)">💬 <span>Chat</span></button>
+    <button class="pfm-item" onclick="_fabRequirePartner(fabInviteToSpar)">⚔ <span>Spar</span></button>
+    <button class="pfm-item" onclick="_fabRequirePartner(openPipelineModal)">💌 <span>Express</span></button>
+    <button class="pfm-item" onclick="_fabRequirePartner(() => sendPoke('soft'))">💛 <span>Thinking of you</span></button>
+  </div>
+  <button id="spar-invite-fab" class="spar-invite-fab" onclick="toggleSparFabMenu()" title="Interact with your partner">✦</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     OLLAMA BRIDGE — P2P proxy to local Ollama instance on James's VM
+     Based on NEXUS OllamaBridge snippet. PeerJS already loaded above.
+═══════════════════════════════════════════════════════════════════ -->
+
+  <div id="eravos-handshake-error" style="display:none;padding:2rem;color:var(--bad);font-family:monospace;white-space:pre-wrap"></div>
+
+  <script src="shared/vendor/leaflet/leaflet.js"></script>
+  <!-- ENGINE CLASSES FIRST, KERNEL LAST.
+       This order is load-bearing, not cosmetic. eravos-kernel.js
+       constructs eravosChat / eravosChoice / eravosGrammar /
+       eravosPairing / eravosPresence / eravosSelectGrammar AT PARSE
+       TIME, guarded by `typeof X !== 'undefined'`. Any class that
+       loads after the kernel makes its global permanently null, and
+       the guard means it fails SILENTLY — the tab renders, nothing
+       works, and no error is thrown (§1.2).
+       Six engines were dead this way. test/boot-order.mjs now fails
+       the build if it happens again. -->
+  <script src="shared/eravos-crypto.js"></script>
+  <script src="shared/eravos-stickers.js"></script>
+  <script src="shared/eravos-features.js"></script>
+  <script src="shared/eravos-safety.js"></script>
+  <script src="shared/eravos-regulation.js"></script>
+  <script src="shared/eravos-cocreation.js"></script>
+  <script src="shared/eravos-planner-share.js"></script>
+  <script src="shared/eravos-persistence.js"></script>
+  <script src="shared/alk/unmet-needs.js"></script>
+  <script src="shared/eravos-pipeline.js"></script>
+  <script src="shared/eravos-careprofile.js"></script>
+  <script src="shared/eravos-expressions.js"></script>
+  <script src="shared/eravos-callaudio.js"></script>
+  <script src="shared/eravos-hardtalk.js"></script>
+  <script src="shared/eravos-goals.js"></script>
+  <script src="shared/eravos-desires.js"></script>
+  <script src="shared/eravos-admin.js"></script>
+  <script src="shared/eravos-choice.js"></script>
+  <script src="shared/eravos-choice-field.js"></script>
+  <script src="shared/eravos-chat.js"></script>
+  <script src="shared/eravos-presence.js"></script>
+  <script src="shared/eravos-grammar.js"></script>
+  <script src="shared/eravos-select-grammar.js"></script>
+  <script src="shared/vendor/qrcode-generator/qrcode.js"></script>
+  <script src="shared/eravos-qr.js"></script>
+  <script src="shared/eravos-pairing.js"></script>
+  <script src="shared/eravos-kernel.js"></script>
+  <!-- ALK layer. ESM, loaded once; publishes the frozen window.ALK namespace.
+       Split-tab JS stays classic and reads from it. One declared seam. -->
+  <script type="module" src="shared/alk/alk-boot.js"></script>
+  <script>
+  /** Real, defensive safety net -- placed here, at the very top of
+      index.html's own inline script, deliberately independent of
+      everything below it (including the async boot sequence and
+      eravos-kernel.js entirely). If kernel.js's own top-level
+      execution ever halts partway through (a real, recurring class of
+      bug in this project -- one uncaught error anywhere in that large
+      file stops every top-level statement after it, including the
+      connection code that already calls updateConnectionAmbient() on
+      every real failure path, checked directly), this timer still
+      fires on its own. Turns an indefinitely frozen "Checking
+      connection..." into a real, actionable message instead of a
+      silent hang. */
+  setTimeout(function () {
+    const text = document.getElementById('conn-ambient-text');
+    if (text && text.textContent === 'Checking connection...') {
+      text.textContent = 'Not connecting — is eravos-serve.js running (not a separate relay)?';
+      text.style.color = '#e2725b';
+      const icon = document.getElementById('conn-ambient-icon');
+      if (icon) icon.textContent = '⚠';
+    }
+  }, 10000);
+
+  /* eravos-shell — REAL lazy loading: only the initially active tab
+     ("oracle") is fetched on boot. Every other tab and every
+     settings sub-tab is a genuinely separate file on disk
+     (tabs/<id>/<id>.html, tabs/settings/subtabs/<id>.html) fetched the
+     first time you click into it, not before. Same principle proven in the
+     single-file build (74% fewer DOM nodes at load there); here it's
+     also fewer HTTP requests at boot, not just deferred parsing. */
+  const TAB_IDS = ["oracle","feelings","relational","rupture","growth","ideas","poetry","rituals","cocreate","codex","mythos","mutator","music","canvas","vault","settings","sparring","grammar","hardtalk","goals","desires","call","chat","voice","poke","needs","planner","lattice","roadmap","admin","console"];
+  const SETTINGS_SUBTABS = ["system","features","ai","admin"];
+
+  // Every tab now lives in its own folder (Phase 0 of ERAVOS-SPEC-v1's
+  // phase map, completed). TAB_SPLIT_PATHS stays as the router's map from
+  // tab id to folder path — kept even now that coverage is total, since
+  // it's still the mechanism for adding new tabs/relational sub-tabs
+  // going forward without touching the loader itself.
+  const TAB_SPLIT_PATHS = {
+    voice:      'tabs/voice/voice',
+    admin:      'tabs/admin/admin',
+    hardtalk:   'tabs/hardtalk/hardtalk',
+    goals:      'tabs/goals/goals',
+    desires:    'tabs/desires/desires',
+    chat:       'tabs/chat/chat',
+    grammar:    'tabs/grammar/grammar',
+    oracle:     'tabs/relational/oracle/oracle',
+    feelings:   'tabs/relational/feelings/feelings',
+    relational: 'tabs/relational/relational',
+    rupture:    'tabs/rupture/rupture',
+    growth:     'tabs/relational/growth/growth',
+    triggers:   'tabs/relational/triggers/triggers',
+    commitments: 'tabs/relational/commitments/commitments',
+    struggles:  'tabs/relational/struggles/struggles',
+    ideas:      'tabs/ideas/ideas',
+    poetry:     'tabs/poetry/poetry',
+    rituals:    'tabs/rituals/rituals',
+    cocreate:   'tabs/cocreate/cocreate',
+    codex:      'tabs/codex/codex',
+    mythos:     'tabs/mythos/mythos',
+    mutator:    'tabs/mutator/mutator',
+    music:      'tabs/music/music',
+    canvas:     'tabs/canvas/canvas',
+    vault:      'tabs/vault/vault',
+    settings:   'tabs/settings/settings',
+    sparring:   'tabs/sparring/sparring',
+    call:       'tabs/call/call',
+    needs:      'tabs/needs/needs',
+    planner:    'tabs/planner/planner',
+    lattice:    'tabs/lattice/lattice',
+    meaning:    'tabs/meaning/meaning',
+    roadmap:    'tabs/roadmap/roadmap',
+    console:    'tabs/console/console',
+  };
+  const ACTIVE_TAB = "oracle";
+  const mountedTabs = new Set();
+  const mountedSubtabs = new Set();
+
+  async function eravosHandshake() {
+    // Non-fatal by design: this used to throw (and take down the entire
+    // app) if even one tab file was missing or the manifest was slightly
+    // out of sync with the server. That's exactly the failure mode that
+    // showed up as a blank error screen from one stale file sitting next
+    // to a newer server — a single content mismatch shouldn't be able to
+    // block the whole app from booting. Real problems get logged to the
+    // console (open devtools if something seems off) instead of a hard
+    // stop; the only things allowed to actually fail boot are the active
+    // tab and the config, both awaited directly in boot() below.
+    try {
+      const res = await fetch('manifest.json');
+      const manifest = await res.json();
+      if (!manifest || !manifest.tabs) {
+        console.warn('[eravos] manifest.json looks incomplete (non-fatal)');
+      }
+    } catch (e) {
+      console.warn('[eravos] manifest.json check unavailable (non-fatal):', e.message);
+    }
+  }
+
+  async function eravosLoadConfig() {
+    const res = await fetch('config/options.json');
+    if (!res.ok) throw new Error('config HTTP ' + res.status);
+    window.EravosConfig = await res.json();
+  }
+
+  /** Real invite detection, run as early as possible (before the async
+      boot sequence below even starts) so the register screen is
+      already in the right state by the time anyone sees it. Was a
+      genuine gap, not an edge case: Pairing.parse() and
+      Pairing.prototype.confirm() both existed and were fully correct,
+      but nothing on the whole page ever called Pairing.parse() at
+      all -- an invite link just landed on the normal, generic login
+      screen with the #pair=... hash sitting there unused. */
+  window._pendingInvite = null;
+  (function detectPendingInvite() {
+    if (!location.hash || location.hash.indexOf('pair=') === -1) return;
+    if (typeof Pairing === 'undefined' || typeof Pairing.parse !== 'function') {
+      console.warn('[eravos] invite link present but Pairing.parse is unavailable');
+      return;
+    }
+    const parsed = Pairing.parse(location.hash);
+    if (!parsed || !parsed.code || !parsed.peer) {
+      console.warn('[eravos] invite link present but could not be parsed:', location.hash);
+      return;
+    }
+    window._pendingInvite = parsed;
+    window.addEventListener('DOMContentLoaded', () => {
+      const banner = document.getElementById('reg-invite-banner');
+      if (banner) banner.style.display = 'block';
+      const modeSelect = document.getElementById('r-mode');
+      if (modeSelect) modeSelect.value = 'duo';
+      if (typeof setLoginTab === 'function') setLoginTab('register');
+      // Real, direct fix: someone arriving via a real invite link has
+      // already decided to join -- showing them marketing copy first
+      // would be pointless friction, not an on-ramp. Straight to the
+      // form.
+      if (typeof showLoginCard === 'function') showLoginCard();
+    });
+  })();
+
+  /** Landing page or login card first — see chooseSignedOutView() in
+      eravos-kernel.js. Runs AFTER detectPendingInvite() above, so an invite
+      link still wins over both. DOMContentLoaded rather than inline: both
+      #homepage and #login-box must exist before either can be hidden. */
+  window.addEventListener('DOMContentLoaded', () => {
+    if (typeof chooseSignedOutView === 'function') chooseSignedOutView();
+  });
+
+  /** Manual counterpart to detectPendingInvite() above, for someone who
+      didn't arrive with #pair=... already in the address bar. Same
+      Pairing.parse() (accepts either the full link or the dot-joined
+      extended code), same window._pendingInvite hookup doRegister()
+      already reads (see eravos-kernel.js) -- one real path, two ways in. */
+  /** Manual counterpart to detectPendingInvite() above, for someone who
+      didn't arrive with #pair=... already in the address bar. Same
+      Pairing.parse() (accepts either the full link or the dot-joined
+      extended code), same window._pendingInvite hookup doRegister()
+      already reads (see eravos-kernel.js) -- one real path, two ways in.
+
+      §GAP found 2026-08-25, from a real screenshot: pasting "4NKTB5XA"
+      here correctly reports "that's just the 8-character code" -- it IS
+      the bare relay code, missing peer/fp/nonce, so that error is right.
+      But the deeper gap the screenshot led to: this function has NO path
+      at all for eravos-db's account-link code (8 DIGITS, no letters --
+      a different, real, separate system, see redeemInviteFromModal() in
+      eravos-kernel.js for where that was wired last session). Someone
+      handed an account code instead of a relay link had no way to redeem
+      it until AFTER creating an account with no invite applied at all,
+      then finding the in-app modal. Fixed below: recognized here too,
+      completed automatically once doRegister()'s real signup succeeds. */
+  function applyPastedInvite() {
+    const input = document.getElementById('r-invite-input');
+    const errEl = document.getElementById('r-invite-error');
+    const raw = input ? input.value.trim() : '';
+    if (errEl) errEl.style.display = 'none';
+    if (!raw) return;
+
+    if (/^\d{8}$/.test(raw)) {
+      window._pendingAccountInviteCode = raw;
+      window._pendingInvite = null; // the two are mutually exclusive per paste
+      const banner = document.getElementById('reg-invite-banner');
+      if (banner) banner.style.display = 'block';
+      const modeSelect = document.getElementById('r-mode');
+      if (modeSelect) modeSelect.value = 'duo';
+      const pasteRow = document.getElementById('reg-invite-paste');
+      if (pasteRow) { pasteRow.querySelector('input').value = ''; }
+      if (typeof showToast === 'function') showToast('✦ Account link code recognized — finish creating your account to connect.');
+      return;
+    }
+
+    if (typeof Pairing === 'undefined' || typeof Pairing.parse !== 'function') {
+      if (errEl) { errEl.textContent = 'Invite parsing is not available right now.'; errEl.style.display = 'block'; }
+      return;
+    }
+    const parsed = Pairing.parse(raw);
+    if (!parsed || !parsed.code || !parsed.peer) {
+      if (errEl) {
+        errEl.textContent = raw.length <= 8 && raw.indexOf('.') === -1
+          ? "That's just the 8-character code — paste the full invite link (or the full dot-separated code) they sent you, so this device knows which device to connect to."
+          : "Couldn't read that as an invite. Paste the full link or code exactly as it was sent.";
+        errEl.style.display = 'block';
+      }
+      return;
+    }
+    window._pendingInvite = parsed;
+    window._pendingAccountInviteCode = null;
+    const banner = document.getElementById('reg-invite-banner');
+    if (banner) banner.style.display = 'block';
+    const modeSelect = document.getElementById('r-mode');
+    if (modeSelect) modeSelect.value = 'duo';
+    const pasteRow = document.getElementById('reg-invite-paste');
+    if (pasteRow) { pasteRow.querySelector('input').value = ''; }
+    if (typeof showToast === 'function') showToast('✦ Invite recognized — finish creating your account to connect.');
+  }
+  if (typeof window !== 'undefined') Object.assign(window, { applyPastedInvite });
+
+  /** Real timezone/region detection, same Intl API this codebase already
+      uses for timezone_created_in on planner events -- not guessed, not
+      a manual setting someone has to remember to update after moving.
+      Sent to Emergence's space-distance component (consolidated onto
+      this same port -- see eravos-serve.js) so the timezone-overlap
+      awake-window math has real data instead of nothing. Convention,
+      stated plainly rather than hidden: THIS device's user is always
+      sent as personA. The actual partner's timezone arrives the same
+      way, from their own device, tagged personB by their own call to
+      this same function -- there's no cross-device coordination here,
+      each side reports its own real, current timezone.
+      Non-blocking, non-fatal: if Emergence isn't attached (see
+      eravos-serve.js's own boot log), this silently has nothing to
+      update and does not affect anything else the app does. */
+  async function eravosDetectAndReportTimezone() {
+    try {
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const locale = Intl.DateTimeFormat().resolvedOptions().locale;
+      await fetch('/api/emergence/space/locations', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ personA: { timezone, locale } }),
+      });
+    } catch (e) {
+      console.warn('[eravos] timezone report to Emergence failed (non-fatal):', e.message);
+    }
+  }
+
+  /** Real toggle, not cosmetic: a disabled tab's nav button (and any
+      subtab-row entry) is removed from the DOM entirely, not just
+      hidden with CSS -- so it's also unreachable by a direct
+      switchTab() call, not just invisible in the nav. */
+  function eravosApplyFeatureToggles() {
+    const tabsConfig = window.EravosConfig && window.EravosConfig.features && window.EravosConfig.features.tabs;
+    if (!tabsConfig) return;
+    for (const [tabName, cfg] of Object.entries(tabsConfig)) {
+      if (cfg && cfg.enabled === false) {
+        document.querySelectorAll('[data-tab="' + tabName + '"]').forEach(el => el.remove());
+      }
+    }
+  }
+
+  function eravosReapplyRoleView() {
+    // Role-gated elements (e.g. the admin-only AI settings tab) only exist
+    // once their tab is mounted — re-apply whenever a new one lands, or a
+    // tab stamped after login never gets its correct visibility.
+    if (typeof S !== 'undefined' && S && S.user) {
+      const role = S.user.role;
+      if (role === 'admin' && typeof applyJamesView === 'function') applyJamesView();
+      else if (role === 'partner' && typeof applyPartnerView === 'function') applyPartnerView();
+    }
+  }
+
+  async function eravosStampTab(id) {
+    if (mountedTabs.has(id)) return;
+    const splitBase = TAB_SPLIT_PATHS[id];
+    const htmlUrl = splitBase ? (splitBase + '.html') : ('tabs/' + id + '.html');
+    try {
+      const r = await fetch(htmlUrl);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const html = await r.text();
+      const wrap = document.createElement('div');
+      wrap.innerHTML = html;
+      document.getElementById('panel-mount').appendChild(wrap);
+      mountedTabs.add(id);
+      eravosReapplyRoleView();
+
+      if (splitBase) {
+        // Split tabs load their own CSS + JS as real assets. A <script>
+        // tag set via innerHTML never executes (a real browser quirk,
+        // not a bug here) — this appends a genuine <script>/<link> to
+        // the document instead, which does.
+        //
+        // Both are OPTIONAL per-tab (§16.4 — don't split CSS/JS out of the
+        // shared kernel files before a tab actually has enough tab-specific
+        // content to justify it). A tab can enter TAB_SPLIT_PATHS with only
+        // an .html file; a missing .css/.js 404 is caught and logged, not
+        // treated as a mount failure — same non-fatal philosophy already
+        // used for manifest.json above. Losing the whole tab over an asset
+        // that was never supposed to exist yet would be worse than not
+        // having it.
+        if (!document.querySelector('link[data-tab-css="' + id + '"]')) {
+          try {
+            const cssUrl = splitBase + '.css';
+            const head = await fetch(cssUrl, { method: 'HEAD' });
+            if (head.ok) {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = cssUrl;
+              link.dataset.tabCss = id;
+              document.head.appendChild(link);
+            }
+          } catch (e) {
+            console.warn('[eravos-shell] no split CSS for "' + id + '" (non-fatal):', e.message);
+          }
+        }
+        if (!document.querySelector('script[data-tab-js="' + id + '"]')) {
+          try {
+            const jsUrl = splitBase + '.js';
+            const head = await fetch(jsUrl, { method: 'HEAD' });
+            if (head.ok) {
+              await new Promise((res, rej) => {
+                const s = document.createElement('script');
+                s.src = jsUrl;
+                s.dataset.tabJs = id;
+                s.onload = res;
+                s.onerror = () => rej(new Error('failed to load ' + s.src));
+                document.head.appendChild(s);
+              });
+            }
+          } catch (e) {
+            console.warn('[eravos-shell] no split JS for "' + id + '" (non-fatal):', e.message);
+          }
+        }
+      }
+
+      const init = window.EravosTabInitRenderers && window.EravosTabInitRenderers[id];
+      if (init) { try { init(); } catch (e) { console.error('[eravos-shell] tab init failed for "' + id + '":', e); } }
+
+      // Phase G — route this tab's self-description selects through the
+      // choice primitive. Runs AFTER init so a tab that builds its own
+      // options at runtime is covered too. mount() is idempotent, so this
+      // costs nothing on re-render.
+      if (typeof window.mountChoiceFields === 'function') {
+        try { window.mountChoiceFields(); }
+        catch (e) { console.error('[eravos-shell] choice-field mount failed for "' + id + '":', e); }
+      }
+    } catch (err) {
+      console.error('[eravos-shell] failed to mount tab "' + id + '":', err);
+      const errDiv = document.createElement('div');
+      errDiv.style.cssText = 'padding:2rem;color:var(--bad);font-family:monospace';
+      errDiv.textContent = 'Tab "' + id + '" failed to load: ' + err.message;
+      errDiv.id = 'panel-' + id;
+      errDiv.className = 'panel';
+      document.getElementById('panel-mount').appendChild(errDiv);
+    }
+  }
+
+  async function eravosStampSettingsSubtab(id) {
+    if (mountedSubtabs.has(id)) return;
+    try {
+      const r = await fetch('tabs/settings/subtabs/' + id + '.html');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const html = await r.text();
+      const wrap = document.createElement('div');
+      wrap.innerHTML = html;
+      document.getElementById('settings-subtab-mount').appendChild(wrap);
+      mountedSubtabs.add(id);
+      const init = window.EravosSettingsSubtabInitRenderers && window.EravosSettingsSubtabInitRenderers[id];
+      if (init) { try { init(); } catch (e) { console.error('[eravos-shell] settings subtab init failed for "' + id + '":', e); } }
+    } catch (err) {
+      console.error('[eravos-shell] failed to mount settings subtab "' + id + '":', err);
+    }
+  }
+
+  function eravosWireNav() {
+    document.addEventListener('click', function (e) {
+      const catBtn = e.target.closest('[data-cat]');
+      if (catBtn) { switchCategory(catBtn.dataset.cat); return; }
+
+      const tabBtn = e.target.closest('[data-tab]');
+      if (tabBtn) {
+        const id = tabBtn.dataset.tab;
+        eravosStampTab(id).then(() => {
+          if (id === 'settings' && !mountedSubtabs.has('system')) {
+            return eravosStampSettingsSubtab('system');
+          }
+        }).then(() => switchTab(id));
+        return;
+      }
+
+      const stBtn = e.target.closest('[data-settings-tab]');
+      if (stBtn) {
+        const id = stBtn.dataset.settingsTab;
+        eravosStampSettingsSubtab(id).then(() => switchSettingsTab(id));
+        return;
+      }
+    });
+  }
+
+  (async function boot() {
+    if (location.protocol === 'file:') {
+      const el = document.getElementById('eravos-handshake-error');
+      if (el) {
+        el.style.display = 'block';
+        el.textContent = 'Eravos can\'t run by double-clicking this file directly.\n\n' +
+          'Browsers block the page from loading its own data (manifest.json, tabs, etc.) ' +
+          'when opened as a file:// path — this is a browser security rule, not a bug here, ' +
+          'and it applies no matter what the site is.\n\n' +
+          'Fix: serve this folder over real HTTP instead of opening the file:\n' +
+          '  • Deploying for real: drop this folder into Apache (or any web server) and ' +
+          'visit it as http://your-domain/ — this is exactly what it\'s built for.\n' +
+          '  • Quick local preview: double-click "preview.command" (Mac/Linux) or ' +
+          '"preview.bat" (Windows) in this folder, then open http://localhost:8080';
+      }
+      return;
+    }
+    try {
+      await eravosHandshake();
+      await eravosLoadConfig();
+      // Real, direct application -- Pairing's own construction happens
+      // far earlier (kernel.js top-level parse time), before this
+      // config fetch could possibly have completed, so this can't be
+      // done at construction time without a race. Pairing.origin is a
+      // real, plain property (see eravos-pairing.js's own constructor)
+      // -- updating it here, once config is definitely loaded, is
+      // correct and simple.
+      if (window.eravosPairing && window.EravosConfig && window.EravosConfig.server && window.EravosConfig.server.publicOrigin) {
+        window.eravosPairing.origin = window.EravosConfig.server.publicOrigin;
+      }
+      eravosApplyFeatureToggles();
+      eravosDetectAndReportTimezone(); // fire-and-forget -- never blocks boot on a network call
+      await eravosStampTab(ACTIVE_TAB); // only this one on boot — the whole point
+      eravosWireNav();
+      // Real, additive safety call: loginSuccess()'s own inline nav-gating
+      // logic (cat-communication, partner-feeling-row, the partner FAB)
+      // is correct on its own, but a real, found timing gap meant it
+      // could run before the DOM/mode state it reads was fully settled,
+      // leaving the Communication category visible for a genuinely solo,
+      // unpaired account (checked directly against a fresh registration).
+      // applyMode() is the same, already-correct, already-tested function
+      // real mode-switches use -- calling it once here, after everything
+      // else in boot has run, closes the gap without touching the
+      // original race itself.
+      if (typeof S !== 'undefined' && S && typeof applyMode === 'function') {
+        applyMode(S.mode || 'solo');
+      }
+      document.dispatchEvent(new CustomEvent('eravos:mounted'));
+      // profile.html's "Re-answer" button can't open the onboarding modal
+      // itself (it lives only in this page) — it redirects here instead.
+      if (new URLSearchParams(location.search).get('reanswer') === '1') {
+        history.replaceState(null, '', location.pathname);
+        if (typeof openOnboardingEdit === 'function') openOnboardingEdit();
+      }
+    } catch (err) {
+      console.error('[eravos-shell] boot failed:', err);
+      const el = document.getElementById('eravos-handshake-error');
+      if (el) {
+        el.style.display = 'block';
+        el.textContent = 'Eravos could not start: ' + err.message +
+          '\n\nThis is a static site — it needs to be served over HTTP (Apache, or any ' +
+          'web server), not opened as a local file. If you\'re already serving it and ' +
+          'still see this, check that manifest.json and the tabs/, config/, and shared/ ' +
+          'folders sit next to this index.html and reload the page.';
+      }
+    }
+  })();
+  </script>
+</body>
+</html>

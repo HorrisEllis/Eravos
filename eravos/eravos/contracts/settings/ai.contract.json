@@ -1,0 +1,19 @@
+{
+  "id": "ai",
+  "dom_ids_exposed": [
+    "ai-features-list",
+    "ai-test-result-claude",
+    "ai-test-result-guardian",
+    "ai-test-result-openai",
+    "guardian-ai-status",
+    "guardian-pref-chatgpt",
+    "guardian-pref-claude",
+    "settings-pane-ai"
+  ],
+  "kernel_hooks_called": [
+    "setGuardianProvider"
+  ],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "parent": "settings",
+  "admin_only": true
+}

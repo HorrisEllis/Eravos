@@ -1,0 +1,38 @@
+<!-- eravos tab: console · category: system -->
+<!-- served by api/server.js at GET /api/tabs/console -->
+<div class="panel" id="panel-console">
+    <div class="g2">
+      <div class="card">
+        <div class="card-title">📟 SYSTEM CONSOLE</div>
+        <div class="log-box" id="console-log">
+          <span class="log-info">SISO stream engine: active</span><br>
+        </div>
+        <div class="flex gap8 mt12">
+          <button class="btn g" onclick="clearLog()">🗑 Clear</button>
+          <button class="btn g" onclick="exportLog()">⬇ Export</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🧪 CONNECTIONS</div>
+        <div class="fc gap12">
+          <div class="flex ac jb gap12" style="padding:12px;border:1px solid var(--border2);border-radius:10px">
+            <div>⚡ Ollama</div>
+            <div class="flex ac gap10">
+              <div class="conn-dot" id="ollama-dot2"></div>
+              <button class="btn g" onclick="log(typeof OllamaClient!=='undefined'&&OllamaClient.isConnected()?'Ollama: connected, model '+OllamaClient.getModel():'Ollama: not connected','info')">Check</button>
+            </div>
+          </div>
+          <div class="flex ac jb gap12" style="padding:12px;border:1px solid var(--border2);border-radius:10px">
+            <div>🔗 Co-Creation Relay</div>
+            <div class="flex ac gap10">
+              <div class="conn-dot" id="p2p-dot2"></div>
+              <button class="btn g" onclick="initMesh()">Reconnect</button>
+            </div>
+          </div>
+        </div>
+        <hr class="sep">
+        <div class="card-title">🧩 STREAM EVENTS</div>
+        <div id="stream-events" class="log-box" style="height:110px;font-size:.67rem"></div>
+      </div>
+    </div>
+  </div>

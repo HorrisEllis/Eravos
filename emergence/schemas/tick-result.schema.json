@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "emergence/schemas/tick-result.schema.json",
+  "title": "Emergence — tick() Result",
+  "description": "The real return shape of loop.js's tick(text, target?) and server.js's POST /tick. Ties together observation.schema.json, created.schema.json, and the per-tick outputs of associative-lattice/causal-graph/event-ledger.",
+  "type": "object",
+  "required": ["observation", "feedbackWindowSize", "created", "lattice", "causal", "ledger", "endStateConditions", "pattern"],
+  "additionalProperties": false,
+  "properties": {
+    "observation": { "$ref": "observation.schema.json" },
+    "feedbackWindowSize": { "type": "integer", "minimum": 0, "description": "current size of the feedback-loop-buffer's ring buffer window, capped at its configured capacity (default 20)." },
+    "created": { "$ref": "created.schema.json" },
+    "lattice": {
+      "type": "object",
+      "required": ["nodeId", "invariants", "nodeCount", "edgeCount", "edge", "hash"],
+      "properties": {
+        "nodeId": { "type": "string" },
+        "invariants": { "type": "array", "items": { "type": "string" }, "description": "the real invariant set extracted this tick -- trajectory:X, rupture:bool, decay:band, target-type:X, convergence:sig-or-none. See associative-lattice/component.spec." },
+        "nodeCount": { "type": "integer", "description": "TRUE total across restarts, per full sigma-baseline rehydration -- not just this session's count." },
+        "edgeCount": { "type": "integer" },
+        "edge": {
+          "type": ["object", "null"],
+          "properties": {
+            "from": { "type": "string" }, "to": { "type": "string" },
+            "weight": { "type": "number", "minimum": 0, "maximum": 1, "description": "Jaccard similarity of shared invariants -- 1.0 = identical invariant sets, 0 = nothing shared." },
+            "sharedInvariants": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "hash": { "type": "string", "description": "SHA-256 hex of this node's persisted record." }
+      }
+    },
+    "causal": {
+      "type": "object",
+      "required": ["nodeId", "dt", "edgeType", "rejected", "hash"],
+      "properties": {
+        "nodeId": { "type": "string" },
+        "dt": { "type": ["number", "null"], "description": "real elapsed simulation ticks since the previous creation. null only for the very first creation ever (no prior to compare against)." },
+        "edgeType": { "type": ["string", "null"], "enum": ["causal/rule", "observational", null], "description": "dt <= causalWindowTicks (default 0.5, stated/tunable) -> causal/rule. Otherwise observational." },
+        "rejected": { "type": "boolean", "description": "true if the real causal store rejected this edge (e.g. diamond-parent structural conflict) -- a real outcome, not swallowed." },
+        "hash": { "type": "string" }
+      }
+    },
+    "ledger": {
+      "type": "object",
+      "required": ["id", "ts", "hash"],
+      "properties": {
+        "id": { "type": "string" }, "ts": { "type": "integer" }, "hash": { "type": "string" }
+      }
+    },
+    "endStateConditions": {
+      "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/reverseCausalTrace" }],
+      "description": "END-STATE FIRST: populated automatically the moment created.cluster is truthy (real convergence, not just 'a target was set'). null otherwise -- never fabricated."
+    },
+    "pattern": {
+      "type": "object",
+      "required": ["signature", "recall", "prediction"],
+      "description": "NEW component (not a port), built on a real primitive found in scanners/crystalball-test-suite.html's PredictiveEngine. Recall is exact-match, not fuzzy. Prediction is null until a transition has genuinely repeated at least once.",
+      "properties": {
+        "signature": { "type": "string", "description": "JSON-stringified fingerprint: trajectory, rupture, decay band, convergence state, and WHICH observer signals fired (not their values)." },
+        "recall": {
+          "type": "object",
+          "required": ["seenBefore", "count", "priorNodeIds", "firstSeen"],
+          "properties": {
+            "seenBefore": { "type": "boolean" },
+            "count": { "type": "integer", "minimum": 0, "description": "real prior occurrence count, before this tick is recorded" },
+            "priorNodeIds": { "type": "array", "items": { "type": "string" } },
+            "firstSeen": { "type": ["integer", "null"] }
+          }
+        },
+        "prediction": {
+          "oneOf": [{ "type": "null" }, {
+            "type": "object",
+            "properties": {
+              "mostLikely": { "type": "string", "description": "the signature that has historically followed the current one most often" },
+              "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+              "candidateCount": { "type": "integer", "minimum": 1 }
+            }
+          }]
+        }
+      }
+    }
+  },
+  "definitions": {
+    "reverseCausalTrace": {
+      "type": "object",
+      "required": ["path", "depth", "truncated", "conditions"],
+      "properties": {
+        "path": { "type": "array", "items": { "type": "string" }, "description": "backward walk through only real causal/rule edges -- stops at the first observational edge or missing parent. Real vendor/rfr2/causality/index.js traceToRoot(), not reimplemented." },
+        "depth": { "type": "integer", "minimum": 0 },
+        "truncated": { "type": "boolean", "description": "true if maxDepth (default 50) was hit before reaching a root." },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": { "nodeId": { "type": "string" }, "invariants": { "type": ["array", "null"] } }
+          },
+          "description": "each step in path, with the real invariants that held at that node (associative-lattice.getInvariants(id))."
+        }
+      }
+    }
+  }
+}

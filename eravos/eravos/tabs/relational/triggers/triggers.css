@@ -1,0 +1,25 @@
+/* eravos tab: triggers · styles for the trigger-map cards and the
+   hold-to-signal button. */
+
+.trigger-entry-card{padding:14px;border:1px solid var(--border2);border-radius:10px;background:var(--glass);margin-bottom:10px}
+.trigger-entry-card.partner{border-color:var(--tint-teal-strong);background:var(--tint-teal)}
+
+#triggered-hold-btn{
+  position:relative;overflow:hidden;
+  width:100%;padding:20px;border-radius:16px;
+  border:2px solid var(--line-teal2);
+  background:var(--tint-teal);
+  color:var(--text);font-family:var(--fd);font-size:1.05rem;
+  cursor:pointer;user-select:none;-webkit-user-select:none;
+  transition:border-color .2s,background .2s;
+}
+#triggered-hold-btn:active,#triggered-hold-btn.holding{border-color:var(--teal);background:var(--tint-teal)}
+#triggered-hold-fill{
+  position:absolute;left:0;top:0;bottom:0;width:0%;
+  background:var(--tint-teal-strong);z-index:0;
+}
+#triggered-hold-btn span{position:relative;z-index:1}
+
+#trigger-quick-select-modal{position:fixed;inset:0;z-index:8700;background:var(--shade-deep);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px}
+#trigger-quick-select-modal.open{display:flex}
+#trigger-quick-select-box{background:linear-gradient(135deg,var(--sheet-mid),var(--sheet-dark));border:1px solid var(--border);border-radius:20px;width:min(420px,92vw);max-height:80vh;overflow-y:auto;padding:24px;animation:fadeIn .2s ease}

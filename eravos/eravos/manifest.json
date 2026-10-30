@@ -1,0 +1,261 @@
+{
+  "categories": {
+    "relational": {
+      "label": "💫 Relational",
+      "subtabs": [
+        "oracle",
+        "feelings",
+        "relational",
+        "rupture",
+        "sparring",
+        "growth",
+        "triggers",
+        "commitments",
+        "struggles",
+        "grammar",
+        "hardtalk",
+        "goals",
+        "desires"
+      ]
+    },
+    "communication": {
+      "label": "📡 Communication",
+      "subtabs": [
+        "chat",
+        "voice",
+        "call",
+        "needs",
+        "planner"
+      ]
+    },
+    "creating": {
+      "label": "✨ Creating",
+      "subtabs": [
+        "poetry",
+        "canvas",
+        "mutator",
+        "mythos",
+        "rituals",
+        "music",
+        "cocreate",
+        "ideas",
+        "meaning"
+      ]
+    },
+    "space": {
+      "label": "🗂 Space",
+      "subtabs": [
+        "codex",
+        "vault",
+        "lattice"
+      ]
+    },
+    "system": {
+      "label": "⚙ System",
+      "subtabs": [
+        "admin",
+        "settings",
+        "roadmap",
+        "console"
+      ]
+    },
+    "community_UNWIRED": {
+      "label": "(no cat-btn found in #cat-nav — real gap, not introduced by this split)",
+      "subtabs": [
+        "sc-space",
+        "sc-projects",
+        "sc-ideas",
+        "sc-vault",
+        "sc-threads",
+        "sc-people",
+        "sc-nodes"
+      ]
+    }
+  },
+  "tabs": {
+    "oracle": {
+      "category": "relational",
+      "hook_count": 8,
+      "dom_id_count": 4,
+      "hasSubtabs": false
+    },
+    "feelings": {
+      "category": "relational",
+      "hook_count": 6,
+      "dom_id_count": 7,
+      "hasSubtabs": false
+    },
+    "relational": {
+      "category": "relational",
+      "hook_count": 4,
+      "dom_id_count": 14,
+      "hasSubtabs": false
+    },
+    "rupture": {
+      "category": "relational",
+      "hook_count": 4,
+      "dom_id_count": 16,
+      "hasSubtabs": false
+    },
+    "growth": {
+      "category": "relational",
+      "hook_count": 4,
+      "dom_id_count": 9,
+      "hasSubtabs": false
+    },
+    "triggers": {
+      "category": "relational",
+      "hook_count": 15,
+      "dom_id_count": 16,
+      "hasSubtabs": false
+    },
+    "commitments": {
+      "category": "relational",
+      "hook_count": 6,
+      "dom_id_count": 6,
+      "hasSubtabs": false
+    },
+    "struggles": {
+      "category": "relational",
+      "hook_count": 14,
+      "dom_id_count": 13,
+      "hasSubtabs": false
+    },
+    "ideas": {
+      "category": "creating",
+      "hook_count": 1,
+      "dom_id_count": 6,
+      "hasSubtabs": false
+    },
+    "poetry": {
+      "category": "creating",
+      "hook_count": 10,
+      "dom_id_count": 5,
+      "hasSubtabs": false
+    },
+    "rituals": {
+      "category": "creating",
+      "hook_count": 8,
+      "dom_id_count": 7,
+      "hasSubtabs": false
+    },
+    "cocreate": {
+      "category": "creating",
+      "hook_count": 6,
+      "dom_id_count": 8,
+      "hasSubtabs": false
+    },
+    "codex": {
+      "category": "space",
+      "hook_count": 5,
+      "dom_id_count": 8,
+      "hasSubtabs": false
+    },
+    "mythos": {
+      "category": "creating",
+      "hook_count": 7,
+      "dom_id_count": 6,
+      "hasSubtabs": false
+    },
+    "mutator": {
+      "category": "creating",
+      "hook_count": 3,
+      "dom_id_count": 8,
+      "hasSubtabs": false
+    },
+    "music": {
+      "category": "creating",
+      "hook_count": 6,
+      "dom_id_count": 11,
+      "hasSubtabs": false
+    },
+    "canvas": {
+      "category": "creating",
+      "hook_count": 8,
+      "dom_id_count": 7,
+      "hasSubtabs": false
+    },
+    "vault": {
+      "category": "space",
+      "hook_count": 3,
+      "dom_id_count": 3,
+      "hasSubtabs": false
+    },
+    "settings": {
+      "category": "system",
+      "hook_count": 0,
+      "dom_id_count": 6,
+      "hasSubtabs": true
+    },
+    "sparring": {
+      "category": "relational",
+      "hook_count": 7,
+      "dom_id_count": 11,
+      "hasSubtabs": false
+    },
+    "call": {
+      "category": "communication",
+      "hook_count": 9,
+      "dom_id_count": 19,
+      "hasSubtabs": false
+    },
+    "needs": {
+      "category": "communication",
+      "hook_count": 3,
+      "dom_id_count": 10,
+      "hasSubtabs": false
+    },
+    "planner": {
+      "category": "communication",
+      "hook_count": 2,
+      "dom_id_count": 10,
+      "hasSubtabs": false
+    },
+    "lattice": {
+      "category": "space",
+      "hook_count": 0,
+      "dom_id_count": 2,
+      "hasSubtabs": false
+    },
+    "meaning": {
+      "category": "creating",
+      "hook_count": 8,
+      "dom_id_count": 8,
+      "hasSubtabs": false
+    },
+    "roadmap": {
+      "category": "system",
+      "hook_count": 0,
+      "dom_id_count": 1,
+      "hasSubtabs": false
+    },
+    "console": {
+      "category": "system",
+      "hook_count": 4,
+      "dom_id_count": 5,
+      "hasSubtabs": false
+    }
+  },
+  "settingsSubtabs": {
+    "general": {
+      "admin_only": false,
+      "hook_count": 5
+    },
+    "system": {
+      "admin_only": false,
+      "hook_count": 11
+    },
+    "features": {
+      "admin_only": false,
+      "hook_count": 0
+    },
+    "ai": {
+      "admin_only": true,
+      "hook_count": 4
+    },
+    "admin": {
+      "admin_only": true,
+      "hook_count": 9
+    }
+  }
+}

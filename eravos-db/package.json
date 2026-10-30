@@ -1,0 +1,11 @@
+{
+  "name": "eravos-db",
+  "version": "0.1.0",
+  "description": "Encrypted user + couple database for Eravos, built on the real Jaa persistence primitives (FileStore/FileRefs/canonicalize/Recovery).",
+  "main": "src/index.js",
+  "scripts": {
+    "demo": "node examples/demo.js",
+    "test": "node test/smoke.test.js"
+  },
+  "license": "UNLICENSED"
+}

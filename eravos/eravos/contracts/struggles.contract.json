@@ -1,0 +1,25 @@
+{
+  "id": "struggles",
+  "location": "tabs/relational/struggles/ (struggles.html, struggles.css, struggles.js)",
+  "dom_ids_exposed": [
+    "panel-struggles", "struggles-trust-gate", "struggles-body",
+    "struggles-checkin", "struggles-checkin-express", "struggles-checklist",
+    "struggles-cluster-toggle", "struggles-share-checklist", "struggles-story",
+    "struggles-story-share-status", "partner-struggles-checklist",
+    "partner-struggles-story"
+  ],
+  "owned_hooks": [
+    "renderStruggles", "answerStrugglesTrustGate", "toggleStruggleItem",
+    "toggleStrugglesClusterMode", "toggleStrugglesChecklistShare",
+    "saveStrugglesStory", "shareStrugglesStory", "unshareStrugglesStory",
+    "answerStrugglesCheckin", "shareCheckinWithPartner", "keepCheckinPrivate"
+  ],
+  "shared_hooks_called": [
+    "DB", "S", "emitSync", "showToast", "_userKey", "_struggles",
+    "_strugglesSet", "_partnerStrugglesChecklist", "_partnerStrugglesStory",
+    "STRUGGLES_CHECKIN_MOODS"
+  ],
+  "notes": "Phase 3 (03-FEATURE-SPECS.md \u00a7Struggles). Ownership (a) private-by-default, with the checklist and the free-form story each having their OWN independent share/unshare toggle -- sharing one doesn't share the other. Trust-gate consent + 'you're not broken' reassurance shown above the checklist always, not just on first view, per spec. Never uses the word 'issues' anywhere in its own copy -- checked against every string before writing it. Cluster view is opt-in, off by default, explicitly framed as a different lens, not a diagnosis. Daily check-in reuses FeelingEvent's own shape/storage (S.feelingHistory / eravors_feeling_history) rather than a parallel schema, entered through a different door as the spec puts it; capped at once per day whether answered or dismissed with 'don't want to talk about it' (both count as handled for today). The four sync gates (struggles:checklist_shared/_unshared, struggles:story_shared/_unshared) live in shared/eravos-kernel.js, cross-cutting, since a partner's shared checklist/story has to update regardless of which tab is open -- and were correctly placed AFTER const syncStream = new Stream() this time, having thrown a real 'Cannot access before initialization' error on that exact mistake during Meaning Archive's build just before this one. Honest gap: the 'Horrible' branch's AI-assisted expression-help is explicitly deferred per spec, not built -- sharing a check-in result is a plain, unassisted share.",
+  "category": "relational",
+  "has_subtabs": false
+}

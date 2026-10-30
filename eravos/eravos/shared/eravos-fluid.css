@@ -1,0 +1,297 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   ERAVOS FLUID  ·  eravos-fluid.css  ·  v0.9.0
+   HOOK: eravos.fluid:layer:00001
+   ══════════════════════════════════════════════════════════════════════════
+
+   Phase F. "Less boxes and deterministic, more fluid, custom."
+
+   Scoped to the three most-used prompts — Feelings, Needs, Rupture — because
+   those are where someone goes when they are least able to deal with a wall
+   of chrome, and they are the three now carrying the Phase G choice fields.
+
+   ── WHY A LAYER AND NOT A MARKUP REWRITE (§5.12, §5.14) ─────────────────
+
+   Every handler in those tabs reads elements by id. Rewriting the markup to
+   remove the boxes would mean touching all of them, and a restyle that
+   breaks saveRupture() is not a restyle. This layer changes nothing
+   structural: no ids move, no handlers change, no JS is touched. Deleting
+   this file returns the tabs to the previous look with zero functional
+   difference — which is the actual test of whether a UI layer is disposable.
+
+   ── WHAT "FLUID" MEANS HERE, CONCRETELY ─────────────────────────────────
+
+     - a card becomes a left rule, not a bordered box
+     - nesting collapses: a .card inside a .card stops drawing twice
+     - inputs become underlines
+     - focus is the only thing that brightens; nothing glows at rest
+     - motion carries state changes instead of a toast announcing them
+
+   Kernel tokens only. Zero literals — enforced by test/token-lint.mjs.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+#panel-feelings, #panel-needs, #panel-rupture { --fl-rule: var(--border2); }
+
+/* ── boxes become rules ─────────────────────────────────────────────── */
+#panel-feelings > .card, #panel-needs .card, #panel-rupture > .card,
+#panel-needs > .g2 > .fc > .card {
+  border: none;
+  border-left: 1px solid var(--fl-rule);
+  border-radius: 0;
+  background: transparent;
+  padding: 2px 0 2px 18px;
+  transition: border-color .28s ease;
+}
+#panel-feelings > .card:focus-within, #panel-needs .card:focus-within,
+#panel-rupture > .card:focus-within { border-left-color: var(--amber); }
+
+/* a card inside a card should not draw twice */
+#panel-needs .card .card, #panel-rupture .card .card,
+#panel-feelings .card .card {
+  border-left: none; padding-left: 0;
+}
+
+#panel-feelings .card-title, #panel-needs .card-title, #panel-rupture .card-title {
+  font-family: var(--fm);
+  font-size: .58rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--dim);
+  opacity: .7;
+  margin-bottom: 14px;
+}
+
+/* ── inputs become underlines ───────────────────────────────────────── */
+#panel-feelings input[type=text], #panel-feelings textarea, #panel-feelings select,
+#panel-needs input[type=text], #panel-needs textarea, #panel-needs select,
+#panel-rupture input[type=text], #panel-rupture textarea, #panel-rupture select {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--fl-rule);
+  border-radius: 0;
+  padding: 8px 2px;
+  transition: border-color .22s ease;
+}
+#panel-feelings input[type=text]:focus, #panel-feelings textarea:focus, #panel-feelings select:focus,
+#panel-needs input[type=text]:focus, #panel-needs textarea:focus, #panel-needs select:focus,
+#panel-rupture input[type=text]:focus, #panel-rupture textarea:focus, #panel-rupture select:focus {
+  border-bottom-color: var(--amber);
+  box-shadow: none;
+  outline: none;
+}
+
+#panel-feelings .fl, #panel-needs .fl, #panel-rupture .fl {
+  font-family: var(--fm);
+  font-size: .6rem;
+  letter-spacing: .07em;
+  color: var(--dim);
+  opacity: .8;
+  margin-bottom: 3px;
+}
+
+/* ── buttons lose their fill ────────────────────────────────────────── */
+#panel-feelings .btn, #panel-needs .btn, #panel-rupture .btn {
+  background: transparent;
+  border: 1px solid var(--fl-rule);
+  border-radius: 999px;
+  font-family: var(--fm);
+  font-size: .66rem;
+  letter-spacing: .05em;
+  padding: 7px 16px;
+  transition: border-color .2s ease, color .2s ease;
+}
+#panel-feelings .btn:hover, #panel-needs .btn:hover, #panel-rupture .btn:hover {
+  border-color: var(--amber); color: var(--amber);
+}
+#panel-feelings .btn.p, #panel-needs .btn.p, #panel-rupture .btn.p { color: var(--amber); }
+
+/* ── list items: rules, not tiles ───────────────────────────────────── */
+#panel-rupture .rupture-item, #panel-needs .need-item {
+  border: none;
+  border-left: 1px solid var(--fl-rule);
+  border-radius: 0;
+  background: transparent;
+  padding: 12px 0 12px 16px;
+  transition: border-color .24s ease;
+}
+#panel-rupture .rupture-item:hover, #panel-needs .need-item:hover { border-left-color: var(--amber); }
+
+#panel-rupture .status-chip {
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-family: var(--fm);
+  font-size: .55rem;
+  letter-spacing: .1em;
+  padding: 2px 9px;
+}
+/* the companion note reads as the person's own voice, not as metadata */
+#panel-rupture .status-note {
+  font-size: .72rem;
+  font-style: italic;
+  color: var(--dim);
+  margin-left: 10px;
+  opacity: .85;
+}
+
+/* ── motion carries the state change ────────────────────────────────── */
+#panel-feelings .fsector, #panel-rupture .rupture-item, #panel-needs .need-item {
+  animation: fluidIn .3s ease backwards;
+}
+@keyframes fluidIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  /* Motion as information still has to be optional. Someone with vestibular
+     sensitivity or a migraine is exactly who is using these three tabs. */
+  #panel-feelings .fsector, #panel-rupture .rupture-item, #panel-needs .need-item { animation: none; }
+  #panel-feelings *, #panel-needs *, #panel-rupture * { transition-duration: .01ms !important; }
+}
+
+/* ── presence bar (Phase D, v0.10.0) ──────────────────────────────────
+   Quiet by construction. It says where they are without pulling you out of
+   where you are, and it disappears entirely when there is nothing to say —
+   an always-visible "not connected" is a nag, not information. */
+#presence-bar{display:flex;align-items:center;gap:10px;padding:0 18px 6px;min-height:0}
+#presence-bar:has(#presence-line[hidden]):has(#presence-follow[hidden]){display:none}
+#presence-line{font-family:var(--fm);font-size:.6rem;letter-spacing:.07em;color:var(--dim);opacity:.75}
+#presence-follow{background:none;border:1px solid var(--border2);border-radius:999px;color:var(--dim);
+  font-family:var(--fm);font-size:.56rem;letter-spacing:.06em;padding:3px 11px;cursor:pointer;transition:.18s}
+#presence-follow:hover{border-color:var(--amber);color:var(--amber)}
+#presence-follow.is-following{border-color:var(--teal);color:var(--teal)}
+@media (prefers-reduced-motion: reduce){ #presence-follow{transition:none} }
+
+/* ── select → grammar offer (Phase E, v0.11.0) ────────────────────────
+   Appears near a selection, never takes the caret, never opens a modal.
+   Quiet: it reads as an option, not an interruption. */
+.sg-offer{position:fixed;z-index:960;background:var(--panel);backdrop-filter:blur(12px);
+  border:1px solid var(--border2);border-radius:999px;color:var(--dim);
+  font-family:var(--fm);font-size:.58rem;letter-spacing:.05em;padding:5px 13px;
+  cursor:pointer;transition:border-color .18s,color .18s;animation:sgIn .16s ease}
+.sg-offer:hover{border-color:var(--amber);color:var(--amber)}
+@keyframes sgIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){ .sg-offer{animation:none;transition:none} }
+
+/* ── Phase F extension (v0.11.0) ──────────────────────────────────────
+   The same treatment for the next tier of tabs. Still purely additive: no
+   ids move, no handlers change. Grammar and Chat already ship fluid, so
+   they are not listed. */
+#panel-triggers > .card, #panel-struggles > .card, #panel-commitments > .card,
+#panel-growth > .card, #panel-codex > .card, #panel-vault > .card {
+  border:none;border-left:1px solid var(--border2);border-radius:0;
+  background:transparent;padding:2px 0 2px 18px;transition:border-color .28s ease;
+}
+#panel-triggers > .card:focus-within, #panel-struggles > .card:focus-within,
+#panel-commitments > .card:focus-within, #panel-growth > .card:focus-within,
+#panel-codex > .card:focus-within, #panel-vault > .card:focus-within { border-left-color:var(--amber) }
+
+#panel-triggers .card .card, #panel-struggles .card .card, #panel-commitments .card .card,
+#panel-growth .card .card, #panel-codex .card .card, #panel-vault .card .card {
+  border-left:none;padding-left:0;
+}
+
+#panel-triggers .card-title, #panel-struggles .card-title, #panel-commitments .card-title,
+#panel-growth .card-title, #panel-codex .card-title, #panel-vault .card-title {
+  font-family:var(--fm);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--dim);opacity:.7;margin-bottom:14px;
+}
+
+#panel-triggers input[type=text], #panel-triggers textarea, #panel-triggers select,
+#panel-struggles input[type=text], #panel-struggles textarea, #panel-struggles select,
+#panel-commitments input[type=text], #panel-commitments textarea, #panel-commitments select,
+#panel-growth input[type=text], #panel-growth textarea, #panel-growth select,
+#panel-codex input[type=text], #panel-codex textarea, #panel-codex select,
+#panel-vault input[type=text], #panel-vault textarea, #panel-vault select {
+  background:transparent;border:none;border-bottom:1px solid var(--border2);
+  border-radius:0;padding:8px 2px;transition:border-color .22s ease;
+}
+#panel-triggers input[type=text]:focus, #panel-triggers textarea:focus, #panel-triggers select:focus,
+#panel-struggles input[type=text]:focus, #panel-struggles textarea:focus, #panel-struggles select:focus,
+#panel-commitments input[type=text]:focus, #panel-commitments textarea:focus, #panel-commitments select:focus,
+#panel-growth input[type=text]:focus, #panel-growth textarea:focus, #panel-growth select:focus,
+#panel-codex input[type=text]:focus, #panel-codex textarea:focus, #panel-codex select:focus,
+#panel-vault input[type=text]:focus, #panel-vault textarea:focus, #panel-vault select:focus {
+  border-bottom-color:var(--amber);box-shadow:none;outline:none;
+}
+
+/* ── invite / pairing (v0.12.0) ───────────────────────────────────── */
+#invite-prompt .ip-inner,#invite-modal .ip-inner{max-width:440px;display:flex;flex-direction:column;gap:14px}
+.ip-title{font-family:var(--fd);font-size:1.05rem;margin:0}
+.ip-body{font-size:.86rem;line-height:1.7;color:var(--dim);margin:0}
+.ip-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+/* §0.1 — the QR was never broken. eravos-kernel.css already capped it at
+   220px, and THIS rule (loaded later, so it wins) replaced that with nothing,
+   so the SVG rendered at its own intrinsic width and burst out of the card.
+   Two rules for one class in two files is the silent-precedence shape Design
+   Law 1 forbids; the cap belongs here, where the winning rule is. */
+.iv-qr{display:flex;justify-content:center;padding:14px 0}
+.iv-qr svg{
+  width:100%; max-width:210px; height:auto;
+  border-radius:8px;
+  /* quiet zone in the element, so it scans even against a dark card —
+     a QR flush to a dark edge is one a camera struggles to find */
+  padding:10px; background:var(--qr-quiet); box-sizing:border-box;
+}
+@media (max-width:420px){ .iv-qr svg{ max-width:170px } }
+.iv-label{font-family:var(--fm);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);opacity:.7;margin:0;text-align:center}
+.iv-code{font-family:var(--fm);font-size:1.4rem;letter-spacing:.28em;text-align:center;color:var(--amber)}
+.iv-link,.iv-email{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border2);
+  color:var(--text);font-family:var(--fm);font-size:.68rem;padding:7px 2px;outline:none}
+.iv-link:focus,.iv-email:focus{border-bottom-color:var(--amber)}
+.iv-expiry{font-family:var(--fm);font-size:.58rem;color:var(--dim);opacity:.7;margin:0;text-align:center}
+
+/* ── support resources (v0.16.0) ──────────────────────────────────── */
+.sup-item{padding-left:12px;border-left:1px solid var(--border2);margin-bottom:14px}
+.sup-label{font-family:var(--fd);font-size:.9rem;margin-bottom:4px}
+.sup-detail{font-size:.84rem;line-height:1.65;color:var(--dim)}
+
+/* ── modals (v0.19.0) ─────────────────────────────────────────────────
+   §0.1 — the `.modal` class was used in markup and DEFINED NOWHERE, so
+   both invite dialogs rendered inline, stacked in the page flow, both at
+   once. Visible in the first screenshot from a real browser: the prompt and
+   the invite form one under the other, mid-page.
+   A class that exists only in HTML is not a class. Defined now. */
+.modal{position:fixed;inset:0;z-index:9700;display:none;align-items:center;justify-content:center;
+  background:var(--scrim);backdrop-filter:blur(16px);padding:20px}
+.modal.open{display:flex}
+.modal-inner{max-width:460px;width:100%;max-height:86vh;overflow-y:auto;
+  background:var(--sheet);border:1px solid var(--border2);border-radius:16px;padding:26px;
+  animation:modalIn .22s ease}
+@keyframes modalIn{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){ .modal-inner{animation:none} }
+
+/* ── expression picker (v0.19.0) ──────────────────────────────────────
+   Every item shows its WORDS under the emoji. That is the alt text, it is
+   what search matches, and it is what makes the set usable by someone who
+   reads emoji differently than you do. An emoji without words is a guess at
+   both ends. */
+.xp-group{margin-bottom:16px}
+.xp-label{font-family:var(--fm);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);opacity:.7;margin-bottom:8px}
+.xp-row{display:flex;flex-wrap:wrap;gap:6px}
+.xp-item{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:66px;
+  background:none;border:1px solid var(--border2);border-radius:10px;padding:7px 9px;
+  cursor:pointer;transition:border-color .16s,transform .16s}
+.xp-item:hover{border-color:var(--amber);transform:translateY(-1px)}
+.xp-item.xp-other{border-style:dashed}
+.xp-e{font-size:1.3rem;line-height:1}
+.xp-s{font-family:var(--fm);font-size:.52rem;color:var(--dim);text-align:center;line-height:1.25;max-width:74px}
+#expr-search{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border2);
+  color:var(--text);font-family:var(--fm);font-size:.72rem;padding:8px 2px;outline:none;margin-bottom:14px}
+#expr-search:focus{border-bottom-color:var(--amber)}
+.call-replay{background:none;border:1px solid var(--border2);border-radius:999px;color:var(--amber);
+  font-family:var(--fm);font-size:.62rem;letter-spacing:.05em;padding:6px 14px;cursor:pointer}
+.call-replay:hover{border-color:var(--amber)}
+
+/* ── co-creation ask (v0.25.0) ────────────────────────────────────────
+   Every setting shows WHAT IT COSTS under its label. A switch whose
+   consequence you have to guess is not a choice. */
+.cc-group{margin-bottom:20px}
+.cc-scope{font-family:var(--fm);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:4px}
+.cc-note{font-size:.76rem;line-height:1.6;color:var(--dim);margin:0 0 12px}
+.cc-row{display:flex;align-items:flex-start;gap:11px;padding:9px 0;cursor:pointer;
+  border-bottom:1px solid var(--border2)}
+.cc-row:last-child{border-bottom:none}
+.cc-row input{margin-top:3px;width:17px;height:17px;accent-color:var(--fire);cursor:pointer;flex-shrink:0}
+.cc-text{display:flex;flex-direction:column;gap:3px}
+.cc-label{font-size:.88rem;color:var(--text);line-height:1.4}
+.cc-why{font-size:.74rem;color:var(--dim);line-height:1.55}

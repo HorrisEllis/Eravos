@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Clear Glass Lite</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-row">
+      <h1>Clear Glass <span class="lite-tag">Lite</span></h1>
+      <button id="btn-options" class="btn-icon" title="Options">⚙</button>
+    </div>
+    <p class="subtitle">Sign in once, per provider. Sessions persist on this device.</p>
+  </header>
+
+  <div id="options-panel" class="options-panel hidden">
+    <div class="options-row">
+      <label><input type="checkbox" id="opt-guardian-enabled"> Guardian-lite (local capture API)</label>
+      <span id="guardian-status-badge" class="badge"></span>
+    </div>
+    <div class="options-row">
+      <label for="opt-guardian-port">Port</label>
+      <input type="number" id="opt-guardian-port" min="1024" max="65535">
+    </div>
+    <div class="options-row">
+      <label for="opt-retention-limit">Retention limit (rows/table, 0 = unlimited)</label>
+      <input type="number" id="opt-retention-limit" min="0" step="1">
+    </div>
+    <div class="options-row">
+      <label><input type="checkbox" id="opt-userscripts-enabled"> Userscripts</label>
+    </div>
+    <div class="options-row options-providers">
+      <span class="options-label">Providers shown</span>
+      <div id="opt-providers-list"></div>
+    </div>
+    <div class="options-actions">
+      <button id="btn-save-options" class="btn-login">Save</button>
+      <button id="btn-reset-options" class="btn-logout">Reset to defaults</button>
+    </div>
+    <div class="options-divider"></div>
+    <div class="options-row">
+      <span class="options-label">Error log</span>
+      <div class="options-btn-row">
+        <button id="btn-view-log" class="btn-open">View</button>
+        <button id="btn-open-log" class="btn-open">Open file</button>
+        <button id="btn-clear-log" class="btn-logout">Clear</button>
+      </div>
+    </div>
+    <pre id="log-viewer" class="log-viewer hidden"></pre>
+  </div>
+
+  <main id="provider-list">
+    <!-- populated by app.js -->
+  </main>
+
+  <section id="ledger-panel">
+    <div class="ledger-header">
+      <span class="ledger-title">Ledger</span>
+      <select id="ledger-table-select"></select>
+      <button id="btn-ledger-refresh" class="btn-open">Refresh</button>
+      <button id="btn-ledger-toggle" class="btn-icon" title="Show/hide ledger">▾</button>
+    </div>
+    <div id="ledger-body" class="ledger-body hidden">
+      <div id="ledger-rows"></div>
+    </div>
+  </section>
+
+  <section id="scripts-panel">
+    <div class="scripts-header">
+      <span id="scripts-count">0 userscripts loaded</span>
+      <button id="btn-open-scripts" class="btn-open">Open scripts folder</button>
+    </div>
+  </section>
+
+  <footer>
+    <p>Each provider gets its own isolated, persistent session — signing out of one never touches another.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

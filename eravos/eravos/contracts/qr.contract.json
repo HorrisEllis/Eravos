@@ -1,0 +1,26 @@
+{
+  "id": "qr",
+  "uuid": "eravos-qr-encoder-0001-0000-000000000001",
+  "version": "0.12.0",
+  "owner": "shared/eravos-qr.js",
+  "lifecycle": "Implemented",
+  "parent": "eravos-pairing-engine-0001-0000-000000000001",
+  "category": "foundation",
+  "scope": "byte mode, error correction level M, versions 1-10 (up to 154 codewords). Zero dependencies.",
+  "verified": [
+    "GF(256) against its defining properties: exp/log inverse across the field, a^255 = 1, multiplication commutative and associative, every non-zero element has an inverse",
+    "Reed-Solomon by SYNDROME EVALUATION — mathematically independent of the polynomial division used to encode, so it is a real check and not a round-trip through the same bug. A deliberately corrupted codeword is asserted to FAIL the check, so the check can demonstrably fail.",
+    "format information against BCH(15,5) minimum distance: all 32 valid strings differ in >= 7 bits",
+    "structure: module counts per version, three finder patterns correctly formed, NO fourth finder (orientation), alternating timing patterns, dark module, no placeholder surviving into output, mask actually varies with content"
+  ],
+  "NOT_verified": [
+    "that a phone camera reads it. There is no scanner in this environment. This is a real-device check and it is OPEN."
+  ],
+  "mitigation": "Because the optics are unverified, renderSVG() is never the only path: the pairing UI always shows the code as text and always offers manual entry. If the QR is wrong, nobody is stranded.",
+  "failure_modes": [
+    "content over version 10 at level M -> throws, naming the limit. Never silently truncated.",
+    "empty input -> throws",
+    "unsupported version requested -> throws, naming the supported range"
+  ],
+  "status": "implemented — 23/23 in test/qr.test.mjs. The maths is checked hard; the optics are not checked at all, and that is stated rather than implied."
+}

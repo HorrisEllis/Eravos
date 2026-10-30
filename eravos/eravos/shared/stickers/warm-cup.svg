@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="cup-body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd08a"/>
+      <stop offset="100%" stop-color="#ff9a3d"/>
+    </linearGradient>
+  </defs>
+  <g stroke="#ffb347" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.8">
+    <path d="M46 20 C 42 30, 50 32, 47 42">
+      <animate attributeName="d" dur="3s" repeatCount="indefinite"
+        values="M46 20 C 42 30, 50 32, 47 42;
+                M46 14 C 50 26, 40 30, 47 42;
+                M46 20 C 42 30, 50 32, 47 42"/>
+    </path>
+    <path d="M62 18 C 58 28, 66 30, 63 40">
+      <animate attributeName="d" dur="3.4s" repeatCount="indefinite"
+        values="M62 18 C 58 28, 66 30, 63 40;
+                M62 12 C 66 24, 56 28, 63 40;
+                M62 18 C 58 28, 66 30, 63 40"/>
+    </path>
+  </g>
+  <path d="M28 50 L36 92 C37 98, 45 102, 60 102 C75 102, 83 98, 84 92 L92 50 Z"
+        fill="url(#cup-body)"/>
+  <ellipse cx="60" cy="50" rx="32" ry="7" fill="#fff3c4"/>
+  <path d="M92 56 C 106 56, 106 78, 92 78" fill="none" stroke="#ff9a3d" stroke-width="6" stroke-linecap="round"/>
+</svg>

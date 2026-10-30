@@ -1,0 +1,42 @@
+{
+  "$schema": "./clarity-config.schema.json",
+  "_note": "A starting point if the defaults aren't cutting it -- wider, stronger consonant boost, and a gentler gate since a softer speaking voice can sit closer to the noise floor than the default threshold assumes. Copy this to clarity-config.json and adjust from here, don't edit this file directly.",
+
+  "gate": {
+    "thresholdDb": -55,
+    "knee": 6,
+    "ratio": 14,
+    "attackSec": 0.005,
+    "releaseSec": 0.2
+  },
+
+  "eq": {
+    "enabled": true,
+    "lowShelf": { "frequencyHz": 150, "gainDb": -6 },
+    "presence": { "frequencyHz": 3000, "q": 0.9, "gainDb": 7 },
+    "highShelf": { "frequencyHz": 6500, "gainDb": 3 }
+  },
+
+  "gain": {
+    "db": 8
+  },
+
+  "limiter": {
+    "thresholdDb": -3,
+    "knee": 6,
+    "ratio": 12,
+    "attackSec": 0.002,
+    "releaseSec": 0.1
+  },
+
+  "rewind": {
+    "bufferSeconds": 20,
+    "frameMs": 500,
+    "defaultReplaySpeed": 0.7
+  },
+
+  "transcription": {
+    "endpoint": null,
+    "whisperModel": "medium"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "planner",
+  "dom_ids_exposed": [
+    "availability-status",
+    "panel-planner",
+    "planner-datetime",
+    "planner-event-list",
+    "planner-feeling-row",
+    "planner-feeling-tag",
+    "planner-location-precision",
+    "planner-location-precision-row",
+    "planner-notes",
+    "planner-share-location",
+    "planner-status",
+    "planner-title",
+    "planner-type"
+  ],
+  "kernel_hooks_called": [
+    "openDeclineEventForm",
+    "openMissedEventForm",
+    "proposePlannerEvent",
+    "respondPlannerEvent",
+    "setAvailable",
+    "setEventOutcome",
+    "toggleEventLocationMap"
+  ],
+  "status": "Phase 3: added 'sleep' event type (distinct from 'rest' \u2014 a bedtime plan, not a full rest day) to both the dropdown and the render's type-emoji map. Added decline-with-reason: declining a proposed event now opens an optional free-text reason form (same structural pattern as the missed-event-reason flow and Meaning's decline-with-reason) instead of declining silently; respondPlannerEvent(id, response, reason) threads the reason through emitSync so it lands in the proposer's toast and on the event card, not just locally. Phase 2: fixed a real timezone bug (datetime-local strings were stored raw and re-parsed in whatever browser rendered them, silently shifting displayed times across timezones \u2014 confirmed with a test, fixed to store a true UTC epoch (start_ts) plus timezone_created_in for audit, per 02-DATA-SCHEMAS.md). Added the 'meetup' event type (distinct from 'date' since a meetup may not be romantically framed). Added the missed-event follow-up flow: past accepted events with no recorded outcome show a 'Did this happen?' prompt; 'not quite' opens a short why/how-you-feel form, synced to the partner via a new planner:event_outcome gate. Old events that only have the ambiguous .datetime string still render (via a fallback), not silently broken by the fix. Phase 2 (final item): optional location sharing added via vendored Leaflet (shared/vendor/leaflet/, npm-installed then copied verbatim, not CDN-loaded, per the self-hosted non-negotiable). Structural default is shared:false; coordinates are rounded to the chosen precision BEFORE they're ever stored, not just displayed rounded. The map shows a precision-appropriate uncertainty circle (city/neighborhood) rather than always a precise pin. Named, not silently glossed over: map TILES come from a public OpenStreetMap server at runtime (in the end user's own browser) since self-hosting a tile server is a heavier separate undertaking \u2014 see shared/vendor/leaflet/NOTICE.txt and 01-ARCHITECTURE.md for the recorded exception.",
+  "category": "communication",
+  "has_subtabs": false
+}

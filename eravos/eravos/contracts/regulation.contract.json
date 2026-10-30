@@ -1,0 +1,27 @@
+{
+  "id": "regulation",
+  "uuid": "eravos-regulation-gate-0001-0000-000000000001",
+  "version": "0.17.0",
+  "owner": "shared/eravos-regulation.js",
+  "lifecycle": "Implemented",
+  "parent": "eravos-kernel",
+  "category": "relational",
+  "spec": "spec/PHASEMAP-v4.md",
+  "summary": "A check before entering a mode you cannot take back. Advises; never blocks.",
+  "invariants": [
+    "ADVISES, NEVER BLOCKS — allowed is always true, asserted across all 121 rating combinations. Blocking an adult from their own app because a slider said so is paternalism at the moment someone has least patience for it, and it teaches people to lie to the slider.",
+    "LOCAL ONLY — no bus, no emitSync, no socket. A test greps the source.",
+    "NEVER LINKED TO CONTENT — there is deliberately no parameter for a message or rupture id, and a test asserts none survives. A self-report that can be quoted back at you is not a self-report, it is ammunition.",
+    "activation and regulation are asked SEPARATELY and are not opposites — calm-and-unreachable and lit-up-and-completely-here are both real states",
+    "thresholds are not thin: activation >= 8 or regulation <= 3. A 6 is a normal Tuesday.",
+    "a fresh reading means no re-asking; a reading older than 45 minutes is not \"now\"",
+    "§12.5 wentAheadAnyway is counted — advice that is always ignored is advice pitched wrong, not a person being stubborn"
+  ],
+  "failure_modes": [
+    "no storage -> throws, refuses to operate blind",
+    "out-of-range rating -> refused, never clamped",
+    "unknown section or moment -> throws, listing the valid ones",
+    "empty or over-long entry -> throws, naming the limit"
+  ],
+  "status": "implemented — covered by test/regulation-care.test.mjs (32 assertions)"
+}

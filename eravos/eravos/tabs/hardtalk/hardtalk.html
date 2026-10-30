@@ -1,0 +1,29 @@
+<!-- eravos tab: hardtalk · category: relational · feature id: hardtalk -->
+<div class="panel" id="panel-hardtalk">
+  <div class="ht-page">
+    <div class="ht-head">
+      <div><div class="ht-title">Uncomfortable conversations</div>
+        <div class="ht-sub" id="ht-sub"></div></div>
+      <button class="ht-icon" id="ht-new" title="Name one">+</button>
+    </div>
+    <p class="ht-intro">The ones you keep circling. Naming it here is most of the work —
+      nothing will chase you to have it. When you do, come back and write what actually
+      happened. <strong>The same subject returning isn't a failure.</strong> It's the one that matters.</p>
+
+    <div class="ht-form" id="ht-form" hidden>
+      <input id="ht-subject" placeholder="what it's about" maxlength="200" autocomplete="off">
+      <textarea id="ht-why" rows="2" placeholder="why it's hard to say — for you, not for them"></textarea>
+      <textarea id="ht-wanted" rows="2" placeholder="what you actually want out of it"></textarea>
+      <textarea id="ht-afraid" rows="2" placeholder="what you're afraid will happen"></textarea>
+      <div class="ht-row">
+        <button class="ht-btn" id="ht-save">Name it</button>
+        <button class="ht-btn ghost" id="ht-cancel">Not now</button>
+      </div>
+    </div>
+
+    <div class="ht-section"><div class="ht-label">circling</div><div class="ht-list" id="ht-circling"></div></div>
+    <div class="ht-section"><div class="ht-label">had</div><div class="ht-list" id="ht-had"></div></div>
+    <details class="ht-shelved"><summary class="small">Shelved</summary><div class="ht-list" id="ht-shelved"></div></details>
+    <details class="ht-diag"><summary class="small">Diagnostics</summary><pre id="ht-health" class="small"></pre></details>
+  </div>
+</div>

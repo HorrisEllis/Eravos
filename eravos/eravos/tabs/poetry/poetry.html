@@ -1,0 +1,45 @@
+<!-- eravos tab: poetry · category: creating -->
+<!-- served by api/server.js at GET /api/tabs/poetry -->
+<div class="panel" id="panel-poetry">
+    <div class="g2">
+      <div class="fc gap16">
+        <div class="card">
+          <div class="card-title">📜 POETRY ENGINE</div>
+          <label class="fl">Emotion / Theme</label>
+          <input type="text" id="poem-theme" placeholder="e.g. missing you at midnight..." style="margin-bottom:10px">
+          <label class="fl">Form</label>
+          <select id="poem-form" style="margin-bottom:10px">
+            <option value="free">Free Verse</option>
+            <option value="haiku">Haiku Sequence</option>
+            <option value="sonnet">Sonnet</option>
+            <option value="ghazal">Ghazal</option>
+            <option value="prose">Prose Poem</option>
+            <option value="ode">Ode</option>
+            <option value="love_letter">Love Letter</option>
+            <option value="erasure">Erasure / Found</option>
+          </select>
+          <div class="flex gap12">
+            <button class="btn p" onclick="generatePoem()">✦ Write</button>
+            <button class="btn g" onclick="randomPoem()">🎲 Random</button>
+            <button class="btn g" onclick="generateFeelingPoem()">💗 From Feeling</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">✒ WRITING PROMPT</div>
+          <button class="btn fw" onclick="writingPrompt()">Generate Writing Prompt</button>
+          <div id="writing-prompt-out" class="ai-out mt12" style="min-height:70px;font-size:.9rem"><em class="small">...</em></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🌹 THE POEM</div>
+        <div id="poem-output" class="poem-out"><em class="small">Your poem will appear here...</em></div>
+        <div class="flex gap8 mt12 wrap">
+          <button class="btn g" onclick="saveToVault('poem',getEl('poem-output'))">💾 Save</button>
+          <button class="btn g" onclick="copyEl('poem-output')">📋 Copy</button>
+          <button class="btn g" onclick="speakEl('poem-output')">🔊 Recite</button>
+          <button class="btn g" onclick="sendToCodex('poem-output','Poem')">📖 Codex</button>
+          <button class="btn g" onclick="exportText('poem-output','poem')">⬇ Export</button>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,33 @@
+{
+  "id": "feelings",
+  "location": "tabs/relational/feelings/ (feelings.html, feelings.css, feelings.js)",
+  "dom_ids_exposed": [
+    "feeling-history-list",
+    "feeling-history-search",
+    "needs-feeling-input",
+    "needs-output",
+    "panel-feelings",
+    "somatic-location",
+    "somatic-output",
+    "somatic-quality"
+  ],
+  "owned_hooks": [
+    "renderFeelingHistory",
+    "generateSomaticGuidance",
+    "findNeeds"
+  ],
+  "shared_hooks_called": [
+    "openFeelingModal",
+    "openPipelineModal",
+    "callAI",
+    "getPrimingPrefix",
+    "log"
+  ],
+  "bus_events_emitted": [
+    "oracle:seed_requested",
+    "poetry:seed_requested"
+  ],
+  "status": "pilot \u2014 first tab split into its own folder per \u00a75.9/\u00a75.12; cross-tab requests to Oracle/Poetry now go through bus events instead of calling their functions directly. Found and corrected: feelingToOracle()/generateFeelingPoem() were listed as owned here but are cross-cutting \u2014 feelingToOracle() is called from index.html's persistent header (.feeling-send-row, present regardless of active tab), generateFeelingPoem() from tabs/poetry/poetry.html's own button. Both moved to shared/eravos-kernel.js; a ReferenceError waiting to happen for anyone clicking either button without visiting Feelings first this session, same bug class as sendPoke (see poke.contract.json).",
+  "category": "relational",
+  "has_subtabs": false
+}

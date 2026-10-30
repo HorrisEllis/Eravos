@@ -1,0 +1,46 @@
+{
+  "id": "grammar",
+  "uuid": "eravos-grammar-store-0001-0000-000000000001",
+  "version": "0.7.0",
+  "owner": "shared/eravos-grammar.js",
+  "lifecycle": "Implemented",
+  "spec": "spec/PHASEMAP-v3.md",
+  "parent": "eravos-kernel",
+  "category": "relational",
+  "has_subtabs": false,
+  "dom_ids_exposed": ["panel-grammar", "gr-shared-list", "gr-awaiting-me", "gr-awaiting-them", "gr-retired-list", "gr-search", "gr-health"],
+  "kernel_hooks_called": ["emitSync", "showToast", "DB.get", "DB.set"],
+  "gates_registered": ["grammar:propose", "grammar:takeup", "grammar:meaning", "grammar:retire", "grammar:decline"],
+  "states": ["proposed", "shared", "retired"],
+  "write_authority": "eravors_grammar — §10.1, the store only. The tab renders and confirms; it never writes.",
+  "failure_modes": [
+    "no storage -> constructor throws, refuses to operate blind",
+    "empty term -> throws",
+    "term over 80 / meaning over 600 chars -> throws, naming the limit",
+    "proposing an existing live word -> throws, pointing at addMeaning/takeUp",
+    "taking up your OWN proposal -> throws; this is the structural guarantee",
+    "declining your own proposal -> throws",
+    "taking up a retired word -> throws, says propose it again first",
+    "unknown state on entries() -> throws, listing known states",
+    "unknown remote action -> throws, validated BEFORE the entry lookup so it cannot be swallowed",
+    "remote action about an unknown entry -> ignored quietly, returns null"
+  ],
+  "invariants": [
+    "TWO-SIDED BY CONSTRUCTION: proposed -> shared has exactly one path, takeUp(), and it refuses the proposer. No flag, argument or admin path bypasses it. Holds over the wire.",
+    "TWO MEANINGS, NEVER MERGED: no canonical meaning field exists. Divergence is reported, never resolved.",
+    "§0.3 meanings APPEND — a meaning drifting over years is kept, not overwritten",
+    "§0.3 retire and decline keep the entry; reviving returns it to PROPOSED, needing take-up afresh",
+    "§1.1 grammar is NEVER inferred. candidates() returns [] with a stated reason; health().inferred is structurally 0",
+    "retire is unilateral by design — taking a word up needs both, putting it down does not",
+    "§0.4 bounded at 400; retired entries are dropped before live ones",
+    "termsIn() matches SHARED terms only, on word boundaries — a proposal must never link two moments"
+  ],
+  "lattice": {
+    "dimension": "grammar",
+    "threshold": 0.20,
+    "resonance_class": "SHARED_LANGUAGE (weight 7 — the highest)",
+    "why_not_folded_into_lexical": "Two moments using the same SHARED word are related differently from two using the same ordinary word. Averaging them into one lexical score destroys exactly that distinction.",
+    "why_read_at_ingest": "grammarTerms are resolved when the utterance is ingested, so a word taken up LATER does not retroactively rewrite history."
+  },
+  "status": "implemented — 29/29 in test/grammar.test.mjs. Suite total 139/139."
+}

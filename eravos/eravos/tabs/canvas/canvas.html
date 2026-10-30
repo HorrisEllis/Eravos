@@ -1,0 +1,44 @@
+<!-- eravos tab: canvas · category: creating -->
+<!-- served by api/server.js at GET /api/tabs/canvas -->
+<div class="panel" id="panel-canvas">
+    <div class="g2">
+      <div class="card">
+        <div class="card-title">🖊 CREATIVE CANVAS</div>
+        <label class="fl">Mode</label>
+        <select id="canvas-mode" style="margin-bottom:10px">
+          <option value="free">Free Write</option>
+          <option value="intention">Intention Setting</option>
+          <option value="gratitude">Gratitude Journal</option>
+          <option value="vision">Vision Board Notes</option>
+          <option value="shadow">Shadow Dialogue</option>
+          <option value="letter">Unsent Letter</option>
+          <option value="stream">Stream of Consciousness</option>
+        </select>
+        <textarea id="canvas-text" rows="14" placeholder="Write freely here. This space is sacred and yours."></textarea>
+        <div class="flex gap8 mt12 wrap">
+          <button class="btn p" onclick="enhanceCanvas()">✦ AI Enhance</button>
+          <button class="btn g" onclick="saveToVault('note',document.getElementById('canvas-text').value)">💾 Save</button>
+          <button class="btn g" onclick="copyEl('canvas-text')">📋 Copy</button>
+          <button class="btn g" onclick="sendToCodex('canvas-text','Note')">📖 Codex</button>
+          <button class="btn g" onclick="document.getElementById('canvas-text').value=''">🗑 Clear</button>
+        </div>
+      </div>
+      <div class="fc gap16">
+        <div class="card">
+          <div class="card-title">📎 FILE UPLOAD</div>
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="handleDragOver(event)" ondrop="handleDrop(event)">
+            <div style="font-size:2rem;margin-bottom:8px">📁</div>
+            <div class="small">Drop files or <span style="color:var(--amber)">click to upload</span></div>
+            <small>Images, text, JSON, PDF</small>
+          </div>
+          <input type="file" id="file-input" multiple accept=".txt,.json,.md,.png,.jpg,.jpeg,.pdf" style="display:none" onchange="handleFileUpload(event)">
+          <div id="file-list" class="fc gap8 mt12"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">✨ AI ENHANCEMENT</div>
+          <div id="canvas-enhance-output" class="ai-out" style="min-height:130px;font-size:.9rem"><em class="small">Write in the canvas, then enhance...</em></div>
+          <button class="btn g mt12" onclick="saveToVault('note',getEl('canvas-enhance-output'))">💾 Save Enhancement</button>
+        </div>
+      </div>
+    </div>
+  </div>

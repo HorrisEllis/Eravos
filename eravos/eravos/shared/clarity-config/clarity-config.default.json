@@ -1,0 +1,41 @@
+{
+  "$schema": "./clarity-config.schema.json",
+
+  "gate": {
+    "thresholdDb": -48,
+    "knee": 0,
+    "ratio": 20,
+    "attackSec": 0.003,
+    "releaseSec": 0.15
+  },
+
+  "eq": {
+    "enabled": true,
+    "lowShelf": { "frequencyHz": 150, "gainDb": -6 },
+    "presence": { "frequencyHz": 2500, "q": 1.1, "gainDb": 5 },
+    "highShelf": { "frequencyHz": 6000, "gainDb": 2 }
+  },
+
+  "gain": {
+    "db": 6
+  },
+
+  "limiter": {
+    "thresholdDb": -3,
+    "knee": 6,
+    "ratio": 12,
+    "attackSec": 0.002,
+    "releaseSec": 0.1
+  },
+
+  "rewind": {
+    "bufferSeconds": 15,
+    "frameMs": 500,
+    "defaultReplaySpeed": 0.75
+  },
+
+  "transcription": {
+    "endpoint": null,
+    "whisperModel": "medium"
+  }
+}

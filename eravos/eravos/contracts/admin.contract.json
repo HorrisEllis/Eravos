@@ -1,0 +1,44 @@
+{
+  "id": "admin",
+  "uuid": "eravos-admin-engine-0001-0000-000000000001",
+  "version": "0.5.0",
+  "owner": "shared/eravos-admin.js",
+  "lifecycle": "Implemented",
+  "spec": "spec/admin.spec",
+  "parent": "eravos-kernel",
+  "category": "system",
+  "has_subtabs": false,
+  "dom_ids_exposed": ["panel-admin", "adm-users", "adm-cocreation", "adm-themes", "adm-result", "adm-health", "adm-summary"],
+  "kernel_hooks_called": ["DB.get", "DB.set", "DB.remove", "showToast"],
+  "consumes": ["eravors_users", "eravors_active_user_key", "<prefix>_* namespaced keys"],
+  "emits": [],
+  "write_authority": "eravors_users — §10.1, this engine is the ONLY writer. seedContainedAccounts() defers to it.",
+  "operations": {
+    "editUser": "display fields only. Never touches the account key or dbPrefix.",
+    "renameUser": "SAME person. Data follows. Peer identity and crypto keys PRESERVED.",
+    "replacePartner": "DIFFERENT person. Data does NOT follow. New peer identity, crypto regenerated, pair torn down.",
+    "removeUser": "account removed, partners unlinked, data archived or purged.",
+    "clearCoCreation": "pair state only. Neither person's own journal/vault/codex/feelings touched.",
+    "purgeThemes": "strips the three retired themes from storage and user records.",
+    "exportAll / exportUser": "§9.4 first-class, and taken automatically before every destructive op."
+  },
+  "failure_modes": [
+    "no storage available -> constructor throws, refuses to operate blind",
+    "unknown user -> throws, naming the key",
+    "malformed account key -> throws, stating the rule",
+    "key collision -> throws, refuses to merge two people",
+    "disposition not chosen -> throws. NO DEFAULT — this decides whether a real person's history is kept",
+    "replacing the admin account -> refused, checked BEFORE key validation so the real reason is named",
+    "removing the last admin -> refused, the app would be unadministrable"
+  ],
+  "invariants": [
+    "§0.3 an export snapshot is returned from every destructive operation, asked for or not",
+    "§1.2 every operation returns a report naming each key touched — never a bare boolean",
+    "§10.1 one write authority for eravors_users",
+    "§17.5 provenance is not inherited: a replacement issues a new peer identity and regenerates crypto keys",
+    "§17.3 rename and replace never share a code path — conflating them orphans or falsifies data",
+    "clearCoCreation is idempotent"
+  ],
+  "root_cause_fixed": "seedContainedAccounts() force-seeded the partner account on EVERY page load, so any rename made through the UI was silently reverted on the next reload — §1.2, a silent failure that corrupts state instead of crashing. The partner slot is now data, seeded once if and only if no partner exists.",
+  "status": "implemented — 28/28 tests passing, including the end-to-end replacement sequence."
+}

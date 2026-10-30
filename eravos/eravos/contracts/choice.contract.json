@@ -1,0 +1,41 @@
+{
+  "id": "choice",
+  "uuid": "eravos-choice-primitive-0001-0000-000000000001",
+  "version": "0.8.0",
+  "owner": "shared/eravos-choice.js",
+  "lifecycle": "Implemented",
+  "spec": "spec/PHASEMAP-v3.md",
+  "parent": "eravos-kernel",
+  "category": "foundation",
+  "prompts_declared": [
+    "feeling",
+    "need",
+    "trigger.body",
+    "trigger.hold",
+    "repair",
+    "+17 routed selects (see choice-field.contract.json)"
+  ],
+  "write_authority": "eravors_custom_options — §10.1",
+  "kernel_hooks_called": [
+    "DB.get",
+    "DB.set"
+  ],
+  "failure_modes": [
+    "no storage -> throws, refuses to operate blind",
+    "defining a prompt twice -> hard error (SISO Design Law 1, never silent precedence)",
+    "empty custom option -> throws",
+    "custom over 120 chars -> throws, naming the limit",
+    "multiple values on a single-select prompt -> throws",
+    "skipping an allowSkip:false prompt -> throws, and the message says reconsider"
+  ],
+  "invariants": [
+    "every declared prompt offers Other — there is no per-prompt opt-out",
+    "allowSkip defaults TRUE; a skip records null, never a default and never the first option",
+    "custom options are offered FIRST next time",
+    "customs are private unless share:true is passed explicitly",
+    "§0.3 remove() archives, restore() brings it back",
+    "§1.1 an unknown value is recorded as written, never normalised onto a canonical option"
+  ],
+  "why": "A closed list is a claim about what a person is allowed to feel. Handed 62 options and none of them right, the common response is to pick the nearest wrong one, which silently corrupts every derivation downstream. A confidently-recorded wrong value is worse than an absent one (§1.2).",
+  "status": "implemented — 15/15 choice assertions. Phase G retrofit of the remaining prompts is open."
+}

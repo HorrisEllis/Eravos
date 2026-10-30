@@ -1,0 +1,17 @@
+{
+  "name": "feedback-loop-buffer",
+  "version": "1.0.0",
+  "description": "Fixed-capacity, overwrite-oldest circular buffer implementing Emerge's feedback/loop primitives, built on the external WARP foundation at ../../../warp (not vendored -- Emergence is built ON it, not around a copy of it). Component of the Emergence project.",
+  "main": "index.js",
+  "bin": {
+    "ring-cli": "cli/ring-cli.js"
+  },
+  "scripts": {
+    "test": "node test/ringbuffer.test.js",
+    "start": "node api/server.js"
+  },
+  "license": "MIT",
+  "author": "James Brooks",
+  "dependencies": {},
+  "engines": { "node": ">=14" }
+}

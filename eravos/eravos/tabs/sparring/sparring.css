@@ -1,0 +1,11 @@
+/* eravos tab: sparring · styles for the Duo Spar Match turn feed and
+   rule chips, pulled into their own file alongside the tab's first
+   real batch of tab-specific JS (§16.4). */
+
+.spar-turn-bubble{padding:10px 12px;border-radius:10px;max-width:85%}
+.spar-turn-bubble.mine{align-self:flex-end;background:var(--tint-fire);border:1px solid var(--line-fire);margin-left:auto}
+.spar-turn-bubble.theirs{background:var(--glass);border:1px solid var(--border2)}
+.spar-turn-meta{font-family:var(--fm);font-size:.6rem;letter-spacing:.08em;color:var(--dim);margin-bottom:4px;text-transform:uppercase}
+.spar-turn-text{font-size:.9rem;line-height:1.5}
+.spar-rule-chip{display:inline-block;font-size:.72rem;padding:4px 10px;border-radius:14px;border:1px solid var(--tint-rose);background:var(--tint-fire);color:var(--text)}
+

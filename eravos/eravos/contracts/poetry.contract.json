@@ -1,0 +1,25 @@
+{
+  "id": "poetry",
+  "dom_ids_exposed": [
+    "panel-poetry",
+    "poem-form",
+    "poem-output",
+    "poem-theme",
+    "writing-prompt-out"
+  ],
+  "kernel_hooks_called": [
+    "copyEl",
+    "exportText",
+    "generateFeelingPoem",
+    "generatePoem",
+    "getEl",
+    "randomPoem",
+    "saveToVault",
+    "sendToCodex",
+    "speakEl",
+    "writingPrompt"
+  ],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "category": "creating",
+  "has_subtabs": false
+}

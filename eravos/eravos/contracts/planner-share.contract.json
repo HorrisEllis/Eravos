@@ -1,0 +1,21 @@
+{
+  "id": "planner-share",
+  "uuid": "eravos-planner-share-0001-0000-000000000001",
+  "version": "0.25.0",
+  "owner": "shared/eravos-planner-share.js",
+  "lifecycle": "Implemented",
+  "parent": "eravos-kernel",
+  "category": "relational",
+  "summary": "Solo events that can become shared ones. Scope is per event, never per app.",
+  "invariants": [
+    "every event starts MINE — being paired is not consent to publish your diary, and there is no share-everything switch",
+    "share() produces PROPOSED, never shared. Only the OTHER side's accept() makes it shared: putting something in someone else's calendar is scheduling them, not planning together.",
+    "you cannot accept your own proposal",
+    "declining is an answer, and the event stays in the proposer's own week rather than vanishing",
+    "either side unshares alone",
+    "§1.2 sharing with no shared calendar is REFUSED loudly — queuing into a calendar that does not exist would look like it worked and reach nobody",
+    "a remote proposal is stored as THEIRS; authorship is never trusted from the wire",
+    "SOLO IS NOT A LESSER MODE — add, list and keep all work with no partner anywhere"
+  ],
+  "status": "implemented — 27 assertions in test/cocreation.test.mjs"
+}

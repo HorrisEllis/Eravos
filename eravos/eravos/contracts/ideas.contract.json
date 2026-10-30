@@ -1,0 +1,17 @@
+{
+  "id": "ideas",
+  "dom_ids_exposed": [
+    "idea-category",
+    "idea-count",
+    "idea-seed",
+    "ideas-grid",
+    "ideas-load",
+    "panel-ideas"
+  ],
+  "kernel_hooks_called": [
+    "generateIdeas"
+  ],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "category": "creating",
+  "has_subtabs": false
+}

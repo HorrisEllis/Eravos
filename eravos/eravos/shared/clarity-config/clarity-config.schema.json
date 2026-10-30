@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "clarity-config.schema.json",
+  "title": "Clarity Engine — Config",
+  "description": "Every tunable value in the clarity chain, pulled out of clarity-engine.js so it can be edited without touching code. Passed as { config } to `new ClarityEngine({ config })`. Any field left out falls back to clarity-config.default.json's value for that field.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+
+    "gate": {
+      "type": "object",
+      "description": "Background noise suppression. Implemented as a DynamicsCompressorNode pushed to a hard knee and steep ratio -- Web Audio has no native gate node, this is the real, standard approximation (see clarity-engine.js's own comment on this).",
+      "additionalProperties": false,
+      "properties": {
+        "thresholdDb": { "type": "number", "minimum": -100, "maximum": 0, "default": -48, "description": "Sound below this level gets suppressed. Lower (more negative) = only very quiet background gets cut. Higher (closer to 0) = more aggressive, risks cutting her quieter words too." },
+        "knee": { "type": "number", "minimum": 0, "maximum": 40, "default": 0, "description": "0 = hardest possible transition (truest gate behavior). Raise this if the gate feels too abrupt/choppy on her voice." },
+        "ratio": { "type": "number", "minimum": 1, "maximum": 20, "default": 20, "description": "How hard the gate pushes down signal below threshold. 20 = near-total suppression. Lower it if it's cutting too much." },
+        "attackSec": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.003, "description": "How fast the gate closes when sound drops below threshold. Very fast by default so it doesn't clip the start of quiet background noise." },
+        "releaseSec": { "type": "number", "minimum": 0, "maximum": 2, "default": 0.15, "description": "How fast the gate re-opens. Too fast and it 'pumps' audibly between her words; too slow and it's slow to suppress noise between sentences." }
+      }
+    },
+
+    "eq": {
+      "type": "object",
+      "description": "Three-band EQ for speech intelligibility. This is the part most worth tuning per-person -- accents differ in which frequency bands carry the information you're missing.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean", "default": true },
+        "lowShelf": {
+          "type": "object",
+          "description": "Cuts rumble below speech range -- room hum, breath noise, distant traffic.",
+          "additionalProperties": false,
+          "properties": {
+            "frequencyHz": { "type": "number", "minimum": 40, "maximum": 400, "default": 150 },
+            "gainDb": { "type": "number", "minimum": -24, "maximum": 0, "default": -6 }
+          }
+        },
+        "presence": {
+          "type": "object",
+          "description": "The consonant-clarity band. This is the single most important knob for accent comprehension -- most of what makes an unfamiliar accent hard to parse is consonant onset/offset detail living in this range, not vowels.",
+          "additionalProperties": false,
+          "properties": {
+            "frequencyHz": { "type": "number", "minimum": 1000, "maximum": 5000, "default": 2500, "description": "2000-3000 generally covers consonant clarity. Try nudging toward 3000-3500 if 's'/'t'/'k' sounds specifically are what's getting lost." },
+            "q": { "type": "number", "minimum": 0.3, "maximum": 5, "default": 1.1, "description": "How narrow the boosted band is. Lower = broader, gentler boost. Higher = more surgical, can sound harsh if pushed too far." },
+            "gainDb": { "type": "number", "minimum": 0, "maximum": 15, "default": 5, "description": "How much to boost. Start conservative -- above ~8dB can start sounding harsh/sibilant." }
+          }
+        },
+        "highShelf": {
+          "type": "object",
+          "description": "Slight lift to sibilance/air -- helps consonant edges (s, sh, t) read clearly without being harsh.",
+          "additionalProperties": false,
+          "properties": {
+            "frequencyHz": { "type": "number", "minimum": 4000, "maximum": 10000, "default": 6000 },
+            "gainDb": { "type": "number", "minimum": 0, "maximum": 10, "default": 2 }
+          }
+        }
+      }
+    },
+
+    "gain": {
+      "type": "object",
+      "description": "Automatic makeup gain -- boosts her voice level overall.",
+      "additionalProperties": false,
+      "properties": {
+        "db": { "type": "number", "minimum": 0, "maximum": 18, "default": 6, "description": "Higher = louder overall. The limiter below prevents clipping even if this is pushed high, but very high values can amplify residual noise the gate didn't catch." }
+      }
+    },
+
+    "limiter": {
+      "type": "object",
+      "description": "Final safety limiter -- catches any peaks the gain boost creates so nothing distorts, regardless of how high gain.db is set.",
+      "additionalProperties": false,
+      "properties": {
+        "thresholdDb": { "type": "number", "minimum": -12, "maximum": 0, "default": -3 },
+        "knee": { "type": "number", "minimum": 0, "maximum": 20, "default": 6 },
+        "ratio": { "type": "number", "minimum": 1, "maximum": 20, "default": 12 },
+        "attackSec": { "type": "number", "minimum": 0, "maximum": 0.1, "default": 0.002 },
+        "releaseSec": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.1 }
+      }
+    },
+
+    "rewind": {
+      "type": "object",
+      "description": "The rewind-and-replay buffer.",
+      "additionalProperties": false,
+      "properties": {
+        "bufferSeconds": { "type": "number", "minimum": 5, "maximum": 60, "default": 15, "description": "How far back you can rewind. Longer uses more memory (raw audio chunks held in the browser tab)." },
+        "frameMs": { "type": "number", "minimum": 100, "maximum": 2000, "default": 500, "description": "Granularity of the rewind strip -- how finely you can jump to a specific moment. Smaller = finer control, more chunks to manage." },
+        "defaultReplaySpeed": { "type": "number", "minimum": 0.5, "maximum": 1, "default": 0.75, "description": "Playback rate when replaying a buffered moment. Pitch is always preserved regardless of this value." }
+      }
+    },
+
+    "transcription": {
+      "type": "object",
+      "description": "Optional live transcription backend. Leave endpoint null to disable this panel entirely.",
+      "additionalProperties": false,
+      "properties": {
+        "endpoint": { "type": ["string", "null"], "default": null, "description": "e.g. 'http://localhost:8420/transcribe' -- a local Whisper bridge. Null disables transcription; the audio clarity chain runs fully without it." },
+        "whisperModel": { "type": "string", "enum": ["tiny", "base", "small", "medium", "large"], "default": "medium", "description": "Not read by clarity-engine.js directly -- this documents which model the endpoint above should be running. 'medium' is the practical floor for accented speech; 'base' (many bridges' own default) is noticeably worse on non-American accents." }
+      }
+    }
+  }
+}

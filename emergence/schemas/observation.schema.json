@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "emergence/schemas/observation.schema.json",
+  "title": "Emergence -- Observation",
+  "description": "The real, flat shape of tick()'s r.observation. FIXED via schema testing: an earlier version of both this schema and loop.js itself only surfaced RelationalModule's summary fields (trajectory, meaning_charge, etc.) -- health and all 9 real Liminal gap signals were computed by rfr2-observer's Gate but silently dropped by loop.js before this was caught. Now flat: summary's own fields stay at the top level for backward compatibility, health and the 9 signals are sibling fields, not nested away.",
+  "type": "object",
+  "required": ["sessionId", "trajectory", "meaning_charge", "decay_score", "rupture_active", "rupture_severity", "repair_attempts", "bid_rate", "bid_response_rate", "health", "oscillatory", "relationalGaps", "reversal", "negativeSpace", "shadow", "assumption", "structural", "existential", "contrastive", "affectiveField"],
+  "additionalProperties": false,
+  "properties": {
+    "sessionId": { "type": "string" },
+    "trajectory": { "type": "string", "enum": ["STABLE", "FLATTENING", "DEEPENING", "RUPTURING", "REPAIRING", "RETREATING"] },
+    "meaning_charge": { "type": "number", "description": "LIVE -- verified to vary across distinct real text inputs." },
+    "decay_score": { "type": "number", "description": "LIVE via sentiment-scorer.js, a NEW domain-agnostic lexicon scorer. Nothing in rfr2 itself produced this signal before that was wired in." },
+    "rupture_active": { "type": "boolean" },
+    "rupture_severity": { "type": "number", "description": "PINNED to a default-derived value -- needs alk.latent.update from a real multimodal source this text-only pipeline doesn't have. Not faked." },
+    "repair_attempts": { "type": "integer" },
+    "bid_rate": { "type": "number" },
+    "bid_response_rate": { "type": "number" },
+    "health": { "type": "object", "description": "RelationalModule's own health() output." },
+    "oscillatory": { "$ref": "#/definitions/gapSignalOrNull", "description": "Real pendulum math + intermittent-reinforcement/love-bombing/approach-retreat detection." },
+    "relationalGaps": { "$ref": "#/definitions/gapSignalOrNull", "description": "Gaslighting (6 layers), manipulation, control patterns." },
+    "reversal": { "$ref": "#/definitions/gapSignalOrNull", "description": "Meaning inversion -- 'fine' meaning not fine." },
+    "negativeSpace": { "$ref": "#/definitions/gapSignalOrNull", "description": "What's systematically avoided across a rolling window." },
+    "shadow": { "$ref": "#/definitions/gapSignalOrNull", "description": "Unspoken emotional/cognitive material." },
+    "assumption": {
+      "$ref": "#/definitions/gapSignalOrNull",
+      "description": "HONEST CALIBRATION NOTE: unlike the other 8 signals, this one's real threshold (hardcoded, not configurable) fires on ordinary unhedged declarative sentences. Verified directly, not a bug. Treat as a much weaker signal than the other 8."
+    },
+    "structural": { "$ref": "#/definitions/gapSignalOrNull", "description": "The conversation's own implicit power geometry." },
+    "existential": { "$ref": "#/definitions/gapSignalOrNull", "description": "Identity/meaning concentrated in a single source." },
+    "contrastive": { "$ref": "#/definitions/gapSignalOrNull", "description": "Stated position vs. what the text is actually doing." },
+    "affectiveField": {
+      "type": "object",
+      "description": "Different lineage (vendor/resonance-v5.1, not rfr2). NEVER null -- no abstention mechanism, always computes a closest emotional basin, even on neutral text. Also has a known blind spot: only responds to certainty/hedge/causal/intimacy/empathy/intensity marker words, not common emotion vocabulary (\"happy\", \"furious\" alone don't differentiate it). See rfr2-observer/index.js's header and test/affective-field.test.js.",
+      "properties": {
+        "theta": { "type": "object", "description": "{H,I,C,M,P_c,P_e} -- entropy, intensity, certainty, intimacy, compassion, empathy." },
+        "coherence": { "type": "number" },
+        "gap_score": { "type": "number" },
+        "collapse_pressure": { "type": "number" },
+        "emotion": {
+          "type": "object",
+          "properties": {
+            "primary": { "type": "object", "properties": { "emotion": { "type": "string" }, "confidence": { "type": "number" } } },
+            "secondary": { "type": "object" },
+            "emotion_field": { "type": "object", "description": "full 16-emotion ranked field, dominant cluster, dual-pole field_signature if a named pair matches." }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "gapSignalOrNull": {
+      "type": ["object", "null"],
+      "description": "null = nothing detected, verified per-module against neutral text. When non-null, real fields observed across modules: id, moduleId, type, subtype, domain, score, confidence, evidence, textExcerpt, loadBearingQuestion. Exact shape varies per module -- see vendor/rfr2/liminal/*.js."
+    }
+  }
+}

@@ -1,0 +1,345 @@
+{
+  "name": "clear-glass-lite",
+  "version": "2.1.1",
+  "description": "A decoupled fork of Clear Glass's provider-login shell. Real per-provider multi-account session isolation, real Greasemonkey/Tampermonkey-format userscript injection, a lightweight local capture/query API (guardian-lite, backed by the same JaaStore engine full Guardian runs on), and a genuinely extensible CLI. Zero dependency on the NEXUS system it was extracted from.",
+  "license": "MIT",
+  "author": "James Brooks (Erosmancer)",
+  "dependencies": [
+    "electron@^42.5.0"
+  ],
+  "decoupling_rule": "Every file in this repo imports only from within this repo, Node's stdlib, or electron. No file requires anything outside clear-glass-lite/ \u2014 this is the literal, checkable definition of 'decoupled' this fork uses, not just a description. Verify with: grep -rn \"require('\\.\\./\\.\\./\" . (should return nothing outside node_modules).",
+  "changelog_note": "v2.1.1: real bug fix \u2014 config.js never had a side effect on load/get, so no config.json ever existed on disk until a user opened Options and clicked Save at least once. A real user reported \"i dont see any configs\" and was right \u2014 there genuinely wasn't one yet. Fixed with ensureConfigFile(), called at boot by both main.js and cli.js (CLI-only users get a real file too, not just GUI users), verified end to end: fresh CLI run now produces a real, complete config.json with zero prior interaction. Added interaction-contract.json, matching the project's own established convention (see guardian/interaction-contract.json) \u2014 every claim in it (19 IPC channels, 6 HTTP routes, 7 CLI commands, 5 config keys) cross-checked directly against the real code, not transcribed from memory. v2.1.0: real Guardian options and history. Added logger.js \u2014 one persistent, rotating error.log shared by main.js/guardian-lite/userscripts.js/cli.js (found a real gap while wiring it in: guardian-lite's server errors were returned to the client but never logged anywhere). Added a real, enforced retention limit for guardian-lite (0=unlimited default, oldest rows trimmed by real timestamp once a table exceeds the configured limit, verified directly). Added a Ledger panel to the hub UI \u2014 browse guardian-lite's actual captured data, per table, delete individual rows, all reading live from the store. Added `cli.js log` (view/clear the error log from the terminal) and Options-panel log view/open/clear. v2.0.1 fixed a real user-reported bug (node main.js instead of npm start) and a QA-found custom-command-shadowing-silently bug. v2.0.0 added multi-account support, real userscript injection, guardian-lite, an extensible CLI, config, and Options. v1.0.0 was login-only. All new capability across every version has been additive.",
+  "entry_points": {
+    "gui": {
+      "command": "npm start",
+      "file": "main.js",
+      "note": "Electron app \u2014 not visually run in the environment this manifest was written in (no display server available there); everything beneath the GUI layer has been tested directly."
+    },
+    "cli": {
+      "command": "node cli.js <command>",
+      "file": "cli.js",
+      "note": "Works standalone, without the GUI running \u2014 see api_surface.cli_commands below."
+    }
+  },
+  "files": [
+    {
+      "path": "main.js",
+      "purpose": "Electron main process \u2014 window management, per-account session partitioning, guardian-lite lifecycle, all IPC handlers.",
+      "depends_on": [
+        "guardian-lite/index.js",
+        "providers.js",
+        "config.js",
+        "login-state.js",
+        "logger.js",
+        "userscripts.js"
+      ],
+      "verified": "syntax-checked; window/session/IPC code matches proven Electron patterns from the source project; GUI itself not visually run."
+    },
+    {
+      "path": "preload.js",
+      "purpose": "The only bridge the renderer has to Electron \u2014 contextIsolation + sandbox, no direct Node access from the page.",
+      "depends_on": [],
+      "verified": "syntax-checked; standard contextBridge pattern."
+    },
+    {
+      "path": "providers.js",
+      "purpose": "The provider registry \u2014 id/name/url/hosts/color per provider. Reused from Clear Glass's real registry, minus NCP-specific fields.",
+      "depends_on": [],
+      "verified": "tested directly \u2014 lookup, unknown-id rejection."
+    },
+    {
+      "path": "login-state.js",
+      "purpose": "Account metadata (labels, connected/last-used timestamps) per provider. NOT session storage \u2014 that's Electron's native session.fromPartition.",
+      "depends_on": [
+        "paths.js"
+      ],
+      "verified": "tested directly \u2014 add/rename/remove, cross-provider isolation, v1.0\u2192v2.0 schema migration."
+    },
+    {
+      "path": "userscripts.js",
+      "purpose": "Loads Greasemonkey/Tampermonkey-format scripts from disk, matches by URL, injects via webContents.executeJavaScript with an idempotency guard.",
+      "depends_on": [
+        "paths.js",
+        "logger.js",
+        "gm-shim.js"
+      ],
+      "verified": "tested directly \u2014 metadata parsing, URL matching (provider-scoped script correctly excluded on other providers), injection code generation, error isolation (one broken script doesn't block others). One real bug found and fixed during testing: failed scripts were reported as succeeded."
+    },
+    {
+      "path": "gm-shim.js",
+      "purpose": "GM_xmlhttpRequest / GM_getValue / GM_setValue shim for userscripts. Reused verbatim from Clear Glass \u2014 already zero-dependency.",
+      "depends_on": [],
+      "verified": "unchanged from source; source behavior already proven."
+    },
+    {
+      "path": "config.js",
+      "purpose": "App-wide settings: load/save/get/set. Arbitrary custom keys pass through untouched, not just the documented DEFAULTS.",
+      "depends_on": [
+        "paths.js"
+      ],
+      "verified": "tested directly \u2014 defaults, set/get, custom key persistence across reload."
+    },
+    {
+      "path": "paths.js",
+      "purpose": "The one place userData path resolution lives \u2014 computes the same directory whether called from Electron (main.js) or plain Node (cli.js), so both share one data store.",
+      "depends_on": [],
+      "verified": "tested directly \u2014 real Electron-absent fallback path confirmed correct for the host platform."
+    },
+    {
+      "path": "cli.js",
+      "purpose": "CLI entrypoint. Built-in commands, custom-command auto-loader, ensures a guardian-lite instance is reachable (finds a running one or boots its own) before running any command that needs one.",
+      "depends_on": [
+        "guardian-lite/server.js",
+        "paths.js",
+        "config.js",
+        "logger.js",
+        "userscripts.js"
+      ],
+      "verified": "tested directly \u2014 three separate real process invocations with data persisting across them, a real custom command file auto-discovered and executed against the live API, config get/set."
+    },
+    {
+      "path": "guardian-lite/store.js",
+      "purpose": "The persistent storage engine. Copied verbatim from the source project's own jaa-store.js \u2014 not a simplified reimplementation.",
+      "depends_on": [],
+      "verified": "tested directly \u2014 insert/query round trip."
+    },
+    {
+      "path": "guardian-lite/server.js",
+      "purpose": "HTTP + SSE server wrapping store.js \u2014 /ingest, /query, /artifacts/:id (DELETE), /channel (SSE broadcast), /stats, /health. Enforces a real, optional per-table retention limit after every ingest.",
+      "depends_on": [
+        "guardian-lite/store.js",
+        "logger.js"
+      ],
+      "verified": "tested directly \u2014 every endpoint hit with curl, live SSE broadcast confirmed, DELETE confirmed precise, retention limit tested directly (10 rows inserted with limit 5, confirmed exactly the 5 newest survived)."
+    },
+    {
+      "path": "guardian-lite/index.js",
+      "purpose": "start/stop/restart lifecycle for the server. The only guardian-lite module main.js and cli.js should import directly.",
+      "depends_on": [
+        "guardian-lite/server.js",
+        "paths.js"
+      ],
+      "verified": "tested directly \u2014 full start-stop-restart-on-new-port cycle, old port confirmed dead, new port confirmed serving the same data directory."
+    },
+    {
+      "path": "renderer/index.html",
+      "purpose": "Hub window markup \u2014 provider list, scripts panel, Options panel.",
+      "depends_on": [],
+      "verified": "structure reviewed; not visually rendered (no display server)."
+    },
+    {
+      "path": "renderer/app.js",
+      "purpose": "Renderer logic \u2014 provider/account rendering (including the connected-account split-button UI), Options panel logic (including retention limit and log viewer), Ledger panel, scripts panel.",
+      "depends_on": [
+        "preload.js (via window.hub)"
+      ],
+      "verified": "syntax-checked; logic reviewed against the real preload bridge surface; not visually exercised."
+    },
+    {
+      "path": "renderer/style.css",
+      "purpose": "All styling.",
+      "depends_on": [],
+      "verified": "not applicable \u2014 static."
+    },
+    {
+      "path": "logger.js",
+      "purpose": "One real, rotating (5MB) error log shared by every module with a real error path \u2014 logError/logInfo write to it, console output kept unchanged alongside.",
+      "depends_on": [
+        "paths.js"
+      ],
+      "verified": "tested directly \u2014 write/read/clear, rotation on an oversized file, plain-string vs real Error object handling, no-recursion on a logging failure itself."
+    }
+  ],
+  "api_surface": {
+    "guardian_lite_http": [
+      {
+        "method": "GET",
+        "path": "/health",
+        "returns": "{ ok, uptime }"
+      },
+      {
+        "method": "POST",
+        "path": "/ingest",
+        "body": "{ table?, ...fields }",
+        "returns": "{ ok, id, table }",
+        "note": "table defaults to 'artifacts' if omitted; schema is not fixed beyond 'a table name and a JSON object'."
+      },
+      {
+        "method": "GET",
+        "path": "/query",
+        "query": "table, limit, plus any field as an exact-match filter",
+        "returns": "{ ok, table, count, rows }"
+      },
+      {
+        "method": "DELETE",
+        "path": "/artifacts/:id",
+        "query": "table (defaults to 'artifacts')",
+        "returns": "{ ok, deleted }"
+      },
+      {
+        "method": "GET",
+        "path": "/channel",
+        "returns": "text/event-stream \u2014 broadcasts every /ingest live"
+      },
+      {
+        "method": "GET",
+        "path": "/stats",
+        "returns": "{ ok, tables: { <tableName>: rowCount, ... } } \u2014 reflects whatever tables have actually been used, not a fixed list"
+      }
+    ],
+    "ipc_channels": [
+      {
+        "channel": "cgl:get-status",
+        "direction": "renderer\u2192main\u2192renderer",
+        "purpose": "Full provider+account status, cookie-verified."
+      },
+      {
+        "channel": "cgl:open-account",
+        "args": "(providerId, accountId|null)",
+        "purpose": "null accountId = mint a new one ('add another account')."
+      },
+      {
+        "channel": "cgl:logout",
+        "args": "(providerId, accountId)",
+        "purpose": "Clears that one account's session partition."
+      },
+      {
+        "channel": "cgl:rename",
+        "args": "(providerId, accountId, label)"
+      },
+      {
+        "channel": "cgl:open-external",
+        "args": "(url)"
+      },
+      {
+        "channel": "cgl:open-scripts-folder",
+        "purpose": "Opens the userscripts directory in the OS file manager."
+      },
+      {
+        "channel": "cgl:list-scripts",
+        "returns": "[{ id, name, enabled, matches }]"
+      },
+      {
+        "channel": "cgl:get-config",
+        "returns": "full config object"
+      },
+      {
+        "channel": "cgl:set-config",
+        "args": "(key, value)"
+      },
+      {
+        "channel": "cgl:reset-config"
+      },
+      {
+        "channel": "cgl:guardian-status",
+        "returns": "{ running, port }"
+      },
+      {
+        "channel": "cgl:restart-guardian",
+        "purpose": "Stops and restarts guardian-lite with current config \u2014 used when Options changes the port or enabled flag."
+      },
+      {
+        "channel": "status-changed",
+        "direction": "main\u2192renderer (push)",
+        "purpose": "Fired after any account/provider state change so the hub UI re-renders without polling."
+      },
+      {
+        "channel": "cgl:ledger-query",
+        "args": "(table, limit)",
+        "purpose": "Real rows from a guardian-lite table, newest first \u2014 reads the live store instance directly, not a round trip through HTTP."
+      },
+      {
+        "channel": "cgl:ledger-tables",
+        "returns": "table names (excludes 'settings', the store's own bootstrap table, not ledger content)"
+      },
+      {
+        "channel": "cgl:ledger-delete",
+        "args": "(table, id)",
+        "purpose": "Delete one row."
+      },
+      {
+        "channel": "cgl:open-log",
+        "purpose": "Opens error.log in the OS default text editor."
+      },
+      {
+        "channel": "cgl:get-log",
+        "args": "(n)",
+        "returns": "last n lines"
+      },
+      {
+        "channel": "cgl:clear-log"
+      }
+    ],
+    "cli_commands": {
+      "builtin": [
+        {
+          "name": "status",
+          "description": "Show guardian-lite status and table counts"
+        },
+        {
+          "name": "ingest",
+          "description": "Ingest a JSON object: cli.js ingest '{\"table\":\"artifacts\",\"content\":\"...\"}'"
+        },
+        {
+          "name": "query",
+          "description": "Query a table: cli.js query [table] [limit]"
+        },
+        {
+          "name": "config",
+          "description": "Get/set config: cli.js config [key] [value]"
+        },
+        {
+          "name": "scripts",
+          "description": "List loaded userscripts"
+        },
+        {
+          "name": "commands",
+          "description": "List custom command files and where to add more"
+        },
+        {
+          "name": "log",
+          "description": "Show recent error.log entries: cli.js log [n] | cli.js log clear"
+        }
+      ],
+      "custom": {
+        "location": "userData/commands/*.js, auto-loaded, no registration step",
+        "contract": "module.exports = { name, description, async run(args, api) }",
+        "api_given_to_commands": [
+          "get(path)",
+          "post(path, body)",
+          "del(path)",
+          "config.get(key)",
+          "config.set(key, value)"
+        ]
+      }
+    }
+  },
+  "extension_points": [
+    {
+      "what": "Add a fifth AI provider",
+      "where": "providers.js",
+      "how": "Add one entry ({id, name, url, hosts, color}) \u2014 the button grid, session partitioning, and status checks all read from this one list."
+    },
+    {
+      "what": "Add a userscript",
+      "where": "userData/userscripts/*.js (open via the 'Open scripts folder' button)",
+      "how": "Standard // ==UserScript== / @match / ==/UserScript== format, real GM_* API available."
+    },
+    {
+      "what": "Add a CLI command",
+      "where": "userData/commands/*.js",
+      "how": "Export { name, description, run(args, api) } \u2014 auto-discovered on next CLI invocation."
+    },
+    {
+      "what": "Store custom project data",
+      "where": "config.js's set(key, value), or guardian-lite's /ingest with a custom table name",
+      "how": "Neither is schema-locked to this app's own keys/tables \u2014 both pass arbitrary data through."
+    }
+  ],
+  "known_gaps": [
+    "Electron GUI not visually run in the environment this was built in \u2014 no display server available there. Everything beneath the GUI layer is tested directly and for real.",
+    "npm link / global `cgl` install not performed \u2014 bin entry and shebang are correct by inspection.",
+    "guardian-lite has no authentication \u2014 binds to 127.0.0.1 only, which is the accepted mitigation for a localhost-only tool, not a complete answer if a project needs it exposed beyond localhost.",
+    "GM_getValue/GM_setValue are scoped per-partition (per account, per provider) \u2014 not shared globally. Matches the source shim's own documented behavior, not a regression."
+  ]
+}

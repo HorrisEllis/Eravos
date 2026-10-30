@@ -1,0 +1,59 @@
+<!-- eravos tab: needs · category: communication -->
+<!-- served by api/server.js at GET /api/tabs/needs -->
+<div class="panel" id="panel-needs">
+    <div class="g2">
+      <div class="fc gap16">
+        <div class="card">
+          <div class="card-title">🫀 EXPRESS A NEED</div>
+          <p class="small" style="color:var(--dim);margin-bottom:18px;line-height:1.7;font-style:italic">"If they care about you, if they love you, they'll want to hear about how you feel."</p>
+          <label class="fl">What do you need right now?</label>
+          <textarea id="need-what" rows="3" placeholder="Be as specific or as vague as you feel — both are valid..."></textarea>
+          <label class="fl mt12">What would help?</label>
+          <textarea id="need-help" rows="3" placeholder="A hug, some space, to be heard, time together, reassurance..."></textarea>
+          <label class="fl mt12">What do you want them to know? (optional)</label>
+          <textarea id="need-know" rows="3" placeholder="Anything else that feels important to say..."></textarea>
+          <!-- Attach current feeling -->
+          <div style="margin-top:12px;padding:10px 14px;border:1px solid var(--border2);border-radius:8px;background:var(--glass)">
+            <div class="small" style="color:var(--cyan);font-family:var(--fm);font-size:.62rem;letter-spacing:.12em;margin-bottom:4px">CURRENT FEELING (auto-attached)</div>
+            <div id="need-feeling-display" class="small" style="color:var(--amber)">— no feeling set —</div>
+          </div>
+          <div class="flex gap10 mt14 wrap">
+            <button class="btn p" onclick="sendNeedCard()">🫀 Send Need Card</button>
+            <button class="btn g" onclick="saveNeedPrivate()">🔒 Keep Private</button>
+            <button class="btn g" onclick="clearNeedForm()">✕ Clear</button>
+          </div>
+          <div id="need-send-status" class="small italic" style="color:var(--dim);margin-top:10px;min-height:16px"></div>
+        </div>
+      </div>
+      <div class="fc gap16">
+        <div class="card">
+          <div class="card-title">📬 PARTNER'S NEEDS <span id="needs-badge" style="display:none;background:var(--fire2);color:var(--text);font-size:.6rem;padding:2px 6px;border-radius:10px;margin-left:6px;font-family:var(--fm)"></span></div>
+          <input type="text" id="partner-needs-search" placeholder="Search partner's needs..." style="margin-bottom:10px" oninput="renderPartnerNeeds()">
+          <div id="partner-needs-list" class="fc gap10">
+            <p class="small italic" style="color:var(--dim)">When your partner sends a need card, it appears here with response options.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">💬 COMMUNICATION SAFETY REQUESTS</div>
+          <p class="small" style="color:var(--dim);margin-bottom:12px;line-height:1.6">When your partner completes the feeling flow and names what they need to feel safe sharing, their request appears here.</p>
+          <div id="safety-requests-list" class="fc gap10">
+            <p class="small italic" style="color:var(--dim)">No pending safety requests.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">💭 PARTNER'S REFLECTIONS</div>
+          <p class="small" style="color:var(--dim);margin-bottom:12px;line-height:1.6">Solutions-oriented reflections your partner has chosen to share — from a feeling share or a repaired rupture. Acknowledging just means "I see this," not "resolved."</p>
+          <div id="partner-mirrors-list" class="fc gap10">
+            <p class="small italic" style="color:var(--dim)">Nothing shared yet.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="font-size:.72rem">📖 MY NEED HISTORY</div>
+          <input type="text" id="need-history-search" placeholder="Search your needs..." style="margin-bottom:10px" oninput="renderNeedHistory()">
+          <div id="need-history-list" class="fc gap8" style="max-height:180px;overflow-y:auto">
+            <p class="small italic" style="color:var(--dim)">Needs you've expressed (private log).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

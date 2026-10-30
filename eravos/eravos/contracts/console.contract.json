@@ -1,0 +1,18 @@
+{
+  "id": "console",
+  "dom_ids_exposed": [
+    "console-log",
+    "ollama-dot2",
+    "p2p-dot2",
+    "panel-console",
+    "stream-events"
+  ],
+  "kernel_hooks_called": [
+    "clearLog",
+    "exportLog",
+    "initMesh"
+  ],
+  "status": "Clear Glass AI Bridge card removed (ai-bridge-dot, checkAiBridgeUI, testAiBridgeUI, saveAiBridgeTokenUI) along with shared/ai-bridge.js itself. checkAiBridgeUI and testAiBridgeUI were already dead before this — referenced here and in console.html's onclick attributes but never defined anywhere in the codebase; clicking either button would have thrown. connectToPartner also replaced with initMesh — connectToPartner was removed when the mesh/relay transport replaced PeerJS, but this contract (and the P2P Partner Reconnect button itself) still pointed at it, meaning that button silently did nothing since. Both found by grepping for stale references while removing the AI bridge, not assumed fixed by the earlier rename pass.",
+  "category": "system",
+  "has_subtabs": false
+}

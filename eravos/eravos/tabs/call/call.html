@@ -1,0 +1,187 @@
+<!-- eravos tab: call · category: communication -->
+<!-- served by api/server.js at GET /api/tabs/call -->
+<div class="panel" id="panel-call">
+
+    <!-- Direct request: consolidate Call/Chat/Voice into one continuous
+         surface. Call is still its own real tab underneath (same
+         proven, tested switchTab('call') mechanism -- see this
+         session's own Phase S work), but no longer has its own visible
+         sub-tab button; this link is the way back. -->
+    <div class="flex ac gap10" style="margin-bottom:14px">
+      <button class="btn g" style="font-size:.78rem" onclick="switchTab('chat')">← Back to chat</button>
+    </div>
+
+    <!-- Connection status bar -->
+    <div class="card" style="margin-bottom:18px;padding:14px 18px">
+      <div class="flex ac jb gap12">
+        <div class="flex ac gap10">
+          <div id="call-p2p-dot" style="width:9px;height:9px;border-radius:50%;background:var(--rose);box-shadow:0 0 7px var(--rose);transition:background .4s,box-shadow .4s"></div>
+          <span id="call-p2p-status" class="small" style="color:var(--dim)">P2P not connected</span>
+        </div>
+        <button class="btn g" style="font-size:.75rem;padding:5px 12px" onclick="callReconnectP2P()">🔗 Reconnect</button>
+        <!-- Real, direct link -- Voice stays its own real tab (jitter/
+             shimmer/HNR measurement, ALK-backed), reachable here instead
+             of a separate sub-tab button now that Call/Chat/Voice are
+             consolidated into one continuous surface. -->
+        <button class="btn g" style="font-size:.75rem;padding:5px 12px" onclick="switchTab('voice')">🎙 My voice signal</button>
+      </div>
+    </div>
+
+    <div class="g2" id="call-video-grid" style="margin-bottom:18px;align-items:start;display:none">
+
+      <!-- Video windows — hidden until call starts -->
+      <div class="card" style="padding:0;overflow:hidden;background:var(--dark);min-height:220px;position:relative">
+        <div style="position:absolute;top:10px;left:12px;z-index:10;font-family:var(--fm);font-size:.6rem;color:var(--amber);letter-spacing:.12em;text-shadow:0 0 8px var(--fire)">PARTNER</div>
+        <video id="remote-video" autoplay playsinline style="width:100%;height:100%;min-height:220px;object-fit:cover;display:block;opacity:0;transition:opacity .5s"></video>
+        <div id="remote-video-placeholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--dim)">
+          <div style="font-size:3rem;opacity:.3">👤</div>
+          <div class="small italic" style="opacity:.5">Waiting for partner's video...</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden;background:var(--dark);min-height:220px;position:relative">
+        <div style="position:absolute;top:10px;left:12px;z-index:10;font-family:var(--fm);font-size:.6rem;color:var(--teal);letter-spacing:.12em;text-shadow:0 0 8px var(--teal)">YOU</div>
+        <video id="local-video" autoplay playsinline muted style="width:100%;height:100%;min-height:220px;object-fit:cover;display:block;transform:scaleX(-1);opacity:0;transition:opacity .5s"></video>
+        <div id="local-video-placeholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--dim)">
+          <div style="font-size:3rem;opacity:.3">🎥</div>
+          <div class="small italic" style="opacity:.5">Camera off</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Off-DOM-visible sources used only to compose the screen-share
+         feed (screen + camera bubble baked into one outbound track) —
+         see toggleScreenShare() in eravos-kernel.js -->
+    <video id="cam-raw-source" autoplay playsinline muted style="display:none"></video>
+    <video id="screen-raw-source" autoplay playsinline muted style="display:none"></video>
+
+    <!-- Call controls -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-title">📞 CALL CONTROLS</div>
+      <div id="call-status-msg" class="small italic" style="color:var(--dim);margin-bottom:16px;min-height:18px">Ready to call your partner.</div>
+
+      <!-- Pre-call options -->
+      <div id="call-precall" class="fc gap12">
+        <div class="flex gap12 wrap ac">
+          <label style="font-size:.82rem;color:var(--dim);min-width:80px">Call type</label>
+          <div class="flex gap8">
+            <button id="call-type-video" class="btn p" onclick="setCallType('video')" style="font-size:.8rem;padding:6px 14px">🎥 Video</button>
+            <button id="call-type-audio" class="btn g" onclick="setCallType('audio')" style="font-size:.8rem;padding:6px 14px">🎤 Audio only</button>
+          </div>
+        </div>
+        <div class="flex gap12 wrap" id="call-request-row">
+          <button class="btn p" onclick="startCall()" style="gap:8px">📞 Call Partner</button>
+        </div>
+        <div class="flex gap12 wrap ac" id="call-awaiting-row" style="display:none">
+          <span class="small italic" style="color:var(--dim)">⏳ Waiting for partner to accept…</span>
+          <button class="btn g" onclick="cancelCallRequest()" style="font-size:.8rem;padding:6px 14px">✕ Cancel</button>
+        </div>
+      </div>
+
+      <!-- In-call controls -->
+      <div id="call-incall" style="display:none">
+        <div class="flex gap10 wrap">
+          <button id="btn-mute" class="btn g" onclick="toggleMute()" style="font-size:.82rem;padding:7px 14px">🎤 Mute</button>
+          <button id="btn-cam" class="btn g" onclick="toggleCamera()" style="font-size:.82rem;padding:7px 14px">🎥 Cam Off</button>
+          <button id="btn-screenshare" class="btn g" onclick="toggleScreenShare()" style="font-size:.82rem;padding:7px 14px">🖥️ Share Screen</button>
+          <button id="btn-transcribe" class="btn g" onclick="toggleCallTranscription()" style="font-size:.82rem;padding:7px 14px">📝 Transcribe</button>
+          <!-- Phase V: real, separate show/hide -- controls only the
+               panel's visibility, never the recognizer itself. Hidden
+               until transcription is actually on; hiding the panel
+               while still listening would be exactly the "captured but
+               hidden" state the phase map's own standing constraint
+               rules out for the toggle below, not this one. -->
+          <button id="btn-transcript-cc" class="btn g" onclick="toggleTranscriptPanelVisible()" style="font-size:.82rem;padding:7px 14px;display:none">CC</button>
+          <button id="btn-fullscreen" class="btn g" onclick="toggleCallFullscreen()" style="font-size:.82rem;padding:7px 14px">⛶ Fullscreen</button>
+          <button class="btn d" onclick="endCall()" style="font-size:.82rem;padding:7px 14px">📵 End Call</button>
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border2)">
+          <div class="small" style="color:var(--dim);margin-bottom:8px;font-family:var(--fm);font-size:.6rem;letter-spacing:.1em">SEND A REACTION</div>
+          <div class="flex gap8 wrap">
+            <button class="call-react-btn" onclick="sendCallReaction('💗')">💗</button>
+            <button class="call-react-btn" onclick="sendCallReaction('😂')">😂</button>
+            <button class="call-react-btn" onclick="sendCallReaction('🔥')">🔥</button>
+            <button class="call-react-btn" onclick="sendCallReaction('✨')">✨</button>
+            <button class="call-react-btn" onclick="sendCallReaction('👋')">👋</button>
+            <button class="call-react-btn" onclick="sendCallReaction('🙏')">🙏</button>
+            <button class="call-react-btn" onclick="sendCallReaction('💋')">💋</button>
+            <button class="call-react-btn" onclick="sendCallReaction('🌙')">🌙</button>
+          </div>
+        </div>
+        <div id="call-reaction-display" style="position:fixed;bottom:120px;right:30px;font-size:3.5rem;pointer-events:none;z-index:9100;opacity:0;transition:opacity .6s"></div>
+      </div>
+
+      <!-- Incoming call banner -->
+      <div id="call-incoming" style="display:none;margin-top:14px;padding:14px;border:1px solid var(--fire);border-radius:10px;background:var(--tint-fire)">
+        <div style="font-family:var(--fb);font-size:.9rem;margin-bottom:10px;color:var(--amber)">📞 Incoming call from partner…</div>
+        <div class="flex gap10">
+          <button class="btn p" onclick="answerCall()" style="background:linear-gradient(135deg,var(--answer),var(--answer-deep))">✅ Answer</button>
+          <button class="btn d" onclick="declineCall()">❌ Decline</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audio call visualizer (voice only mode) -->
+    <div id="call-audio-vis" class="card" style="display:none;margin-bottom:18px;text-align:center;padding:28px">
+      <div style="font-size:4rem;margin-bottom:10px;animation:pulse 1.4s ease-in-out infinite">🎤</div>
+      <div class="card-title" style="margin-bottom:6px">VOICE CALL ACTIVE</div>
+      <div id="call-duration" class="small" style="font-family:var(--fm);color:var(--amber);letter-spacing:.15em">00:00</div>
+    </div>
+
+    <!-- Live transcript — Phase 4 roadmap: local speech-to-text feeds
+         the lattice/mythos as a shared, co-created record, not a
+         private log. Each device transcribes only its own mic; lines
+         from both sides merge here via call:transcript_line sync. -->
+    <div id="call-transcript-panel" class="card" style="display:none;margin-bottom:18px">
+      <div class="card-title" style="font-size:.72rem">📝 LIVE TRANSCRIPT <span class="small" style="color:var(--dim);font-weight:normal">— builds the lattice together</span></div>
+      <div id="call-transcript-log" class="fc gap6" style="max-height:220px;overflow-y:auto"></div>
+    </div>
+
+    <!-- Phase V: real consent modal -- direct request: "warns and asks
+         for consent with a prompt to accept, before enabling it,"
+         shown every real time transcription goes from off to on, not
+         just once ever. -->
+    <div id="transcript-consent-modal" class="modal">
+      <div class="modal-inner">
+        <div class="card-title">📝 Live transcription</div>
+        <p class="small" style="color:var(--dim);line-height:1.75;margin-bottom:14px">
+          Turning this on starts converting your side of this call to text, live, on this device only.
+          Finalized lines sync so you both see one shared transcript, and every line feeds the Lattice —
+          the same real record the rest of Eravos draws from.
+        </p>
+        <p class="small" style="color:var(--dim);line-height:1.75;margin-bottom:14px">
+          It never leaves your two devices. Turn it back off anytime with the same Transcribe button —
+          off means the recognizer actually stops, not that the panel just hides while it keeps listening.
+        </p>
+        <div class="flex gap10">
+          <button class="btn p" onclick="_resolveTranscriptConsent(true)">Accept &amp; start</button>
+          <button class="btn g" onclick="_resolveTranscriptConsent(false)">Not now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase V: real read-back, outside an active call. Reuses the
+         existing per-conversation transcript store; this is a list/
+         detail view, not new storage. -->
+    <div class="card" id="call-transcript-history-card" style="margin-bottom:18px">
+      <div class="flex jb ac" style="margin-bottom:10px">
+        <div class="card-title" style="margin:0">📖 Past transcripts</div>
+        <button class="btn g" style="font-size:.72rem" onclick="toggleTranscriptHistory()">Show</button>
+      </div>
+      <div id="call-transcript-history-list" class="fc gap10" style="display:none"></div>
+    </div>
+
+    <!-- Tips -->
+    <div class="card">
+      <div class="card-title" style="font-size:.72rem">ℹ HOW IT WORKS</div>
+      <p class="small" style="color:var(--dim);line-height:1.7;margin:0">
+        Uses the same P2P connection as the rest of the app — no third-party servers involved once connected.
+        Both partners need to be online and connected for calls to work.
+        Calling sends a request first — your partner gets 30 seconds to accept or decline before your camera/mic ever turn on.
+        Your browser will ask for camera/mic permissions once they accept.
+        Screen sharing works during video calls — your screen and camera bubble are sent as one feed, and there's a fullscreen button for couch-party moments.
+        Transcription is local to each device (your mic only) and syncs so you both see one shared transcript — every line feeds the Lattice, and from there the Mythos.
+      </p>
+    </div>
+
+  </div>

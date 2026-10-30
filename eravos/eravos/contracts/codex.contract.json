@@ -1,0 +1,23 @@
+{
+  "id": "codex",
+  "dom_ids_exposed": [
+    "codex-content",
+    "codex-form",
+    "codex-list",
+    "codex-summary-out",
+    "codex-tags",
+    "codex-title",
+    "codex-type",
+    "panel-codex"
+  ],
+  "kernel_hooks_called": [
+    "exportCodex",
+    "generateCodexSummary",
+    "getElementById",
+    "openCodexForm",
+    "saveCodexEntry"
+  ],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "category": "space",
+  "has_subtabs": false
+}

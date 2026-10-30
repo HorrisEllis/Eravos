@@ -1,0 +1,40 @@
+{
+  "id": "chat",
+  "uuid": "eravos-chat-engine-0001-0000-000000000001",
+  "version": "0.6.0",
+  "owner": "shared/eravos-chat.js",
+  "lifecycle": "Implemented",
+  "spec": "spec/PHASEMAP-v3.md",
+  "parent": "eravos-kernel",
+  "category": "communication",
+  "has_subtabs": false,
+  "surfaces": ["tabs/chat/ (full page)", "popup composer (mounted globally)"],
+  "dom_ids_exposed": ["panel-chat", "chat-flow", "chat-input", "chat-add", "chat-call", "chat-search", "chat-presence", "chat-pop-btn"],
+  "kernel_hooks_called": ["emitSync", "switchTab", "showToast", "updateInboxBadge", "DB.get", "DB.set"],
+  "gates_registered": ["chat:message", "chat:receipt", "chat:typing", "presence:cursor", "presence:tab"],
+  "attachment_kinds": ["vault", "feeling", "need", "spar_invite", "codex", "poem", "canvas", "grammar"],
+  "ephemeral_types": ["chat:typing", "presence:cursor", "presence:tab"],
+  "write_authority": "eravors_chat_thread and eravors_chat_prefs — §10.1, the engine only. Surfaces render; they never store.",
+  "failure_modes": [
+    "no storage -> constructor throws, refuses to operate blind",
+    "empty send (no text, no attachment) -> throws",
+    "over-long send -> throws, naming the 4000-char limit",
+    "unknown attachment kind -> throws, listing the known ones",
+    "attachment without an id -> throws; it is a reference, not a copy",
+    "offline send -> marked queued, kept in thread, replayed by the Phase 1 outbox",
+    "transport throw -> recorded ON the message, never swallowed",
+    "listener throws -> named in console, does not break the send",
+    "unknown event on on() -> throws, listing known events"
+  ],
+  "invariants": [
+    "§1.2 ephemeral types are NEVER persisted — not capped, not trimmed, never written",
+    "§0.4 thread bounded at 500 messages",
+    "duplicate replay is idempotent — the outbox cannot double-post",
+    "cursor sharing and read receipts default OFF and require opt-in on THIS side",
+    "a remote cursor is ignored unless this side also opted in",
+    "cursor sends throttled at 80ms",
+    "stale presence expires (cursor 5s, typing 6s) rather than hanging",
+    "§10.1 two surfaces over one store cannot diverge — asserted by test"
+  ],
+  "status": "implemented — 36/36 in test/choice-chat.test.mjs. Phase D two-device verification is open by design."
+}

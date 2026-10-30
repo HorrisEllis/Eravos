@@ -1,0 +1,25 @@
+/* lattice tab — §5.12 the UI is disposable; nothing here affects execution */
+#panel-lattice .lat-meta{display:flex;gap:14px;align-items:center;font-family:var(--fd);font-size:.72rem;color:var(--dim)}
+#panel-lattice .lat-dot{width:8px;height:8px;border-radius:50%;background:var(--dim);display:inline-block}
+#panel-lattice .lat-dot.ok{background:var(--good)}
+#panel-lattice .lat-dot.warn{background:var(--amber)}
+#panel-lattice .lat-dot.bad{background:var(--bad)}
+#panel-lattice .lat-intro{max-width:60ch;line-height:1.7;opacity:.85}
+#panel-lattice .lat-dims{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 18px}
+#panel-lattice .lat-chip{font-family:var(--fd);font-size:.66rem;letter-spacing:.04em;padding:3px 9px;border:1px solid var(--border);border-radius:999px;color:var(--dim)}
+#panel-lattice .lat-chip.live{border-color:var(--amber);color:var(--amber)}
+#panel-lattice .lat-chip.silent{opacity:.35}
+#panel-lattice .lat-empty{text-align:center;padding:44px 20px}
+#panel-lattice .lat-empty-glyph{font-size:3rem;margin-bottom:12px;opacity:.4}
+#panel-lattice .lat-empty-title{font-family:var(--fd);font-size:.9rem;color:var(--amber);margin-bottom:8px}
+#panel-lattice .lat-empty p{max-width:440px;margin:0 auto;line-height:1.7}
+#panel-lattice .lat-list{display:flex;flex-direction:column;gap:12px}
+#panel-lattice .lat-card{border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:6px;padding:12px 14px;background:var(--panel2)}
+#panel-lattice .lat-card.w6{border-left-color:var(--violet)}
+#panel-lattice .lat-card.w5{border-left-color:var(--good)}
+#panel-lattice .lat-card.w3{border-left-color:var(--cyan)}
+#panel-lattice .lat-label{font-family:var(--fd);font-size:.74rem;letter-spacing:.03em;margin-bottom:8px}
+#panel-lattice .lat-quote{font-size:.86rem;line-height:1.55;margin:4px 0;padding-left:10px;border-left:1px solid var(--border);opacity:.92}
+#panel-lattice .lat-ev{font-family:var(--fd);font-size:.62rem;color:var(--dim);margin-top:8px;opacity:.75}
+#panel-lattice .lat-diag{margin-top:22px;opacity:.6}
+#panel-lattice .lat-diag pre{white-space:pre-wrap;font-size:.62rem;line-height:1.5;max-height:260px;overflow:auto}

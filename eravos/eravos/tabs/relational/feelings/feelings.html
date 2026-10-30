@@ -1,0 +1,64 @@
+<!-- eravos tab: feelings · category: relational
+     Pilot split — own folder, own html/css/js (feelings.css, feelings.js),
+     talks to the rest of the app only through appStream events and the
+     hooks contracts/feelings.contract.json declares. See
+     tabs/relational/feelings/feelings.js for the tab-specific logic;
+     shared/eravos-kernel.js still owns cross-cutting state (DB, S,
+     callAI, the bus) and the still-flat tabs. -->
+<div class="panel" id="panel-feelings">
+    <div class="g2">
+      <div class="fc gap16">
+        <div class="card">
+          <div class="card-title">💗 FEELING INTELLIGENCE</div>
+          <p class="small italic" style="margin-bottom:14px">Emotional intelligence is the foundation of all co-creation. Map, express, and metabolize your inner world.</p>
+          <button class="btn p fw mt8" onclick="openFeelingModal()">💗 Update My Feeling State</button>
+          <button class="btn fw mt8" onclick="openPipelineModal()">💌 Express to Partner / Self</button>
+          <button class="btn fw mt8" onclick="feelingToOracle()">🔮 Get Guidance for this Feeling</button>
+          <button class="btn fw mt8" onclick="generateFeelingPoem()">📜 Poem from this Feeling</button>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 FEELING HISTORY</div>
+          <input type="text" id="feeling-history-search" placeholder="Search by feeling or note..." style="margin-bottom:10px" oninput="renderFeelingHistory()">
+          <div id="feeling-history-list" class="fc gap8" style="max-height:280px;overflow-y:auto">
+            <div class="small italic" style="text-align:center;padding:20px;color:var(--dim)">No feelings logged yet.</div>
+          </div>
+        </div>
+      </div>
+      <div class="fc gap16">
+        <div class="card">
+          <div class="card-title">🔬 SOMATIC CHECK-IN</div>
+          <label class="fl">Where do you feel it in your body?</label>
+          <select id="somatic-location" style="margin-bottom:10px">
+            <option value="chest">Chest / Heart</option>
+            <option value="throat">Throat</option>
+            <option value="belly">Belly / Gut</option>
+            <option value="head">Head / Mind</option>
+            <option value="shoulders">Shoulders / Neck</option>
+            <option value="hands">Hands / Arms</option>
+            <option value="legs">Legs / Feet</option>
+            <option value="whole">Whole Body</option>
+          </select>
+          <label class="fl">Quality of sensation</label>
+          <select id="somatic-quality" style="margin-bottom:10px">
+            <option value="tight">Tight / Constricted</option>
+            <option value="open">Open / Expansive</option>
+            <option value="warm">Warm / Glowing</option>
+            <option value="heavy">Heavy / Dense</option>
+            <option value="electric">Electric / Tingling</option>
+            <option value="numb">Numb / Hollow</option>
+            <option value="trembling">Trembling / Alive</option>
+          </select>
+          <button class="btn p" onclick="generateSomaticGuidance()">✦ Somatic Guidance</button>
+          <div id="somatic-output" class="ai-out mt12" style="min-height:80px;font-size:.9rem"><em class="small">...</em></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🧠 NEEDS FINDER</div>
+          <p class="small italic" style="margin-bottom:10px">Based on NVC — every feeling points to a need.</p>
+          <label class="fl">Current feeling</label>
+          <input type="text" id="needs-feeling-input" placeholder="I feel..." style="margin-bottom:10px">
+          <button class="btn p" onclick="findNeeds()">✦ Find Underlying Needs</button>
+          <div id="needs-output" class="ai-out mt12" style="min-height:80px;font-size:.9rem"><em class="small">...</em></div>
+        </div>
+      </div>
+    </div>
+  </div>

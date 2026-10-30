@@ -1,0 +1,42 @@
+/* grammar — Phase F fluid pass. Kernel tokens only, zero hex, zero fallbacks. */
+#panel-grammar .gr-page{display:flex;flex-direction:column;gap:22px;max-width:70ch}
+#panel-grammar .gr-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+#panel-grammar .gr-title{font-family:var(--fd);font-size:1.15rem;letter-spacing:.01em}
+#panel-grammar .gr-sub{font-family:var(--fm);font-size:.6rem;color:var(--dim);letter-spacing:.07em;margin-top:4px}
+#panel-grammar .gr-icon{background:none;border:none;color:var(--dim);font-size:1.3rem;line-height:1;padding:4px 10px;border-radius:999px;cursor:pointer;transition:.18s}
+#panel-grammar .gr-icon:hover{color:var(--amber);background:var(--panel2)}
+#panel-grammar .gr-intro{font-size:.86rem;line-height:1.75;color:var(--dim);max-width:62ch}
+
+#panel-grammar .gr-propose{display:flex;flex-direction:column;gap:8px;padding:14px 0;border-top:1px solid var(--border2);border-bottom:1px solid var(--border2)}
+#panel-grammar .gr-propose input,#panel-grammar .gr-propose textarea,#panel-grammar .gr-search{
+  width:100%;background:transparent;border:none;border-bottom:1px solid var(--border2);
+  color:var(--text);font-family:inherit;font-size:.88rem;line-height:1.6;padding:7px 2px;outline:none;resize:none;transition:border-color .2s}
+#panel-grammar .gr-propose input:focus,#panel-grammar .gr-propose textarea:focus,#panel-grammar .gr-search:focus{border-bottom-color:var(--amber)}
+#panel-grammar .gr-propose input::placeholder,#panel-grammar .gr-propose textarea::placeholder,#panel-grammar .gr-search::placeholder{color:var(--dim);opacity:.55}
+#panel-grammar .gr-search{font-family:var(--fm);font-size:.72rem;margin-bottom:6px}
+#panel-grammar .gr-row{display:flex;gap:8px;margin-top:4px}
+#panel-grammar .gr-btn{background:none;border:1px solid var(--border2);border-radius:999px;color:var(--amber);
+  font-family:var(--fm);font-size:.66rem;letter-spacing:.05em;padding:6px 15px;cursor:pointer;transition:.18s}
+#panel-grammar .gr-btn:hover{border-color:var(--amber)}
+#panel-grammar .gr-btn.ghost{color:var(--dim)}
+
+#panel-grammar .gr-section-label{font-family:var(--fm);font-size:.58rem;color:var(--dim);letter-spacing:.14em;
+  text-transform:uppercase;margin-bottom:12px;opacity:.7}
+#panel-grammar .gr-list{display:flex;flex-direction:column;gap:20px}
+
+/* an entry is typography, not a card */
+#panel-grammar .gr-entry{padding-left:12px;border-left:1px solid var(--border2)}
+#panel-grammar .gr-entry.shared{border-left-color:var(--amber)}
+#panel-grammar .gr-entry.awaiting{border-left-style:dashed}
+#panel-grammar .gr-term{font-family:var(--fd);font-size:1rem;margin-bottom:8px}
+#panel-grammar .gr-meanings{display:flex;flex-direction:column;gap:7px}
+#panel-grammar .gr-meaning{font-size:.86rem;line-height:1.62}
+#panel-grammar .gr-meaning .who{font-family:var(--fm);font-size:.56rem;letter-spacing:.1em;color:var(--dim);
+  text-transform:uppercase;margin-right:9px;opacity:.75}
+#panel-grammar .gr-meaning.empty{color:var(--dim);font-style:italic;opacity:.7}
+#panel-grammar .gr-diverge{font-family:var(--fm);font-size:.58rem;color:var(--teal);letter-spacing:.06em;margin-top:7px;opacity:.85}
+#panel-grammar .gr-acts{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
+#panel-grammar .gr-when{font-family:var(--fm);font-size:.55rem;color:var(--dim);letter-spacing:.07em;opacity:.6;margin-top:7px}
+#panel-grammar .gr-empty{font-size:.85rem;line-height:1.7;color:var(--dim);font-style:italic}
+#panel-grammar .gr-retired,#panel-grammar .gr-diag{opacity:.55;margin-top:6px}
+#panel-grammar .gr-diag pre{white-space:pre-wrap;font-size:.6rem;line-height:1.5;max-height:220px;overflow:auto;color:var(--dim)}

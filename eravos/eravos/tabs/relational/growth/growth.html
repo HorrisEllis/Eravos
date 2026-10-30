@@ -1,0 +1,75 @@
+<!-- eravos tab: growth · category: relational -->
+<!-- served by api/server.js at GET /api/tabs/growth · lives at tabs/relational/growth/growth.html -->
+<div class="panel" id="panel-growth">
+    <div class="flex jb ac wrap gap12" style="margin-bottom:6px">
+      <div class="card-title" style="margin:0">🌱 Growth tracker</div>
+      <button class="btn g" style="font-size:.78rem" onclick="generateGrowthIdeas()">✦ Growth ideas together</button>
+    </div>
+    <div id="growth-stats-line" class="small" style="color:var(--dim);margin-bottom:14px">0 logged</div>
+    <div class="small" style="color:var(--dim);margin-bottom:20px;line-height:1.7">
+      Growth here doesn't mean a grand breakthrough — a repaired rupture counts, noticing a pattern before
+      it repeats counts, choosing to say the hard thing counts. <strong>Small and real beats big and rare.</strong>
+    </div>
+
+    <!-- Real, always-visible form -- was hidden behind a toggle button
+         before, which made the tab read as an empty box until clicked.
+         Grammar/Hard Talk both show their input fields immediately;
+         this now matches that pattern rather than hiding its own depth. -->
+    <div class="g2" style="margin-bottom:8px">
+      <div>
+        <label class="fl">what grew</label>
+        <textarea id="grow-what" rows="3" placeholder="the growth, the insight, the moment you noticed something different"></textarea>
+      </div>
+      <div>
+        <label class="fl">how it felt</label>
+        <textarea id="grow-feel" rows="2" placeholder="the feeling of this, in your own words"></textarea>
+        <label class="fl mt12">what made it possible</label>
+        <textarea id="grow-why" rows="2" placeholder="what conditions, actions, or insights let this happen"></textarea>
+      </div>
+    </div>
+    <div class="flex jb ac wrap gap12" style="margin-bottom:24px">
+      <select id="grow-cat" style="max-width:240px">
+        <option value="emotional">Emotional Awareness</option>
+        <option value="communication">Communication</option>
+        <option value="intimacy">Intimacy</option>
+        <option value="creativity">Creativity</option>
+        <option value="conflict">Conflict Resolution</option>
+        <option value="self">Self-Knowing</option>
+        <option value="shared">Shared Vision</option>
+      </select>
+      <div class="flex gap10">
+        <button class="btn p" onclick="saveGrowth()">Log it</button>
+        <button class="btn g" onclick="clearGrowthForm()">Not now</button>
+      </div>
+    </div>
+
+    <div id="growth-ideas-card" class="card" style="display:none;margin-bottom:20px">
+      <div class="card-title">💡 Growth ideas together</div>
+      <div id="growth-ideas-output" class="ai-out" style="min-height:100px;font-size:.9rem"></div>
+    </div>
+
+    <div id="growth-list" class="fc gap12">
+      <div class="small italic" style="color:var(--dim)">Nothing logged yet. Small and real beats big and rare — log the first one whenever it happens.</div>
+    </div>
+
+    <!-- GETTING TO KNOW YOU — open loops, curiosity-driven not guilt-driven.
+         No "seen" state, no aging indicators, no pressure to answer fast. -->
+    <div class="card" style="margin-top:28px">
+      <div class="flex jb ac wrap gap12" style="margin-bottom:8px">
+        <div class="card-title" style="margin:0">Getting to know you</div>
+        <span class="small" id="qloop-stats-line" style="color:var(--dim)">0 asked</span>
+      </div>
+      <div class="small" style="color:var(--dim);margin-bottom:14px;line-height:1.7">
+        Ask something you're actually curious about. Their answer stays hidden from you until you answer
+        one back — no rush either direction.
+      </div>
+      <div class="flex gap8" style="margin-bottom:18px">
+        <input id="qloop-input" type="text" placeholder="what do you want to know?" style="flex:1">
+        <button class="btn g" style="font-size:.78rem" onclick="suggestQuestion()">✦ Suggest one</button>
+        <button class="btn p" onclick="askQuestion()">Ask →</button>
+      </div>
+      <div id="qloop-list" class="fc gap12">
+        <div class="small italic" style="color:var(--dim)">No questions yet — ask something you're actually curious about.</div>
+      </div>
+    </div>
+  </div>

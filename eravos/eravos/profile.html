@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Eravos — Profile</title>
+<link rel="manifest" href="app.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Eravos">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#ff6a00">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="shared/eravos-kernel.css">
+<style>
+  /* profile.html is its own page (§5.9 — sovereign), not a tab —
+     it borrows the app's visual language but owns its own layout. */
+  body{min-height:100vh}
+  #profile-page{max-width:640px;margin:0 auto;padding:28px 20px 60px}
+  #profile-page-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+  #profile-back{display:inline-flex;align-items:center;gap:6px;font-family:var(--fm);font-size:.68rem;letter-spacing:.08em;color:var(--dim);text-decoration:none;border:1px solid var(--border2);border-radius:20px;padding:6px 14px;transition:color .2s,border-color .2s}
+  #profile-back:hover{color:var(--fire);border-color:var(--fire)}
+  #profile-page-title{font-family:var(--fd);font-size:1.3rem;color:var(--amber);flex:1}
+  #profile-loading, #profile-signedout{max-width:640px;margin:80px auto;text-align:center;font-family:var(--fm);font-size:.75rem;color:var(--dim)}
+  #profile-signedout a{color:var(--fire)}
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<div id="profile-loading">✦ Loading your profile...</div>
+
+<div id="profile-signedout" style="display:none">
+  Not signed in. <a href="index.html">Return to Eravos</a> to log in first.
+</div>
+
+<div id="profile-page" style="display:none">
+  <div id="profile-page-header">
+    <a id="profile-back" href="index.html">← Eravos</a>
+    <div id="profile-page-title">Your Profile</div>
+  </div>
+
+  <!-- ── PROFILE CARD ─────────────────────────────────────────────── -->
+  <div class="profile-header-card card" style="margin-bottom:18px">
+    <div class="flex ac gap20" style="margin-bottom:20px">
+      <div id="profile-avatar-ring" onclick="document.getElementById('profile-pic-input').click()" style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--line-fire),var(--tint-fire2));border:2px solid var(--line-fire);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;font-size:32px;flex-shrink:0;position:relative;transition:border-color .2s" title="Tap to change photo">
+        <span id="profile-avatar-initials" style="font-family:var(--fd);font-size:1.4rem;background:linear-gradient(135deg,var(--amber),var(--fire));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">?</span>
+        <img id="profile-avatar-img" src="" alt="" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%">
+        <div style="position:absolute;inset:0;border-radius:50%;background:var(--scrim-soft);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s" class="profile-avatar-overlay">📷</div>
+      </div>
+      <input type="file" id="profile-pic-input" accept="image/*" style="display:none" onchange="handleProfilePicUpload(this)">
+      <div style="flex:1;min-width:0">
+        <div id="profile-display-name-shown" style="font-family:var(--fd);font-size:1.1rem;color:var(--amber);margin-bottom:3px">—</div>
+        <div id="profile-role-badge" style="font-family:var(--fm);font-size:.6rem;letter-spacing:.15em;color:var(--dim);margin-bottom:8px">—</div>
+        <div id="profile-member-since" class="small" style="color:var(--dim)"></div>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--border2);padding-top:16px;margin-bottom:16px">
+      <div class="card-title" style="margin-bottom:12px">Identity</div>
+      <label class="fl">Display Name</label>
+      <input type="text" id="profile-name" placeholder="Your name..." style="margin-bottom:10px">
+      <label class="fl">Username <span style="color:var(--dim);font-size:.7rem">(sign-in)</span></label>
+      <input type="text" id="profile-username" readonly style="margin-bottom:10px;opacity:.7;cursor:not-allowed">
+      <label class="fl">Bio <span style="color:var(--dim);font-size:.7rem">(optional)</span></label>
+      <textarea id="profile-bio" rows="2" placeholder="A sentence about who you are..." style="margin-bottom:14px;resize:vertical"></textarea>
+    </div>
+
+    <div style="border-top:1px solid var(--border2);padding-top:16px;margin-bottom:16px">
+      <div class="card-title" style="margin-bottom:12px">Change Password</div>
+      <label class="fl">Current Password</label>
+      <input type="password" id="profile-pass-current" placeholder="Enter current password" style="margin-bottom:8px">
+      <label class="fl">New Password</label>
+      <input type="password" id="profile-pass" placeholder="New password" style="margin-bottom:8px">
+      <input type="password" id="profile-pass2" placeholder="Confirm new password" style="margin-bottom:6px">
+      <div class="small" style="color:var(--dim);margin-bottom:12px">Min 6 characters</div>
+    </div>
+
+    <div id="profile-msg" class="small" style="color:var(--teal);margin-bottom:10px;min-height:16px"></div>
+    <button class="btn p" onclick="saveProfile()">💾 Save Profile</button>
+  </div>
+
+  <!-- ── ONBOARDING ANSWERS ─────────────────────────────────────────── -->
+  <div class="card" id="profile-onboarding-card" style="margin-bottom:18px">
+    <div class="flex jb ac mb12">
+      <div class="card-title" style="margin:0">✦ Your Answers</div>
+      <button class="btn g" style="font-size:.68rem" onclick="location.href='index.html?reanswer=1'">✎ Re-answer</button>
+    </div>
+    <p class="small" style="color:var(--dim);margin-bottom:14px;line-height:1.6">Your onboarding responses shape how the Oracle speaks to you.</p>
+    <div id="ob-answers-display" class="fc gap12"></div>
+  </div>
+
+</div>
+
+<script src="shared/eravos-kernel.js"></script>
+<script>
+  // This page reads the same localStorage/IndexedDB session as index.html
+  // (same origin) — it's a consumer of existing state, not a new store
+  // (§5.14 — every layer is replaceable, the storage layer isn't duplicated).
+  (function () {
+    if (!S.user) {
+      document.getElementById('profile-loading').style.display = 'none';
+      document.getElementById('profile-signedout').style.display = '';
+      return;
+    }
+    document.getElementById('profile-loading').style.display = 'none';
+    document.getElementById('profile-page').style.display = '';
+    const userEl = document.getElementById('profile-username');
+    if (userEl) userEl.value = S.user.email || S.user.name || '';
+    loadProfileForm();
+  })();
+</script>
+
+</body>
+</html>

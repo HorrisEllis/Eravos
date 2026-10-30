@@ -1,0 +1,35 @@
+<!-- eravos settings sub-tab: ai -->
+<!-- served by api/server.js at GET /api/tabs/settings/subtabs/ai -->
+<div id="settings-pane-ai" style="display:none">
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">🤖 AI ASSISTANCE</div>
+        <p class="small" style="color:var(--dim);margin-bottom:10px;line-height:1.65">Eravos's AI has one job: helping the two of you communicate and understand each other better. It teaches technique instead of ghostwriting your words, and it never decides things for you. Everything in Eravos works fully without it — AI just makes some responses richer. Turn it off entirely with the master switch below.</p>
+        <div id="ai-features-list" class="fc gap0"></div>
+      </div>
+
+      <!-- Clear-Glass AI Bridge -- routes Oracle/etc through a real,
+           logged-in provider session (Claude.ai by default) via the
+           bundled clear-glass-lite Electron app + guardian-lite
+           backend, instead of a self-hosted local model. Direct,
+           explicit request, replacing the Ollama Bridge that used to
+           be here. Status below is a REAL check (fetches guardian-
+           lite's own /health endpoint directly), not a guess -- if
+           the desktop app isn't running this correctly and honestly
+           says so, it doesn't pretend to be connected. -->
+      <div class="card" style="margin-bottom:14px;border-color:var(--tint-teal-strong)">
+        <div class="card-title" style="color:var(--teal)">🪞 Clear-Glass AI Bridge <span style="font-family:var(--fm);font-size:.58rem;color:var(--teal);letter-spacing:.1em">SELF-HOSTED</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:12px;line-height:1.6">Routes AI features through a real, logged-in provider session (Claude.ai by default) running in the desktop app — no API key stored here. If nothing's connected, every AI feature already falls back to curated offline guidance; this just makes those responses richer.</p>
+        <div id="ai-bridge-status" class="small" style="margin-bottom:10px;color:var(--dim)">Checking…</div>
+        <div class="small" style="color:var(--dim);line-height:1.7">Not connected? Open the Eravos desktop app, then use the tray menu's <strong style="color:var(--amber)">"AI Bridge: log in"</strong> item once — it stays connected in the background after that.</div>
+        <button class="btn g mt10" onclick="checkAiBridgeStatus()" style="font-size:.78rem">↻ Check again</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📶 How AI is used here</div>
+        <div class="fc gap6">
+          <div class="flex ac gap10"><span style="font-family:var(--fm);font-size:.65rem;color:var(--teal);min-width:20px">1</span><span class="small">🪞 Clear-Glass AI Bridge, if connected above — a real provider session, running in the desktop app</span></div>
+          <div class="flex ac gap10"><span style="font-family:var(--fm);font-size:.65rem;color:var(--violet);min-width:20px">✦</span><span class="small" style="color:var(--violet)">Offline guidance — always available, never an error, whether or not the bridge is connected</span></div>
+        </div>
+        <p class="small" style="color:var(--dim);margin-top:12px;line-height:1.6">Third-party AI providers (direct OpenAI/Claude API keys) used to be options here — removed, since they were never actually consistent with Eravos running on infrastructure the two of you control (see the spec's "always self-hosted" principle).</p>
+      </div>
+    </div>

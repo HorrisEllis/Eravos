@@ -1,0 +1,134 @@
+/* chat — fluid, not boxed. §01-ARCHITECTURE §2: kernel tokens only, zero hex.
+   The design brief was "less boxes and deterministic, more fluid, custom",
+   so messages are typography and rhythm rather than bubbles in cards: no
+   card borders, no avatars, no per-message container. Speaker is carried by
+   indent and colour weight; time by spacing. */
+
+#panel-chat .chat-page{display:flex;flex-direction:column;height:calc(100vh - 190px);min-height:420px;position:relative}
+
+#panel-chat .chat-head{display:flex;align-items:center;justify-content:space-between;padding:0 2px 14px;border-bottom:1px solid var(--border2)}
+#panel-chat .chat-with{font-family:var(--fd);font-size:1.05rem;letter-spacing:.01em}
+#panel-chat .chat-head-acts{display:flex;gap:2px}
+
+#panel-chat .chat-icon{background:none;border:none;color:var(--dim);font-size:1.05rem;line-height:1;padding:6px 9px;border-radius:999px;cursor:pointer;transition:color .18s,background .18s}
+#panel-chat .chat-icon:hover{color:var(--amber);background:var(--panel2)}
+#panel-chat .chat-icon.chat-send{color:var(--amber)}
+#panel-chat .chat-icon.chat-add{font-size:1.25rem}
+
+#panel-chat .chat-search{width:100%;margin:12px 0 0;padding:9px 12px;background:transparent;border:none;border-bottom:1px solid var(--border2);color:var(--text);font-family:var(--fm);font-size:.75rem;outline:none}
+#panel-chat .chat-search:focus{border-bottom-color:var(--amber)}
+
+#panel-chat .chat-flow{flex:1;overflow-y:auto;padding:22px 6px 8px;display:flex;flex-direction:column;gap:3px}
+#panel-chat .chat-flow::-webkit-scrollbar{width:2px}
+#panel-chat .chat-flow::-webkit-scrollbar-thumb{background:var(--border2)}
+
+/* Real message bubbles -- direct request. Was deliberately bubble-free
+   typography before ("messages are typography and rhythm... no card
+   borders, no per-message container"); that read as unfinished/plain
+   rather than fluid. Mine: amber-fire gradient, right-aligned. Theirs:
+   a real dark panel bubble, left-aligned -- still on-theme (kernel
+   tokens only), just an actual chat now. */
+#panel-chat .msg{max-width:72%;line-height:1.5;font-size:.9rem;padding:0;opacity:0;animation:msgIn .28s ease forwards;display:flex;flex-direction:column}
+#panel-chat .msg.mine{align-self:flex-end;align-items:flex-end}
+#panel-chat .msg.theirs{align-self:flex-start;align-items:flex-start}
+#panel-chat .msg + .msg{margin-top:2px}
+#panel-chat .msg.gap{margin-top:18px}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+#panel-chat .msg-bubble{padding:10px 14px;border-radius:18px;word-wrap:break-word;white-space:pre-wrap}
+#panel-chat .msg.mine .msg-bubble{background:linear-gradient(135deg,var(--tint-rose),var(--tint-fire2));color:var(--text);border-bottom-right-radius:5px}
+#panel-chat .msg.theirs .msg-bubble{background:var(--panel2);border:1px solid var(--border2);color:var(--text);border-bottom-left-radius:5px}
+#panel-chat .msg.queued .msg-bubble{opacity:.6}
+#panel-chat .msg.failed .msg-bubble{border-color:var(--rose)}
+
+#panel-chat .msg-meta{font-family:var(--fm);font-size:.55rem;color:var(--dim);letter-spacing:.06em;opacity:.55;margin-top:3px;padding:0 4px}
+#panel-chat .msg.queued .msg-meta{color:var(--amber);opacity:.9}
+#panel-chat .msg.failed .msg-meta{color:var(--rose);opacity:1}
+
+/* attachments live inside the bubble now, not as a separate quiet line */
+#panel-chat .msg-att{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border:1px solid var(--border2);border-radius:999px;font-family:var(--fm);font-size:.62rem;color:var(--dim);cursor:pointer}
+#panel-chat .msg-att:hover{border-color:var(--amber);color:var(--amber)}
+#panel-chat .msg.mine .msg-media,#panel-chat .msg.mine .msg-sticker{align-self:flex-end}
+
+#panel-chat .chat-presence{min-height:16px;font-family:var(--fm);font-size:.6rem;color:var(--dim);letter-spacing:.05em;padding:0 2px}
+
+#panel-chat .chat-compose{display:flex;align-items:flex-end;gap:6px;padding-top:12px;border-top:1px solid var(--border2)}
+#panel-chat .chat-input{flex:1;resize:none;background:transparent;border:none;outline:none;color:var(--text);font-family:inherit;font-size:.9rem;line-height:1.6;max-height:150px;padding:8px 2px}
+#panel-chat .chat-input::placeholder{color:var(--dim);opacity:.55}
+
+/* the add sheet rises, it doesn't pop */
+#panel-chat .chat-attach-sheet{position:absolute;left:0;right:0;bottom:64px;padding:14px;border:1px solid var(--border2);border-radius:14px;background:var(--panel);backdrop-filter:blur(14px);display:flex;flex-wrap:wrap;gap:8px;animation:sheetIn .2s ease}
+
+/* Phase O -- record/review panel, same rise-not-pop pattern as the
+   attach sheet above */
+#panel-chat .chat-record-panel{position:absolute;left:0;right:0;bottom:64px;padding:16px;border:1px solid var(--line-rose2);border-radius:14px;background:var(--panel);backdrop-filter:blur(14px);animation:sheetIn .2s ease}
+#panel-chat .chat-record-live{display:flex;align-items:center;gap:10px;font-family:var(--fm);font-size:.8rem;color:var(--text)}
+#panel-chat .chat-record-dot{width:10px;height:10px;border-radius:50%;background:var(--rose);animation:recordPulse 1.2s ease-in-out infinite}
+@keyframes recordPulse{0%,100%{opacity:1}50%{opacity:.35}}
+#panel-chat .chat-record-review{display:flex;flex-direction:column;gap:12px}
+#panel-chat .chat-record-review video{max-width:100%;max-height:200px;border-radius:10px;background:var(--dark)}
+#panel-chat .chat-record-review audio{width:100%}
+#panel-chat .chat-record-transcript-toggle{display:flex;align-items:center;gap:8px;color:var(--dim);cursor:pointer}
+#panel-chat .chat-record-transcript-toggle input:disabled{opacity:.4}
+#panel-chat .chat-record-btn{position:relative}
+@keyframes sheetIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+#panel-chat .att-opt{padding:8px 14px;border:1px solid var(--border2);border-radius:999px;font-family:var(--fm);font-size:.66rem;color:var(--dim);cursor:pointer;transition:.18s}
+#panel-chat .att-opt:hover{border-color:var(--amber);color:var(--amber)}
+
+/* emoji sheet -- reuses the real expression-picker system (xp-* classes,
+   defined once in kernel.css), same rise-not-pop pattern as the attach
+   sheet above */
+#panel-chat .chat-emoji-sheet{position:absolute;left:0;right:0;bottom:64px;max-height:min(360px,50vh);overflow-y:auto;padding:14px;border:1px solid var(--border2);border-radius:14px;background:var(--panel);backdrop-filter:blur(14px);animation:sheetIn .2s ease}
+
+#panel-chat .chat-diag{margin-top:14px;opacity:.55}
+#panel-chat .chat-prefs{display:flex;flex-wrap:wrap;gap:14px;margin:8px 0}
+#panel-chat .chat-prefs label{font-family:var(--fm);font-size:.62rem;color:var(--dim);display:flex;gap:6px;align-items:center;cursor:pointer}
+#panel-chat .chat-diag pre{white-space:pre-wrap;font-size:.6rem;line-height:1.5;max-height:220px;overflow:auto;color:var(--dim)}
+
+/* ── the popup composer, mounted globally (not inside this panel) ────── */
+.chat-pop-btn{position:fixed;right:22px;bottom:22px;width:46px;height:46px;border-radius:50%;border:1px solid var(--border2);background:var(--panel);backdrop-filter:blur(12px);color:var(--amber);font-size:1.1rem;cursor:pointer;z-index:900;transition:.2s}
+.chat-pop-btn:hover{transform:translateY(-2px)}
+.chat-pop-btn .pop-unread{position:absolute;top:-3px;right:-3px;min-width:16px;height:16px;border-radius:999px;background:var(--rose);color:var(--bg);font-family:var(--fm);font-size:.55rem;line-height:16px;text-align:center;padding:0 4px}
+.chat-pop{position:fixed;right:22px;bottom:78px;width:min(370px,calc(100vw - 36px));max-height:min(560px,70vh);display:flex;flex-direction:column;border:1px solid var(--border2);border-radius:16px;background:var(--panel);backdrop-filter:blur(18px);z-index:901;overflow:hidden;animation:sheetIn .22s ease}
+.chat-pop-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border2)}
+.chat-pop-head .cp-name{font-family:var(--fd);font-size:.86rem}
+.chat-pop-head .cp-acts{display:flex;gap:2px}
+.chat-pop-flow{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:2px}
+.chat-pop-flow .msg{max-width:100%;font-size:.82rem}
+.chat-pop-compose{display:flex;align-items:flex-end;gap:4px;padding:10px 12px;border-top:1px solid var(--border2)}
+.chat-pop-compose textarea{flex:1;resize:none;background:transparent;border:none;outline:none;color:var(--text);font-family:inherit;font-size:.84rem;line-height:1.55;max-height:110px}
+.chat-pop-sheet{padding:12px;border-top:1px solid var(--border2);display:flex;flex-wrap:wrap;gap:7px}
+
+/* shared cursor — a presence, not a pointer */
+.eravos-remote-cursor{position:fixed;width:12px;height:12px;border-radius:50%;background:var(--amber);opacity:.55;pointer-events:none;z-index:9999;transition:transform .09s linear;box-shadow:0 0 14px var(--amber)}
+.eravos-remote-cursor::after{content:attr(data-who);position:absolute;left:16px;top:-2px;font-family:var(--fm);font-size:.55rem;color:var(--amber);white-space:nowrap}
+
+/* ══════════════════════════════════════════════════════════════════════
+   STICKERS — real visual picker (thumbnails, not a text list) plus real
+   inline message rendering. See eravos-stickers.js for the 6 real,
+   custom SVG stickers this grid actually displays.
+   ══════════════════════════════════════════════════════════════════════ */
+#panel-chat .sticker-grid{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:10px;
+}
+#panel-chat .sticker-opt{
+  background:var(--shade); border:1px solid var(--border2); border-radius:12px;
+  padding:8px; cursor:pointer; transition:.18s; display:flex; align-items:center; justify-content:center;
+}
+#panel-chat .sticker-opt:hover{ border-color:var(--amber); transform:scale(1.05); background:var(--glass2); }
+#panel-chat .sticker-opt img{ width:100%; height:auto; max-width:64px; display:block; }
+#panel-chat .sticker-back{
+  grid-column:1 / -1; margin-top:4px; padding:8px; border:1px solid var(--border2); border-radius:999px;
+  background:none; color:var(--dim); font-family:var(--fm); font-size:.66rem; cursor:pointer; transition:.18s;
+}
+#panel-chat .sticker-back:hover{ border-color:var(--amber); color:var(--amber); }
+
+#panel-chat .msg-sticker{ margin-top:6px; }
+#panel-chat .msg-sticker img{ width:88px; height:88px; display:block; filter:drop-shadow(0 4px 10px var(--scrim-soft)); }
+#panel-chat .mine .msg-sticker{ display:flex; justify-content:flex-end; }
+
+/* ── real media (photo/video) button + inline message rendering ── */
+#panel-chat .chat-media-btn{ font-size:1.05rem; }
+#panel-chat .msg-media{ margin-top:6px; max-width:220px; }
+#panel-chat .msg-media img,
+#panel-chat .msg-media video{ width:100%; border-radius:10px; display:block; }

@@ -1,0 +1,16 @@
+{
+  "id": "vault",
+  "dom_ids_exposed": [
+    "panel-vault",
+    "vault-filter",
+    "vault-grid"
+  ],
+  "kernel_hooks_called": [
+    "clearVault",
+    "exportVault",
+    "renderVault"
+  ],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "category": "space",
+  "has_subtabs": false
+}

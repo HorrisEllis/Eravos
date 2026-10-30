@@ -1,0 +1,27 @@
+{
+  "id": "admin",
+  "dom_ids_exposed": [
+    "admin-msg-tab",
+    "erav-file-input",
+    "erav-import-status",
+    "reg-enabled-toggle-admin",
+    "settings-pane-admin",
+    "shared-db-inspect",
+    "ticker-editor",
+    "ticker-save-status"
+  ],
+  "kernel_hooks_called": [
+    "click",
+    "exportSharedDB",
+    "getElementById",
+    "importEravFromFile",
+    "inspectSharedDB",
+    "resetAccountPassword",
+    "resetTicker",
+    "saveTicker",
+    "setRegistrationEnabled"
+  ],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "parent": "settings",
+  "admin_only": true
+}

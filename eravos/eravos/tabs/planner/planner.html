@@ -1,0 +1,62 @@
+<!-- eravos tab: planner · category: communication -->
+<!-- served by api/server.js at GET /api/tabs/planner -->
+<div class="panel" id="panel-planner">
+    <div class="g2">
+      <div class="fc gap16">
+        <div class="card">
+          <div class="card-title">📅 PROPOSE AN EVENT</div>
+          <label class="fl">Event type</label>
+          <select id="planner-type">
+            <option value="date">💕 Date</option>
+            <option value="call">📞 Call</option>
+            <option value="checkin">🌿 Check-In</option>
+            <option value="rest">🌙 Rest Day</option>
+            <option value="sleep">😴 Sleep / Bedtime</option>
+            <option value="meetup">🤝 Meetup</option>
+            <option value="custom">✦ Custom</option>
+          </select>
+          <label class="fl mt12">Title</label>
+          <input type="text" id="planner-title" placeholder="What are we doing?">
+          <label class="fl mt12">Date & Time</label>
+          <input type="datetime-local" id="planner-datetime">
+          <label class="fl mt12">Notes (optional)</label>
+          <textarea id="planner-notes" rows="3" placeholder="Details, location, what to bring..."></textarea>
+          <div id="planner-feeling-row" style="margin-top:12px">
+            <label class="fl">Tag a feeling (optional)</label>
+            <input type="text" id="planner-feeling-tag" placeholder="How are you feeling about this?">
+          </div>
+          <div style="margin-top:12px;padding:10px 12px;border:1px solid var(--border2);border-radius:10px">
+            <label class="small" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox" id="planner-share-location" onchange="document.getElementById('planner-location-precision-row').style.display=this.checked?'block':'none'">
+              📍 Share a location for this event (optional, off by default)
+            </label>
+            <div id="planner-location-precision-row" style="display:none;margin-top:8px">
+              <label class="fl">How precise?</label>
+              <select id="planner-location-precision">
+                <option value="neighborhood" selected>Neighborhood-level (~1km)</option>
+                <option value="city">City-level (~10km)</option>
+                <option value="precise">Exact</option>
+              </select>
+              <div class="small" style="color:var(--dim);margin-top:6px">Your browser will ask for location permission when you propose this. Coarser precision is rounded before it's ever sent — not just displayed rounded.</div>
+            </div>
+          </div>
+          <div class="flex gap10 mt14 wrap">
+            <button class="btn p" onclick="proposePlannerEvent()">📅 Propose Event</button>
+          </div>
+          <div id="planner-status" class="small italic" style="color:var(--dim);margin-top:10px"></div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="font-size:.72rem">ℹ AVAILABILITY</div>
+          <p class="small" style="color:var(--dim);margin-bottom:12px">Let your partner know you're available without sending a notification.</p>
+          <button class="btn" onclick="setAvailable(true)">✅ I'm available</button>
+          <div id="availability-status" class="small italic" style="color:var(--dim);margin-top:8px"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📆 SHARED TIMELINE</div>
+        <div id="planner-event-list" class="fc gap10">
+          <p class="small italic" style="color:var(--dim)">Proposed and confirmed events appear here. Events display in your local timezone.</p>
+        </div>
+      </div>
+    </div>
+  </div>

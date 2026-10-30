@@ -1,0 +1,26 @@
+{
+  "id": "goals",
+  "uuid": "eravos-goals-engine-0001-0000-000000000001",
+  "version": "0.14.0",
+  "owner": "shared/eravos-goals.js",
+  "lifecycle": "Implemented",
+  "parent": "eravos-kernel",
+  "category": "relational",
+  "feature_id": "roadmap_shared",
+  "toggle": "feat_roadmap_shared — gated for real by shared/eravos-features.js",
+  "summary": "Shared goals and steps. Four-valued ownership; \"ours\" cannot be declared alone.",
+  "invariants": [
+    "asking for \"ours\" lands in `proposed`; only the OTHER side's takeUp() promotes it",
+    "you cannot take up your own proposal",
+    "finishing every step does NOT auto-complete the goal — only a person says it is done",
+    "a date is a `hope`, never a deadline. Nothing goes overdue.",
+    "§17.3 completionPercent and overdue are null and reported as absent by design",
+    "§0.3 drop() keeps the record and the reason — deciding against something is a result"
+  ],
+  "failure_modes": [
+    "no storage -> constructor throws, refuses to operate blind",
+    "unknown state/owner/answer -> throws, listing the valid ones",
+    "empty or over-long input -> throws, naming the limit"
+  ],
+  "status": "implemented — covered by test/features-new.test.mjs (36 assertions across the registry and all three engines)"
+}

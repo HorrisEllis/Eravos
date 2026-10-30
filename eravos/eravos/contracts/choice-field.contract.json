@@ -1,0 +1,33 @@
+{
+  "id": "choice-field",
+  "uuid": "eravos-choice-field-0001-0000-000000000001",
+  "version": "0.8.0",
+  "owner": "shared/eravos-choice-field.js",
+  "lifecycle": "Implemented",
+  "spec": "spec/PHASEMAP-v3.md",
+  "parent": "eravos-choice-primitive-0001-0000-000000000001",
+  "category": "foundation",
+  "kernel_hooks_called": ["eravosChoice", "showToast"],
+  "mounted_by": "mountChoiceFields() in shared/eravos-kernel.js, called after every tab init",
+  "selects_routed": 17,
+  "selects_exempt": 11,
+  "lint": "test/choice-lint.mjs — part of test/run-all.mjs; an UNCLASSIFIED select fails the build",
+  "failure_modes": [
+    "target element missing -> throws, naming the id",
+    "eravosChoice not booted -> throws rather than degrading to a closed list",
+    "onChange throws -> named in console, field keeps working",
+    "custom over 120 chars -> the registry's limit is surfaced, never silently truncated"
+  ],
+  "invariants": [
+    "\"Something else\" is ALWAYS present and ALWAYS last — mount() takes no flag that removes it",
+    "custom options are offered FIRST, above the built-ins",
+    "a skip records null — never a default, never the first option",
+    "the vocabulary is SEEDED from the markup already in the tab; nothing is restated (§16.5)",
+    "mount() is idempotent — safe to re-run on every tab render",
+    "search appears only past SEARCH_THRESHOLD (8), because scanning is the cost the 62-tile feeling grid demonstrated",
+    "mountAll returns a per-target report: mounted / notOnThisPage / failed — never a bare count"
+  ],
+  "not_covered": "System selects — filters, config, model pickers. A closed list is CORRECT there: those are properties of the software, not claims about a person. Bolting \"Something else\" onto a particle-density picker would be noise, and noise makes the real rule easier to ignore (§0.5). The lint holds that line with a stated reason per exemption.",
+  "known_limitation": "rup-status is classified SYSTEM because relational-health derivations read it as a state machine and free text would break every consumer. The limitation is real — \"still there, we just don't talk about it\" fits none of open/healing/resolved. Owed: a companion free-text field ALONGSIDE the status, not replacing it. Tracked in spec/PHASEMAP-v3.md Phase G, not silently accepted.",
+  "status": "implemented — 12/12 in test/choice-field.test.mjs. Suite total 151/151 + lint clean."
+}

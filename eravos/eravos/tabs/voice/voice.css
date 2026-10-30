@@ -1,0 +1,16 @@
+/* voice tab — §5.12 disposable */
+#panel-voice .vc-meta{display:flex;gap:12px;align-items:center;font-family:var(--fd);font-size:.72rem;color:var(--dim)}
+#panel-voice .vc-dot{width:8px;height:8px;border-radius:50%;background:var(--dim);display:inline-block}
+#panel-voice .vc-dot.ok{background:var(--good)}
+#panel-voice .vc-dot.warn{background:var(--amber)}
+#panel-voice .vc-dot.bad{background:var(--bad)}
+#panel-voice .vc-intro,#panel-voice .vc-note{max-width:60ch;line-height:1.7;opacity:.85}
+#panel-voice .vc-note{margin-top:18px;opacity:.6}
+#panel-voice .vc-controls{display:flex;gap:8px;margin:16px 0}
+#panel-voice .vc-readout{font-family:var(--fd);font-size:.78rem;padding:12px 14px;border:1px solid var(--border);border-radius:6px;color:var(--amber);background:var(--panel2))}
+#panel-voice .vc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:14px}
+#panel-voice .vc-cell{border:1px solid var(--border);border-radius:6px;padding:10px 12px}
+#panel-voice .vc-cell b{display:block;font-family:var(--fd);font-size:1.1rem;color:var(--amber)}
+#panel-voice .vc-cell span{font-size:.66rem;color:var(--dim);letter-spacing:.04em}
+#panel-voice .vc-diag{margin-top:22px;opacity:.6}
+#panel-voice .vc-diag pre{white-space:pre-wrap;font-size:.62rem;line-height:1.5;max-height:240px;overflow:auto}

@@ -1,0 +1,46 @@
+{
+  "id": "sparring",
+  "location": "tabs/sparring/ (sparring.html, sparring.css, sparring.js)",
+  "dom_ids_exposed": [
+    "panel-sparring",
+    "spar-duo-connection-hint",
+    "spar-duo-match-body",
+    "spar-duo-turn-secs",
+    "spar-duo-match-secs",
+    "spar-turn-input",
+    "spar-turn-feed",
+    "spar-rule-input",
+    "spar-setup-reason",
+    "spar-setup-boundaries",
+    "spar-history-list"
+  ],
+  "owned_hooks": [
+    "proposeDuoSparMatch",
+    "sendSparTurn",
+    "proposeSparRule",
+    "saveSparSetupFields",
+    "cancelDuoSparMatch",
+    "renderSparMatch",
+    "renderSparHistory"
+  ],
+  "shared_hooks_called": [
+    "DB",
+    "S",
+    "emitSync",
+    "showToast",
+    "_sparMatch",
+    "_sparMatchSet",
+    "_sparApplyTurn",
+    "updateSparSetup",
+    "startSparMatchClock",
+    "_archiveSparMatch",
+    "fabInviteToSpar"
+  ],
+  "bus_events_emitted": [
+    "oracle:seed_requested"
+  ],
+  "notes": "Redesigned per direct request: \"just be a chat window, no oracle. a floating invite partner to sparr button.\" Solo free-write mode and all Oracle integration removed entirely -- this tab is now only the Duo Match chat system. A new 'setup' stage sits between invite-accept and the clock starting: reason, boundaries, and rules are all editable/proposable there, with a spar:match_start sync type carrying the actual startedAt/endsAt/deadline so both devices use identical timing instead of each independently computing its own (avoiding clock skew). Both partners now auto-navigate to this tab the moment an invite is accepted (_gotoSparringTab(), kernel.js), rather than the accepter going there on their own action while the proposer has to remember to switch over manually. Completed matches are now archived to eravors_spar_history (_archiveSparMatch(), kernel.js) -- didn't exist as a concept before this redesign, since solo mode was the only thing feeding spar history previously. The floating 'Invite to Spar' button (index.html, persistent shell, #spar-invite-fab) and its cross-cutting invite function (fabInviteToSpar()) live in the kernel since the button is reachable from any tab, not just this one. Also removed while doing this: the Settings 'Duo Spar Mode' toggle (tabs/settings/subtabs/system.html) and its setCouplesMode()/initCouplesToggle() functions, which controlled whether solo-mode prompts were duo-flavored -- a feature that no longer exists after this redesign, found while sweeping for dangling references to the removed solo-mode functions rather than left as an orphaned control. Verified with a 23-check test covering the full flow: FAB visibility gated to duo mode, sending an invite and auto-navigating, accepting into setup (not straight to active), the clock not running during setup, reason/boundaries/rules all editable in setup and syncing correctly, starting the clock, the receiving side applying the exact synced timing values rather than computing its own, match archival, and confirming the old Duo Spar Mode card and its toggle element are both fully gone.",
+  "status": "split, and rebuilt once more to remove a redundant connection status card and add a contextual connection hint instead \u2014 see notes",
+  "category": "relational",
+  "has_subtabs": false
+}

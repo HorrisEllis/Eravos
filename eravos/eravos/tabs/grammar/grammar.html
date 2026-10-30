@@ -1,0 +1,56 @@
+<!-- eravos tab: grammar · category: relational -->
+<div class="panel" id="panel-grammar">
+  <div class="gr-page">
+
+    <div class="gr-head">
+      <div>
+        <div class="gr-title">Shared grammar</div>
+        <div class="gr-sub" id="gr-sub"></div>
+      </div>
+      <button class="gr-icon" id="gr-new" title="Put a word forward">+</button>
+    </div>
+
+    <p class="gr-intro">
+      Words that carry more between you than the dictionary gives them.
+      A word isn't shared because one of you said it — it's shared when the
+      other one takes it up. Each of you writes what it means to you, separately,
+      and both are kept. The gap between them is usually the interesting part.
+    </p>
+
+    <div class="gr-propose" id="gr-propose" hidden>
+      <input id="gr-term" placeholder="the word or phrase" maxlength="80" autocomplete="off">
+      <textarea id="gr-meaning" rows="2" placeholder="what it means to you — you can leave this and come back" maxlength="600"></textarea>
+      <div class="gr-row">
+        <button class="gr-btn" id="gr-propose-go">Put it forward</button>
+        <button class="gr-btn ghost" id="gr-propose-cancel">Not now</button>
+      </div>
+    </div>
+
+    <div class="gr-section" id="gr-awaiting-me" hidden>
+      <div class="gr-section-label">waiting on you</div>
+      <div class="gr-list" id="gr-awaiting-me-list"></div>
+    </div>
+
+    <div class="gr-section" id="gr-awaiting-them" hidden>
+      <div class="gr-section-label">put forward, waiting on them</div>
+      <div class="gr-list" id="gr-awaiting-them-list"></div>
+    </div>
+
+    <div class="gr-section">
+      <div class="gr-section-label">yours, together</div>
+      <input class="gr-search" id="gr-search" placeholder="search your vocabulary" autocomplete="off">
+      <div class="gr-list" id="gr-shared-list"></div>
+    </div>
+
+    <details class="gr-retired">
+      <summary class="small">Retired</summary>
+      <div class="gr-list" id="gr-retired-list"></div>
+    </details>
+
+    <details class="gr-diag">
+      <summary class="small">Diagnostics</summary>
+      <pre id="gr-health" class="small"></pre>
+    </details>
+
+  </div>
+</div>

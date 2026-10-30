@@ -1,0 +1,21 @@
+{
+  "id": "meaning",
+  "location": "tabs/meaning/ (meaning.html, meaning.css, meaning.js)",
+  "dom_ids_exposed": [
+    "panel-meaning",
+    "meaning-file-input",
+    "meaning-journal-text",
+    "meaning-grid"
+  ],
+  "owned_hooks": [
+    "setMeaningFilter", "renderMeaningArchive", "editMeaningGratitude",
+    "deleteMeaningEntry", "handleMeaningFileSelect", "addMeaningJournalEntry",
+    "_meaningDragOver", "_meaningDragLeave", "_meaningDrop"
+  ],
+  "shared_hooks_called": [
+    "DB", "S", "emitSync", "showToast", "_meaningArchive", "_meaningArchiveSet"
+  ],
+  "notes": "Phase 3 (03-FEATURE-SPECS.md \u00a7Meaning, 02-DATA-SCHEMAS.md MeaningEntry). Ownership shape (c) joint-log, same as Vault/Codex. The auto-surface offer (openMeaningAddPrompt/confirmAddToMeaning/submitMeaningDecline) and the meaning:added sync gate live in shared/eravos-kernel.js, cross-cutting, hooked into receiveMessage() for love/poem/feeling subtypes -- fires on the RECEIVING side (the compassionate decline copy and the 'how loved did this make you feel' rating only make sense from the person who received something). Distinct from Vault, which already auto-saves love letters/poems as a technical backup unrelated to this curated collection. Honest scope: only wired to the message-receipt path -- cocreate-output generation is also named in the spec as a trigger but no clean existing hook point was found for it this pass, not silently claimed done. Declined offers are kept as an honest record (received_response.added:false) but don't sync back to the sender and don't show in the main grid -- a curated collection of what was kept, not a log of everything offered. File uploads store as data URLs in local storage; no hard size cap enforced, named as a known constraint given this is a static, no-backend app.",
+  "category": "creating",
+  "has_subtabs": false
+}

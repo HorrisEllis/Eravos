@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "emergence/schemas/ledger-record.schema.json",
+  "title": "Emergence — Ledger Record",
+  "description": "The real, persisted record shape written by event-ledger/index.js's ledger:commit Gate -- content-addressed via vendor/jaa/FileStore.js (a real port of Jaa's persistence layer, see that file's header), hash-chained via 'prev'. rfr2's real UpgradeLedger still does the actual validation (requires proof) before this record is written -- this schema describes what gets stored, not the commit() call's input shape.",
+  "type": "object",
+  "required": ["id", "ts", "nodeId", "target", "cluster", "tick", "prev"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "description": "real rfr2 UpgradeLedger-assigned id, UUID-shaped." },
+    "ts": { "type": "integer", "description": "real rfr2 UpgradeLedger timestamp, not this file's own clock." },
+    "nodeId": { "type": "string", "description": "e.g. 'creation:7' -- matches the same node across lattice/causal-graph/ledger for a given tick." },
+    "target": { "oneOf": [{ "$ref": "target.schema.json" }, { "type": "null" }] },
+    "cluster": { "type": ["object", "null"], "description": "same shape as created.schema.json's cluster field." },
+    "tick": { "type": "number" },
+    "prev": { "type": ["string", "null"], "description": "SHA-256 hex hash of the previous record in the chain, or null if this is the first commit ever. Walking prev repeatedly is how history()/traceToRoot() work." }
+  }
+}

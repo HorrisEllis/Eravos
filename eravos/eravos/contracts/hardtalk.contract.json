@@ -1,0 +1,25 @@
+{
+  "id": "hardtalk",
+  "uuid": "eravos-hardtalk-engine-0001-0000-000000000001",
+  "version": "0.14.0",
+  "owner": "shared/eravos-hardtalk.js",
+  "lifecycle": "Implemented",
+  "parent": "eravos-kernel",
+  "category": "relational",
+  "feature_id": "hardtalk",
+  "toggle": "feat_hardtalk — gated for real by shared/eravos-features.js",
+  "summary": "The conversations you keep circling. No resolved state, no success rate — return is the growth signal.",
+  "invariants": [
+    "no `resolved` state — subjects do not close, they get easier or they do not",
+    "record() APPENDS an attempt; having it twice is the point, not a correction",
+    "circling is a legitimate resting place and nothing nudges you out of it",
+    "§17.3 successRate is null and reported as absent by design, not missing",
+    "nothing prompts DURING a conversation — before and after only"
+  ],
+  "failure_modes": [
+    "no storage -> constructor throws, refuses to operate blind",
+    "unknown state/owner/answer -> throws, listing the valid ones",
+    "empty or over-long input -> throws, naming the limit"
+  ],
+  "status": "implemented — covered by test/features-new.test.mjs (36 assertions across the registry and all three engines)"
+}

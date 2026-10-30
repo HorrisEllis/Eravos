@@ -1,0 +1,35 @@
+{
+  "id": "pairing",
+  "uuid": "eravos-pairing-engine-0001-0000-000000000001",
+  "version": "0.12.0",
+  "owner": "shared/eravos-pairing.js",
+  "lifecycle": "Implemented",
+  "spec": "spec/PHASEMAP-v3.md",
+  "parent": "eravos-kernel",
+  "category": "foundation",
+  "states": ["solo", "invited", "requested", "paired"],
+  "dom_ids_exposed": ["invite-prompt", "invite-modal", "invite-qr", "invite-code", "invite-link", "invite-email", "invite-expiry"],
+  "kernel_hooks_called": ["openInvitePartner", "emailInvitePartner", "revokeInvitePartner", "acceptPartner", "maybePromptInvite", "dismissInvitePrompt", "myPeerId"],
+  "write_authority": "eravors_pairing and eravors_invite_prompt_seen — §10.1",
+  "failure_modes": [
+    "no storage -> throws, refuses to operate blind",
+    "createInvite without a peerId -> throws; a code identifying nobody pairs nobody",
+    "createInvite while paired -> throws, names the partner",
+    "scanning an expired code -> throws, says to ask for a fresh one",
+    "receiveRequest on a used/expired/mismatched code -> refused with the reason named",
+    "confirm with nothing pending -> throws",
+    "emailInvite before an invite exists -> throws"
+  ],
+  "invariants": [
+    "SOLO IS THE DEFAULT and a complete mode. No partner account is seeded — one exists only when a real person accepts.",
+    "the invite prompt appears ONCE. 'I'm riding solo' and 'skip' both silence it permanently; pairing stays available in Settings.",
+    "SCANNING DOES NOT PAIR — it creates a request the issuing side confirms. Same shape as the grammar store.",
+    "codes are SINGLE-USE and EXPIRE (24h default). A pairing link that works forever is a permanent open door on whatever it passed through.",
+    "the payload carries no name, no password, nothing about the person — a code photographed off a screen reveals nothing",
+    "unpair is unilateral. Nobody needs permission to be solo.",
+    "§1.2 a weak randomness source is reported in health(), never assumed away",
+    "§1.2 a peerId containing the account key is flagged as an identity leak"
+  ],
+  "found_by_test": "The payload test caught a REAL leak, not a fixture artifact: peer ids were minted as `eravos-<account key>-fixed`, so every pairing code announced who made it. Fixed at the source with opaque ids; the detector stays so the next one is named too.",
+  "status": "implemented — 25/25 in test/pairing.test.mjs."
+}

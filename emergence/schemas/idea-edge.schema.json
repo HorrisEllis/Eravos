@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "emergence/schemas/idea-edge.schema.json",
+  "title": "Emergence — Idea Edge",
+  "description": "Real shape returned by idea-store's link() -- a real WARP Gate guarded by 3 real hard Axioms (idea:valid-edge-type, idea:from-exists, idea:to-exists -- the last two check live store state via closures, not a cached snapshot). Same EDGE_TYPES vocabulary as the original build-tools/rheon-idea-os/storage/IdeaStore.js.",
+  "type": "object",
+  "required": ["id", "ts", "fromId", "toId", "type", "source"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string" },
+    "ts": { "type": "integer" },
+    "fromId": { "type": "string", "description": "must reference a real, already-added idea -- enforced by idea:from-exists." },
+    "toId": { "type": "string", "description": "must reference a real, already-added idea -- enforced by idea:to-exists." },
+    "type": { "type": "string", "enum": ["related", "refines", "contradicts", "implements", "spawns"], "description": "enforced by idea:valid-edge-type -- the real EDGE_TYPES vocabulary, unchanged from the original." },
+    "source": { "type": "string", "default": "api" }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "needs",
+  "dom_ids_exposed": [
+    "need-feeling-display",
+    "need-help",
+    "need-history-list",
+    "need-history-search",
+    "need-know",
+    "need-send-status",
+    "need-what",
+    "needs-badge",
+    "panel-needs",
+    "partner-mirrors-list",
+    "partner-needs-list",
+    "partner-needs-search",
+    "safety-requests-list"
+  ],
+  "kernel_hooks_called": [
+    "clearNeedForm",
+    "saveNeedPrivate",
+    "sendNeedCard"
+  ],
+  "status": "mechanically extracted \u2014 hooks not yet scoped/typed in kernel. Added search to both need lists. Found and fixed while adding it: renderPartnerNeeds() passed the filtered (need-only) array position to respondToNeed(idx), but respondToNeed indexes the FULL eravors_inbox array \u2014 any non-need message before a need card in the inbox meant 'Write response' opened a completely different message. Confirmed with a test before fixing; now tracks each need's real index in the full inbox alongside it.",
+  "category": "communication",
+  "has_subtabs": false
+}

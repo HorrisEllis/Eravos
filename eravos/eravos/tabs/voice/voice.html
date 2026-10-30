@@ -1,0 +1,36 @@
+<div class="panel" id="panel-voice">
+  <button class="btn g" style="font-size:.78rem;margin-bottom:14px" onclick="switchTab('chat')">← Back to chat</button>
+  <div class="panel-head">
+    <h2>🎙 Voice</h2>
+    <div class="vc-meta">
+      <span id="voice-state">idle</span>
+      <span id="voice-health" class="vc-dot"></span>
+    </div>
+  </div>
+
+  <p class="small vc-intro">
+    Voice measures what text cannot. <strong>Suppression</strong> — the gap between
+    what is shown and what is felt — has no producer in written language at all.
+    Jitter, shimmer and harmonics-to-noise measure vocal perturbation directly.
+  </p>
+
+  <div class="vc-controls">
+    <button id="voice-start" class="btn">Start listening</button>
+    <button id="voice-stop" class="btn ghost" disabled>Stop</button>
+  </div>
+
+  <div id="voice-prosody-readout" class="vc-readout">no audio yet</div>
+
+  <div class="vc-grid" id="voice-metrics"></div>
+
+  <p class="small vc-note">
+    Signal, not diagnosis. High jitter measures vocal perturbation — it does not
+    mean anxious, stressed or untruthful. Interpretation lives with you.
+    Nothing is recorded or sent anywhere; frames are measured and discarded.
+  </p>
+
+  <details class="vc-diag">
+    <summary class="small">Diagnostics</summary>
+    <pre id="voice-diag-out" class="small"></pre>
+  </details>
+</div>

@@ -1,0 +1,33 @@
+{
+  "id": "presence",
+  "uuid": "eravos-presence-shell-0001-0000-000000000001",
+  "version": "0.10.0",
+  "owner": "shared/eravos-presence.js",
+  "lifecycle": "Implemented",
+  "spec": "spec/PHASEMAP-v3.md",
+  "parent": "eravos-chat-engine-0001-0000-000000000001",
+  "category": "foundation",
+  "dom_ids_exposed": ["presence-bar", "presence-line", "presence-follow"],
+  "kernel_hooks_called": ["switchTab", "emitSync", "showToast", "renderPresenceLine", "togglePresenceFollow"],
+  "gates_registered": ["presence:follow"],
+  "consumes": ["ChatEngine.remote()", "ChatEngine.sendTab()", "ChatEngine 'tab' event"],
+  "write_authority": "none — this module persists NOTHING. ChatEngine owns the transport and the prefs (§10.1).",
+  "failure_modes": [
+    "no chat engine -> enteredTab reports sent:false, canFollow reports false, health says 'no-chat-engine'",
+    "partner not sharing their tab -> follow() refuses, naming the reason",
+    "no tab seen yet -> follow() refuses",
+    "presence older than 12s -> reported stale, line disappears",
+    "listener throws -> named in console, presence keeps working"
+  ],
+  "invariants": [
+    "NOTHING IS PERSISTED — not the follow state, not who was where, not for how long. health().persisted is structurally 0 and a test drives 200 tab moves to prove the store stays empty.",
+    "you can only follow someone already sharing their tab — which was already opt-in and two-sided",
+    "following BROADCASTS presence:follow — a follow the other person cannot see is surveillance, not co-navigation",
+    "being followed is REPORTED, never asked for: a follow that could sit hidden while pending is worse than one stated plainly",
+    "either side ends it alone — the follower by unfollowing, the followed by turning tab sharing off",
+    "a follow NEVER steals focus mid-sentence: it defers while a text field holds content, retries, and is cancelled by unfollow",
+    "an empty text field is not typing; a checkbox or button focus is not typing"
+  ],
+  "design_decision": "Following someone through an app is one step from watching them. The asymmetry is closed deliberately rather than left to trust: the follow is announced, and both sides can end it unilaterally. §17.3 — recorded, not buried.",
+  "status": "implemented — 18/18 in test/presence.test.mjs. Suite 169/169 + lints. Two-device verification remains open by design."
+}

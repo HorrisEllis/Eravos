@@ -1,0 +1,48 @@
+<!-- eravos tab: oracle · category: relational -->
+<!-- served by api/server.js at GET /api/tabs/oracle · lives at tabs/relational/oracle/oracle.html -->
+<div class="panel active" id="panel-oracle">
+    <div class="g2">
+      <div class="fc gap16">
+        <div class="card">
+          <div class="card-title">🔮 ORACLE PROMPT</div>
+          <label class="fl">What do you seek?</label>
+          <textarea id="oracle-input" rows="4" placeholder="Describe where you are emotionally, creatively, relationally..."></textarea>
+          <div class="flex gap12 mt12 wrap">
+            <select id="oracle-mode" style="max-width:200px">
+              <option value="romantic">Romantic Spark</option>
+              <option value="cocreation">Co-Creation Catalyst</option>
+              <option value="selfgrowth">Self-Love & Growth</option>
+              <option value="therapy">Therapeutic Insight</option>
+              <option value="emergent">Emergent / Wild</option>
+              <option value="spontaneous">Spontaneous Date</option>
+              <option value="conflict">Navigate Conflict</option>
+              <option value="intimacy">Deepen Intimacy</option>
+            </select>
+            <button class="btn p" onclick="consultOracle()">✦ Consult Oracle</button>
+            <button class="btn g" onclick="randomOracle()">🎲 Surprise</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚡ QUICK SPARKS</div>
+          <div class="g2" style="gap:9px">
+            <button class="btn" onclick="spark('date idea')">🌹 Date Idea</button>
+            <button class="btn" onclick="spark('love letter')">💌 Love Letter</button>
+            <button class="btn" onclick="spark('intimacy exercise')">🕊 Intimacy Ex.</button>
+            <button class="btn" onclick="spark('creative ritual')">🔮 Ritual</button>
+            <button class="btn" onclick="spark('affirmation')">✨ Affirmation</button>
+            <button class="btn" onclick="spark('question depth')">🪞 Deep Q</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">💬 ORACLE SPEAKS</div>
+        <div id="oracle-output" class="ai-out"><em class="small">The oracle awaits your intention...</em></div>
+        <div class="flex gap8 mt12 wrap">
+          <button class="btn g" onclick="saveToVault('oracle',getEl('oracle-output'))">💾 Save</button>
+          <button class="btn g" onclick="copyEl('oracle-output')">📋 Copy</button>
+          <button class="btn g" onclick="speakEl('oracle-output')">🔊 Speak</button>
+          <button class="btn g" onclick="sendToCodex('oracle-output','Oracle Reading')">📖 Codex</button>
+        </div>
+      </div>
+    </div>
+  </div>

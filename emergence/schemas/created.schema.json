@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "emergence/schemas/created.schema.json",
+  "title": "Emergence — Created (cfr-creator output)",
+  "description": "Real fields from cfr-creator/index.js's 'cfr:created' Event. Not the discarded v0.1 shape (stats/injected, based on a made-up stress formula) -- this is the real attractor/cluster-based rebuild. See cfr-creator/component.spec's revision note for why v0.1 was thrown out.",
+  "type": "object",
+  "required": ["target", "cluster", "tick", "attractorCount"],
+  "additionalProperties": false,
+  "properties": {
+    "target": {
+      "oneOf": [{ "$ref": "target.schema.json" }, { "type": "null" }],
+      "description": "null if tick() was called with no target -- the field still runs (curl noise, entropy) but claims no directed creation."
+    },
+    "cluster": {
+      "type": ["object", "null"],
+      "description": "null until real particle density near the attractor crosses physics.js's own 0.012 threshold -- an honest 'hasn't converged yet', not a fabricated number.",
+      "properties": {
+        "id": { "type": "string", "description": "matches target.id" },
+        "density": { "type": "number", "minimum": 0 },
+        "avgSpeed": { "type": "number", "minimum": 0 },
+        "sig": { "type": "string", "enum": ["causal", "laminar", "turb"], "description": "settled (low speed) | mid | still chaotic. Real physics.js classification, not invented." }
+      }
+    },
+    "tick": { "type": "number", "description": "real physics.js simulation time (w._t) -- the axis causal-graph's dt is measured against, per AXIOMS Sec3.2: logical time is the ordering axis, wall clock is display metadata only." },
+    "attractorCount": { "type": "integer", "minimum": 0 }
+  }
+}

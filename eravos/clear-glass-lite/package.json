@@ -1,0 +1,19 @@
+{
+  "name": "clear-glass-lite",
+  "version": "2.1.1",
+  "description": "A decoupled, standalone fork of Clear Glass's provider-login shell — no NEXUS wiring, no orchestrator/cortex/guardian dependency, no SISO bus. Real per-provider multi-account session isolation, real userscript injection, a lightweight local capture/query API (guardian-lite), and a customizable CLI — small enough to drop into any Electron project.",
+  "main": "main.js",
+  "bin": {
+    "cgl": "./cli.js"
+  },
+  "author": "James Brooks (Erosmancer)",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dev": "NODE_ENV=development electron ."
+  },
+  "dependencies": {
+    "electron": "^42.5.0"
+  }
+}

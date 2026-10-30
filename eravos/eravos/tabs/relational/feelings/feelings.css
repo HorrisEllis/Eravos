@@ -1,0 +1,9 @@
+/* tabs/relational/feelings/feelings.css
+ * Feelings-specific styling. Currently the Feelings panel composes the
+ * shared design system entirely (.card, .btn, .fc, .g2 from
+ * shared/eravos-kernel.css) — there's no feelings-only visual language
+ * yet, so this file is intentionally near-empty rather than padded with
+ * unearned rules (§16.4 — simple things stay simple; §0.5 — complexity
+ * must earn its existence). Add feelings-specific rules here as they
+ * come up; don't reach back into eravos-kernel.css for them.
+ */

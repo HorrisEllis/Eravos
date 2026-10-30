@@ -1,0 +1,21 @@
+{
+  "id": "expressions",
+  "uuid": "eravos-expressions-0001-0000-000000000001",
+  "version": "0.19.0",
+  "owner": "shared/eravos-expressions.js",
+  "lifecycle": "Implemented",
+  "parent": "eravos-kernel",
+  "spec": "spec/PHASEMAP-v4.md",
+  "summary": "146 ways to say something without finding the words, grouped by intent and linked to the feelings tracker.",
+  "invariants": [
+    "NOT an emoji picker. A phone keyboard already has every emoji; what it lacks is a set organised by what you are trying to SAY, searchable by meaning rather than Unicode name.",
+    "EVERY entry carries words. That is the alt text, the search index, and what makes the set usable by someone who reads emoji differently. An emoji without words is a guess at both ends.",
+    "every entry maps to feelings, so sending one can set your feeling — but only when asked. Sending a heart is not always a declaration about your internal state.",
+    "§12.2 reuse is distinguished from duplication: the same emoji meaning a DIFFERENT thing is deliberate (🫂 is both \"holding you\" and \"I need to be held\"). The same emoji meaning the same thing twice is a mistake, and there are none.",
+    "the wanting group is hidden in solo mode — nothing is sent to nobody",
+    "this is not only a romance set: hard, friction, need and everyday groups carry as much weight",
+    "\"Something else\" is always last, routed through the choice primitive — the private one that means something only between two people is where the real vocabulary lives"
+  ],
+  "not_verified": [],
+  "status": "implemented — covered by test/callaudio-expressions.test.mjs (23 assertions)"
+}

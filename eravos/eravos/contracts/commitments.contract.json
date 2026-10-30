@@ -1,0 +1,22 @@
+{
+  "id": "commitments",
+  "location": "tabs/relational/commitments/ (commitments.html, commitments.css, commitments.js)",
+  "dom_ids_exposed": [
+    "panel-commitments",
+    "commitment-text",
+    "commitment-level",
+    "commitment-due",
+    "commitment-linked-event",
+    "commitments-list"
+  ],
+  "owned_hooks": [
+    "createCommitment", "changeCommitmentStatus", "openCommitmentReflectionForm",
+    "_applyCommitmentStatus", "renderCommitments", "populateCommitmentEventLink"
+  ],
+  "shared_hooks_called": [
+    "DB", "S", "emitSync", "showToast", "_commitments", "_commitmentsSet"
+  ],
+  "notes": "Phase 3 (03-FEATURE-SPECS.md \u00a7Commitments & Promises, 02-DATA-SCHEMAS.md Commitment). Ownership shape (c) joint-log, same as PlannerEvent \u2014 both partners write directly to one shared list (shared_commitments). The two sync gates (commitment:created, commitment:status_changed) and the storage helpers live in shared/eravos-kernel.js, cross-cutting \u2014 checked against cross-file callers before deciding, learned from the poke/feelingToOracle mistakes: the future Relational Health derived view (next in this phase) will read this same data from wherever it lives, so it has to stay correct regardless of whether this tab is mounted. Status changes to 'missed' or 'renegotiated' require a reflection note before saving (not punitive \u2014 what got in the way, what changed); 'kept' doesn't. status_history is append-only \u2014 a missed commitment that's later kept gets a new history entry, never an edit to the old one.",
+  "category": "relational",
+  "has_subtabs": false
+}

@@ -1,0 +1,26 @@
+{
+  "id": "careprofile",
+  "uuid": "eravos-careprofile-0001-0000-000000000001",
+  "version": "0.17.0",
+  "owner": "shared/eravos-careprofile.js",
+  "lifecycle": "Implemented",
+  "parent": "eravos-kernel",
+  "category": "relational",
+  "spec": "spec/PHASEMAP-v4.md",
+  "summary": "\"When I'm upset, I need affection\" — and everything in that shape. Written by the person it is about.",
+  "invariants": [
+    "AUTHORSHIP IS ABSOLUTE — edit() and remove() refuse when the caller is not the author. A profile of someone the other person can rewrite is a projection, not a profile.",
+    "author is never a parameter; it is always the caller. A remote entry is FORCED to their authorship rather than trusted from the payload.",
+    "SURFACED, NOT FILED — forMoment() pulls their entries when a rupture is logged, not in a tab you would have to think to open",
+    "a partner never sees their edit history. \"She used to need X\" turns a living document into a receipt.",
+    "§0.3 editing keeps the previous version — what someone needed two years ago is worth having too",
+    "§17.3 completionPercent is null and untouched sections are information, not a to-do list"
+  ],
+  "failure_modes": [
+    "no storage -> throws, refuses to operate blind",
+    "out-of-range rating -> refused, never clamped",
+    "unknown section or moment -> throws, listing the valid ones",
+    "empty or over-long entry -> throws, naming the limit"
+  ],
+  "status": "implemented — covered by test/regulation-care.test.mjs (32 assertions)"
+}

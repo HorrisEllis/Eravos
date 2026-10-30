@@ -1,0 +1,279 @@
+{
+  "server": {
+    "port": 80,
+    "note": "Precedence: --port flag > ERAVOS_PORT/PORT env var > this file > 8080. node eravos-serve.js --show-config tells you which one actually won.",
+    "singleInstance": true,
+    "killPrevious": true,
+    "lockFile": ".eravos.lock",
+    "bindHost": "0.0.0.0",
+    "bindHostNote": "Direct request: open Eravos up to 0.0.0.0. This was already Node's own implicit default (confirmed directly, not assumed) -- now explicit and documented instead of silently relying on what Node happens to do. 0.0.0.0 means every network interface on this machine, not just localhost -- genuinely reachable from your LAN and, once your router forwards the port (see upnp below) or you're behind the DDNS setup below, from the open internet. Set to \"127.0.0.1\" instead if you ever want to guarantee local-only, e.g. while testing something you don't want reachable yet.",
+    "upnp": false,
+    "upnpExternalPort": 80,
+    "upnpExternalPortNote": "The port UPnP asks your router to open on the OUTSIDE, mapped to this app's real internal port -- default 80 so a partner connecting from outside never has to type a port number (http://your-ip instead of http://your-ip:8080). Deliberately separate from server.port: binding directly to 80 needs admin/root on most systems, mapping external 80 -> internal 8080 through the router does not.",
+    "publicOrigin": "https://eravos.anonymousservers.info",
+    "publicOriginNote": "Direct request: first URL should be anonymousservers.info. Set explicitly now rather than left to auto-detect from your own browser's address -- every invite link/QR code will use this real domain. Requires the DDNS setup below actually pointing this domain at your current IP, and the ACME section below (or a manually-provisioned cert) for this to be a real https:// connection rather than a browser warning.",
+    "upnpNote": "OFF, on evidence not preference. Four SSDP probes across 2026-08-08/08-12 got zero gateway responses (logs/tunnel.log: the upnp step took exactly the full 5s timeout every time), so this router does not answer UPnP at all. Port 80 is separately unreachable from outside. The named Cloudflare tunnel below makes both irrelevant: Cloudflare holds the public IP, nothing inbound is forwarded, and the hostname is stable so invite codes stay valid.",
+    "allowedOrigins": [
+      "https://eravos.anonymousservers.info",
+      "https://anonymousservers.info",
+      "http://localhost:4020",
+      "http://127.0.0.1:4020",
+      "http://10.0.0.216",
+      "https://10.0.0.216"
+    ],
+    "allowedOriginsNote": "Real, direct request: publicOrigin needs to be consistent across Eravos, working on any address used, not just the one currently active. Every real host ever saved as publicOrigin (via the Admin tab, or here by hand) now stays in this list -- confirmed and fixed a real bug where setting publicOrigin to the real IP (24.21.239.115) did NOT add it here, so the relay genuinely rejected connections from that address even though invite links pointed to it correctly. The Admin tab now keeps this list and publicOrigin in sync automatically going forward. Changes to this specific list only take effect on the relay's next real restart (it is read into process.env.ALLOWED_ORIGINS once, at boot) -- publicOrigin itself (what invite links point to) takes effect live, immediately, no restart needed.",
+    "tlsCert": null,
+    "tlsKey": null,
+    "tlsNote": "NULL ON PURPOSE for first boot. eravos-serve.js reads these at startup and EXITS rather than silently downgrade to plaintext, so pointing them at files that do not exist yet means the server will not start at all. Set to data/tls/cert.pem and data/tls/key.pem only after ACME has issued, then restart.",
+    "emergencePath": null,
+    "emergenceNote": "Override where eravos-serve.js looks for emergence/loop.js (see --emergence-path/EMERGENCE_PATH). null uses the default sibling-folder guess.",
+    "_fixNote": "This used to be two separate \"server\" objects in this same file (a real, found bug -- JSON.parse silently keeps only the LAST duplicate key, so upnp/allowedOrigins/tlsCert/tlsKey/emergencePath were being silently ignored). Merged into one.",
+    "portNote": "80 for FIRST BOOT ONLY -- ACME HTTP-01 needs this box answering on 80 to issue the cert. Once data/tls/cert.pem exists, set port:443 and fill tlsCert/tlsKey below; httpRedirectPort:80 then takes over 80 for renewals and redirects. Router forwards 80+443 to 10.0.0.216. Windows has no privileged-port restriction.",
+    "httpRedirectPort": 80,
+    "httpRedirectPortNote": "The second listener: serves /.well-known/acme-challenge/* and 301s everything else to https. Without it, binding 443 leaves nothing on 80 and ACME RENEWAL FAILS SILENTLY in ~80 days. Set to 0 only if something else already owns 80."
+  },
+  "ddns": {
+    "enabled": true,
+    "hostname": "eravos.anonymousservers.info",
+    "updateUrl": "https://api.godaddy.com",
+    "username": null,
+    "password": null,
+    "checkIntervalMinutes": 15,
+    "note": "ON, and it must point at the SAME name ACME validates (eravos.anonymousservers.info) or the HTTP-01 challenge resolves somewhere else. godaddyToken is null: the old PAT shipped in a zip in cleartext -- rotate at developer.godaddy.com and put the new one here. Until then this warns and does not start, which is correct.",
+    "updateUrlExamples": {
+      "noip": "https://dynupdate.no-ip.com/nic/update",
+      "duckdns": "https://www.duckdns.org/update (duckdns uses a token as both username and password, and a query param, not a path -- see the real client's own comment for the exact shape)",
+      "dynu": "https://api.dynu.com/nic/update"
+    },
+    "godaddyToken": null
+  },
+  "aiBridge": {
+    "enabled": false,
+    "provider": "claude",
+    "guardianLitePort": 7823,
+    "note": "Opt-in, off by default. Routes Oracle through a real, logged-in provider tab (clear-glass-lite + guardian-lite, bundled in this repo's own clear-glass-lite/ folder) instead of -- or alongside -- the primary Ollama path in eravos-kernel.js. Real, documented tradeoff: this codebase already tried this once and removed it (see eravos-kernel.js's own comment at the AI call chain) over a real failure surface -- CSP, DOM structure changes, session state -- that the current Ollama-first approach doesn't have. Turning this on only starts the background window and guardian-lite server; the ONE-TIME real login still has to happen manually via the Electron tray menu's 'AI Bridge: log in' item before it can actually answer anything."
+  },
+  "smtp": {
+    "send": {
+      "host": null,
+      "port": 587,
+      "secure": false,
+      "starttls": true,
+      "user": null,
+      "pass": null,
+      "from": null,
+      "note": "For real outbound mail (e.g. emailing an invite link) via a real relay you already have credentials for -- your own Gmail/real transactional-mail provider's SMTP endpoint. host:null means email-sending is off; nothing attempts to send until this is filled in. See server-modules/tiny-smtp-client.js's own header for why this is a real relay client, not a from-scratch mail server that delivers directly to arbitrary recipients (real mail providers distrust unauthenticated unknown senders -- that's not realistic for a small app, so this deliberately doesn't try)."
+    },
+    "devServer": {
+      "enabled": false,
+      "port": 2525,
+      "host": "127.0.0.1",
+      "note": "A real, minimal SMTP server for LOCAL TESTING ONLY -- catches whatever this app sends and stores it (in memory + as real .eml files under the data dir) instead of delivering it anywhere. Point smtp.send.host at 127.0.0.1 / this port during development to see exactly what an invite email would contain without touching a real inbox. See server-modules/tiny-smtp-server.js."
+    }
+  },
+  "features": {
+    "note": "Set enabled:false to hide a tab from navigation entirely. Real toggles -- the tab is skipped from TAB_NAMES-derived nav, not just visually hidden. Defaults reflect what actually exists in this build.",
+    "tabs": {
+      "oracle": {
+        "enabled": true
+      },
+      "feelings": {
+        "enabled": true
+      },
+      "relational": {
+        "enabled": true
+      },
+      "rupture": {
+        "enabled": true
+      },
+      "growth": {
+        "enabled": true
+      },
+      "triggers": {
+        "enabled": true
+      },
+      "commitments": {
+        "enabled": true
+      },
+      "struggles": {
+        "enabled": true
+      },
+      "ideas": {
+        "enabled": true
+      },
+      "poetry": {
+        "enabled": true
+      },
+      "rituals": {
+        "enabled": true
+      },
+      "cocreate": {
+        "enabled": true
+      },
+      "codex": {
+        "enabled": true
+      },
+      "mythos": {
+        "enabled": true
+      },
+      "mutator": {
+        "enabled": true
+      },
+      "music": {
+        "enabled": true
+      },
+      "canvas": {
+        "enabled": true
+      },
+      "vault": {
+        "enabled": true
+      },
+      "settings": {
+        "enabled": true
+      },
+      "sparring": {
+        "enabled": true
+      },
+      "call": {
+        "enabled": true
+      },
+      "console": {
+        "enabled": true
+      },
+      "needs": {
+        "enabled": true
+      },
+      "planner": {
+        "enabled": true
+      },
+      "lattice": {
+        "enabled": true
+      },
+      "meaning": {
+        "enabled": true
+      },
+      "roadmap": {
+        "enabled": true
+      }
+    },
+    "clarity": {
+      "enabled": true,
+      "note": "The real-time call audio clarity chain -- see shared/clarity-config/ for its own detailed gain/EQ/gate settings, separate from this on/off switch."
+    },
+    "spaceDistance": {
+      "enabled": true,
+      "note": "Emergence's learned-cadence + timezone-overlap relational-health signal. Requires Emergence attached -- see server.emergencePath above."
+    },
+    "safety": {
+      "enabled": true
+    },
+    "hardtalk": {
+      "enabled": true
+    },
+    "toasts": {
+      "enabled": true,
+      "categories": {
+        "reminders": true,
+        "calendar": true,
+        "messages": true,
+        "expressions": true,
+        "presence": true
+      },
+      "note": "Per-category toast notifications. Setting a category to false silences that class of real-time notification without affecting the others."
+    }
+  },
+  "ticker": {
+    "defaultPhrases": [
+      "✦ You are worthy of deep love",
+      "✦ Co-creation is alchemy",
+      "✦ Interdependence is strength",
+      "✦ Eros is the force that creates worlds",
+      "✦ Presence is the deepest gift",
+      "✦ Vulnerability is power",
+      "✦ Emergence happens in safety",
+      "✦ Your body knows the way",
+      "✦ Desire is information",
+      "✦ What you make together transforms you both",
+      "✦ Rest is revolutionary",
+      "✦ Love is a creative act",
+      "✦ The wound is where the light enters",
+      "✦ Play is sacred",
+      "✦ You belong here"
+    ]
+  },
+  "onboarding": {
+    "genderOptions": [
+      "Man",
+      "Woman",
+      "Non-binary",
+      "Genderfluid",
+      "Gender non-conforming",
+      "Agender",
+      "Trans man",
+      "Trans woman",
+      "Other"
+    ],
+    "orientationOptions": [
+      "Straight",
+      "Gay",
+      "Lesbian",
+      "Bisexual",
+      "Pansexual",
+      "Queer",
+      "Asexual",
+      "Other"
+    ]
+  },
+  "theme": {
+    "all": [
+      ""
+    ],
+    "labels": {
+      "": "🔥 Original Fire"
+    },
+    "retired": [
+      "raven-theme",
+      "golden-theme",
+      "romeo-theme"
+    ],
+    "note": "§16.5 delete before add. One theme. 01-ARCHITECTURE.md §2 already required every colour to be a kernel CSS custom property, so removing the alternates changed zero tab stylesheets."
+  },
+  "ai": {
+    "providers": {
+      "openai": {
+        "name": "OpenAI / ChatGPT",
+        "endpoint": "https://api.openai.com/v1/chat/completions",
+        "defaultModel": "gpt-4o",
+        "keyDB": "ai_openai_key",
+        "modelDB": "ai_openai_model"
+      },
+      "claude": {
+        "name": "Claude (Anthropic)",
+        "endpoint": "https://api.anthropic.com/v1/messages",
+        "defaultModel": "claude-sonnet-4-6",
+        "keyDB": "claude_key",
+        "modelDB": "claude_model"
+      }
+    }
+  },
+  "relay": {
+    "url": null,
+    "note": "null = derive from the page you are served from (host:port/relay). That is correct for one-port serving and cannot drift from the server. Set an explicit ws:// or wss:// URL only if the relay genuinely lives somewhere else.",
+    "path": "/relay"
+  },
+  "emergence": {
+    "base": "/emergence",
+    "note": "Emergence is a separate project, attached rather than vendored. If eravos-serve.js mounts it, this same-origin path works with no change. If it is not there, the lattice field dimension abstains and everything else is unaffected."
+  },
+  "acme": {
+    "enabled": true,
+    "domain": "eravos.anonymousservers.info",
+    "email": null,
+    "staging": true,
+    "certPath": "data/tls/cert.pem",
+    "certKeyPath": "data/tls/key.pem",
+    "note": "ON. HTTP-01 needs inbound port 80 to genuinely reach this box. VERIFY THAT FIRST (see SETUP.md) -- prior testing on 2026-08-12 found port 80 unreachable from cellular and Lets Encrypt own validator timed out, which is what residential ISP inbound blocking looks like. staging:true until one full run succeeds, then false.",
+    "stagingNote": "staging:true uses Let's Encrypt's real staging environment -- a real, working test run against real ACME infrastructure, but the certificate it issues is NOT trusted by browsers (deliberately, so testing doesn't count against Let's Encrypt's real production rate limits). Verify a full real run succeeds on staging first, then set staging:false for the real, trusted certificate.",
+    "afterIssuance": "Provisioning succeeding does not switch this server to HTTPS automatically -- it logs the real cert/key paths and asks for a restart. Set server.tlsCert/tlsKey to data/tls/cert.pem and data/tls/key.pem in this same file, then restart. A hot-swap mid-run was deliberately not attempted -- unproven under time pressure against a real cert-serving HTTPS server is exactly the kind of thing not to risk."
+  }
+}

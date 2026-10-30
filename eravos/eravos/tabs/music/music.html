@@ -1,0 +1,46 @@
+<!-- eravos tab: music · category: creating -->
+<!-- served by api/server.js at GET /api/tabs/music -->
+<div class="panel" id="panel-music">
+    <div class="g2">
+      <div class="card">
+        <div class="card-title">🎵 MOOD & MUSIC</div>
+        <label class="fl">Current emotional state</label>
+        <input type="text" id="music-mood-input" placeholder="describe your mood..." style="margin-bottom:10px">
+        <label class="fl">Desired atmosphere</label>
+        <select id="music-vibe" style="margin-bottom:10px">
+          <option value="sensual">Sensual & Slow</option>
+          <option value="passionate">Passionate & Intense</option>
+          <option value="playful">Playful & Light</option>
+          <option value="healing">Healing & Tender</option>
+          <option value="ecstatic">Ecstatic & Expansive</option>
+          <option value="contemplative">Contemplative & Still</option>
+          <option value="creative">Creative & Inspired</option>
+          <option value="celebratory">Celebratory & Alive</option>
+        </select>
+        <button class="btn p" onclick="generateMusicRec()">🎵 Generate Playlist</button>
+        <div id="music-output" class="ai-out mt12" style="min-height:120px;font-size:.9rem"><em class="small">Awaiting your mood...</em></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🎛 BINAURAL TONES</div>
+        <div class="fc gap12">
+          <div><label class="fl">Left ear Hz: <span id="hz-left-val">200</span></label>
+            <input type="range" id="hz-left" min="50" max="800" value="200" oninput="document.getElementById('hz-left-val').textContent=this.value;updateTone()"></div>
+          <div><label class="fl">Right ear Hz: <span id="hz-right-val">210</span></label>
+            <input type="range" id="hz-right" min="50" max="800" value="210" oninput="document.getElementById('hz-right-val').textContent=this.value;updateTone()"></div>
+          <div><label class="fl">Volume: <span id="vol-val">30</span>%</label>
+            <input type="range" id="vol-range" min="0" max="100" value="30" oninput="document.getElementById('vol-val').textContent=this.value;updateTone()"></div>
+          <div class="flex gap12">
+            <button class="btn" onclick="startTone()">▶ Start</button>
+            <button class="btn d" onclick="stopTone()">⏹ Stop</button>
+          </div>
+          <div class="small">Beat freq: <span id="beat-freq">10</span> Hz</div>
+          <div class="flex gap8 wrap mt8">
+            <button class="btn g" onclick="setPreset(432,446)">432 Hz Love</button>
+            <button class="btn g" onclick="setPreset(528,542)">528 Hz Repair</button>
+            <button class="btn g" onclick="setPreset(396,406)">396 Hz Release</button>
+            <button class="btn g" onclick="setPreset(174,184)">174 Hz Ground</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

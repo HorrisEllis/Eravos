@@ -1,0 +1,27 @@
+{
+  "id": "music",
+  "dom_ids_exposed": [
+    "beat-freq",
+    "hz-left",
+    "hz-left-val",
+    "hz-right",
+    "hz-right-val",
+    "music-mood-input",
+    "music-output",
+    "music-vibe",
+    "panel-music",
+    "vol-range",
+    "vol-val"
+  ],
+  "kernel_hooks_called": [
+    "generateMusicRec",
+    "getElementById",
+    "setPreset",
+    "startTone",
+    "stopTone",
+    "updateTone"
+  ],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "category": "creating",
+  "has_subtabs": false
+}

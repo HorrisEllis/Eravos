@@ -1,0 +1,27 @@
+{
+  "id": "mythos",
+  "dom_ids_exposed": [
+    "archetype-grid",
+    "mythos-output",
+    "mythos-seed",
+    "mythos-seed-voice-toggle",
+    "mythos-seed-mic-btn",
+    "mythos-tone",
+    "mythos-type",
+    "panel-mythos"
+  ],
+  "kernel_hooks_called": [
+    "generateMythos",
+    "getEl",
+    "openMythosEditor",
+    "openMythosEditorWith",
+    "saveToVault",
+    "sendToCodex",
+    "sendToMutator",
+    "toggleVoiceToText",
+    "startVoiceDictation"
+  ],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel. Added opt-in voice-to-text on the seed field (toggleVoiceToText/startVoiceDictation/initVoiceToggleUI, all generic — not hardcoded to this field — in eravos-kernel.js): a checkbox reveals a mic button that dictates via the browser's own SpeechRecognition (Chrome/Edge/Safari; no server, nothing leaves the device). Off by default since it asks for mic permission. The lattice has no text entry of its own — buildLatticeData() only reads from Codex/Vault/Ruptures/etc. — so this feeds the lattice indirectly: whatever's dictated here becomes the seed generateMythos() turns into myth, and saveToVault()/sendToCodex() on that output is what actually lands in the lattice's word constellation.",
+  "category": "creating",
+  "has_subtabs": false
+}

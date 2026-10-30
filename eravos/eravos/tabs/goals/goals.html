@@ -1,0 +1,34 @@
+<!-- eravos tab: goals · category: relational · feature id: roadmap_shared -->
+<div class="panel" id="panel-goals">
+  <div class="ht-page">
+    <div class="ht-head">
+      <div><div class="ht-title">Goals &amp; roadmap</div>
+        <div class="ht-sub" id="gl-sub"></div></div>
+      <button class="ht-icon" id="gl-new" title="Add a goal">+</button>
+    </div>
+    <p class="ht-intro">A goal belongs to one of you, both of you, or <em>neither yet</em>.
+      Asking for it to be shared puts it in <strong>proposed</strong> until they take it up —
+      writing "we should" doesn't make it shared. No deadlines, nothing goes red,
+      nothing is scored.</p>
+
+    <div class="ht-form" id="gl-form" hidden>
+      <input id="gl-title" placeholder="what you want" maxlength="200" autocomplete="off">
+      <textarea id="gl-why" rows="2" placeholder="why it matters — optional"></textarea>
+      <select id="gl-owner">
+        <option value="mine">Mine to carry</option>
+        <option value="ours">Propose as ours</option>
+      </select>
+      <div class="ht-row">
+        <button class="ht-btn" id="gl-save">Add it</button>
+        <button class="ht-btn ghost" id="gl-cancel">Not now</button>
+      </div>
+    </div>
+
+    <div class="ht-section"><div class="ht-label">waiting on them</div><div class="ht-list" id="gl-proposed"></div></div>
+    <div class="ht-section"><div class="ht-label">waiting on you</div><div class="ht-list" id="gl-awaiting"></div></div>
+    <div class="ht-section"><div class="ht-label">ours</div><div class="ht-list" id="gl-ours"></div></div>
+    <div class="ht-section"><div class="ht-label">mine</div><div class="ht-list" id="gl-mine"></div></div>
+    <details class="ht-shelved"><summary class="small">Done &amp; dropped</summary><div class="ht-list" id="gl-closed"></div></details>
+    <details class="ht-diag"><summary class="small">Diagnostics</summary><pre id="gl-health" class="small"></pre></details>
+  </div>
+</div>

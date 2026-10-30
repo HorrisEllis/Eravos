@@ -1,0 +1,7 @@
+/* eravos tab: commitments · grouped list + append-only history chips */
+
+.commitment-group { margin-bottom: 20px; }
+.commitment-group-title { font-family: var(--fm); font-size: .68rem; letter-spacing: .14em; margin-bottom: 8px; }
+.commitment-card { padding: 14px; border: 1px solid var(--border2); border-radius: 10px; background: var(--glass); margin-bottom: 10px; }
+.commitment-history { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.commitment-history-entry { font-size: .68rem; color: var(--dim); padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border2); background: var(--panel2); }

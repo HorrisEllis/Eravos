@@ -1,0 +1,31 @@
+{
+  "id": "oracle",
+  "location": "tabs/relational/oracle/ (oracle.html, oracle.css, oracle.js)",
+  "dom_ids_exposed": [
+    "oracle-input",
+    "oracle-mode",
+    "oracle-output",
+    "panel-oracle"
+  ],
+  "owned_hooks": [
+    "consultOracle",
+    "randomOracle",
+    "spark"
+  ],
+  "shared_hooks_called": [
+    "callAI",
+    "copyEl",
+    "getEl",
+    "saveToVault",
+    "sendToCodex",
+    "speakEl",
+    "log"
+  ],
+  "bus_events_listened": [
+    "oracle:seed_requested"
+  ],
+  "notes": "ORACLE_SYS is a shared constant also read by the still-unsplit Relational (Bond) tab's generateRelationalInsight()/generatePulseInsight(). Safe today because Oracle mounts at boot (ACTIVE_TAB) and is always loaded before Bond can be reached; if Bond is later split, ORACLE_SYS either moves to a shared constants file or Bond gets its own copy \u2014 don't leave it as an accidental load-order dependency.",
+  "status": "split \u2014 folder-per-tab per \u00a75.9/\u00a75.12. Boot flow (index.html's boot()) mounts ACTIVE_TAB via eravosStampTab, which already respects TAB_SPLIT_PATHS, so no separate boot-path fix was needed.",
+  "category": "relational",
+  "has_subtabs": false
+}

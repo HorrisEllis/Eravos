@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="iv-a" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#c2410c"/>
+      <stop offset="100%" stop-color="#ff9a3d"/>
+    </linearGradient>
+    <linearGradient id="iv-b" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#ffb347"/>
+      <stop offset="100%" stop-color="#ffe9b8"/>
+    </linearGradient>
+  </defs>
+  <path d="M40 106 C 20 90, 20 70, 40 60 C 60 50, 60 30, 40 14"
+        fill="none" stroke="url(#iv-a)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M80 106 C 100 90, 100 70, 80 60 C 60 50, 60 30, 80 14"
+        fill="none" stroke="url(#iv-b)" stroke-width="6" stroke-linecap="round"/>
+  <g fill="#ff9a3d">
+    <ellipse cx="34" cy="86" rx="9" ry="5" transform="rotate(-30 34 86)"/>
+    <ellipse cx="52" cy="54" rx="9" ry="5" transform="rotate(20 52 54)"/>
+    <ellipse cx="34" cy="30" rx="8" ry="4.5" transform="rotate(-25 34 30)"/>
+  </g>
+  <g fill="#ffe9b8">
+    <ellipse cx="86" cy="86" rx="9" ry="5" transform="rotate(30 86 86)"/>
+    <ellipse cx="68" cy="54" rx="9" ry="5" transform="rotate(-20 68 54)"/>
+    <ellipse cx="86" cy="30" rx="8" ry="4.5" transform="rotate(25 86 30)"/>
+  </g>
+</svg>

@@ -1,0 +1,51 @@
+<!-- eravos tab: mutator · category: creating -->
+<!-- served by api/server.js at GET /api/tabs/mutator -->
+<div class="panel" id="panel-mutator">
+    <div class="g2" style="margin-bottom:18px">
+      <div class="card">
+        <div class="card-title">🎨 IMAGE PROMPT MUTATOR</div>
+        <p class="small italic" style="margin-bottom:12px">Transform ideas from other tabs into image generation prompts. Mutate, evolve, and remix them.</p>
+        <label class="fl">Source Text / Idea</label>
+        <textarea id="mutator-source" rows="4" placeholder="Paste any text, poem, oracle reading, mythos..."></textarea>
+        <label class="fl mt12">Visual Style</label>
+        <select id="mutator-style" style="margin-bottom:10px">
+          <option value="ethereal">Ethereal / Luminous</option>
+          <option value="painterly">Painterly / Oil</option>
+          <option value="botanical">Botanical / Natural</option>
+          <option value="abstract">Abstract / Geometric</option>
+          <option value="mythological">Mythological / Epic</option>
+          <option value="minimalist">Minimalist / Ink</option>
+          <option value="surreal">Surreal / Dreamlike</option>
+          <option value="holographic">Holographic / Neon</option>
+        </select>
+        <label class="fl">Mutation Strength</label>
+        <input type="range" id="mutation-strength" min="1" max="5" value="2" style="margin-bottom:6px">
+        <small>1 = faithful, 5 = radical mutation</small>
+        <div class="flex gap12 mt12">
+          <button class="btn p" onclick="generateImagePrompts()">✦ Generate Prompts</button>
+          <button class="btn g" onclick="mutatePrompts()">🔄 Mutate Again</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">✨ GENERATED PROMPTS</div>
+        <div id="mutator-prompts" class="fc gap12">
+          <div class="small italic" style="color:var(--dim);padding:20px;text-align:center">Generated prompts will appear here. Copy them to your image generator of choice.</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🖼 PROMPT CANVAS — Generative Palettes</div>
+      <div class="flex gap12 wrap ac" style="margin-bottom:14px">
+        <select id="palette-source" style="max-width:220px">
+          <option value="oracle">From Oracle</option>
+          <option value="poem">From Poetry</option>
+          <option value="mythos">From Mythos</option>
+          <option value="feeling">From Current Feeling</option>
+          <option value="vault">From Last Vault Item</option>
+        </select>
+        <button class="btn p" onclick="generatePalette()">🎨 Generate Visual Palette</button>
+      </div>
+      <div id="palette-output" class="ai-out" style="min-height:120px;font-size:.92rem"><em class="small">Generate a visual palette concept for your creative work...</em></div>
+      <div id="palette-swatches" class="flex gap12 mt12 wrap"></div>
+    </div>
+  </div>

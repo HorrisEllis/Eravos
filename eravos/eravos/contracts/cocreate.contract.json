@@ -1,0 +1,24 @@
+{
+  "id": "cocreate",
+  "dom_ids_exposed": [
+    "card-deck",
+    "card-output",
+    "cocreate-framework",
+    "cocreate-output",
+    "cocreate-seed",
+    "panel-cocreate",
+    "person1",
+    "person2"
+  ],
+  "kernel_hooks_called": [
+    "copyEl",
+    "drawCard",
+    "generateCoCreate",
+    "getEl",
+    "saveToVault",
+    "sendToCodex"
+  ],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "category": "creating",
+  "has_subtabs": false
+}

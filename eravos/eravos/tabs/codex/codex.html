@@ -1,0 +1,44 @@
+<!-- eravos tab: codex · category: space -->
+<!-- served by api/server.js at GET /api/tabs/codex -->
+<div class="panel" id="panel-codex">
+    <div class="flex jb ac wrap gap12" style="margin-bottom:18px">
+      <div class="card-title" style="margin:0">📖 THE CODEX <span class="num">(Sacred Record)</span></div>
+      <div class="flex gap8 wrap">
+        <button class="btn p" onclick="openCodexForm()">+ New Entry</button>
+        <button class="btn g" onclick="generateCodexSummary()">✦ Generate Summary</button>
+        <button class="btn g" onclick="exportCodex()">⬇ Export</button>
+      </div>
+    </div>
+    <div id="codex-form" class="card" style="display:none;margin-bottom:18px">
+      <div class="card-title">📝 NEW CODEX ENTRY</div>
+      <div class="g2">
+        <div>
+          <label class="fl">Title</label><input type="text" id="codex-title" placeholder="Name this entry..." style="margin-bottom:10px">
+          <label class="fl">Type</label>
+          <select id="codex-type" style="margin-bottom:10px">
+            <option value="insight">Insight</option>
+            <option value="memory">Sacred Memory</option>
+            <option value="vow">Vow / Commitment</option>
+            <option value="symbol">Symbol / Archetype</option>
+            <option value="pattern">Pattern Observed</option>
+            <option value="dream">Dream / Vision</option>
+            <option value="creation">Creation</option>
+          </select>
+          <label class="fl">Tags</label>
+          <input type="text" id="codex-tags" placeholder="love, growth, fire (comma separated)">
+        </div>
+        <div>
+          <label class="fl">Content</label>
+          <textarea id="codex-content" rows="6" placeholder="Record this entry..."></textarea>
+        </div>
+      </div>
+      <div class="flex gap12 mt12">
+        <button class="btn p" onclick="saveCodexEntry()">💾 Save to Codex</button>
+        <button class="btn g" onclick="document.getElementById('codex-form').style.display='none'">✕ Cancel</button>
+      </div>
+    </div>
+    <div id="codex-summary-out" class="ai-out" style="display:none;margin-bottom:18px;font-size:.9rem"></div>
+    <div id="codex-list" class="ga">
+      <div class="small italic text-center" style="padding:40px;grid-column:1/-1;color:var(--dim)">Your codex is empty. Start recording what matters.</div>
+    </div>
+  </div>

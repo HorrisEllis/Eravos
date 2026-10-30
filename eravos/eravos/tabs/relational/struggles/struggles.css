@@ -1,0 +1,116 @@
+/* eravos tab: struggles */
+
+/* §CONSIDERATE REDESIGN — was a bare bordered-box checkbox list, same
+   visual weight as a compliance form, for content that's often hard to
+   even look at honestly. Real changes, not just decoration: more room
+   to breathe between items (this is a list to read slowly, not scan),
+   a warmer reading font for the statements themselves, a softer custom
+   checkbox instead of the OS default, and cluster tags quieted down to
+   near-invisible until you actually look for them — ten always-visible
+   pill tags competing with ten personal statements was exactly the kind
+   of simultaneous visual load that makes a hard list harder to sit with. */
+
+.struggles-reassurance {
+  font-family: var(--fb);
+  font-size: 1.02rem;
+  color: var(--amber);
+  text-align: center;
+  padding: 14px 18px;
+  border: 1px solid var(--line-fire);
+  border-radius: 14px;
+  background: var(--tint-fire);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.struggles-checklist-intro {
+  font-family: var(--fb);
+  font-style: italic;
+  font-size: .92rem;
+  color: var(--dim);
+  line-height: 1.7;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--panel2);
+}
+
+.struggles-checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--tint-rose2);
+  border-radius: 14px;
+  margin-bottom: 12px;
+  font-size: .92rem;
+  font-family: var(--fb);
+  line-height: 1.55;
+  cursor: pointer;
+  background: var(--tint-rose2);
+  transition: background .3s ease, border-color .3s ease;
+}
+.struggles-checklist-item:hover {
+  background: var(--tint-rose2);
+  border-color: var(--line-rose2);
+}
+.struggles-checklist-item.read-only {
+  cursor: default;
+  background: var(--tint-teal);
+  border-color: var(--line-teal);
+}
+
+/* Custom checkbox — softer, rounder, rose-toned instead of the stark
+   OS default. Still a real <input type="checkbox">, just restyled. */
+.struggles-checklist-item input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  min-width: 20px;
+  margin-top: 2px;
+  border: 1.5px solid var(--line-rose2);
+  border-radius: 7px;
+  background: transparent;
+  cursor: pointer;
+  transition: background .25s ease, border-color .25s ease;
+  position: relative;
+}
+.struggles-checklist-item input[type="checkbox"]:checked {
+  background: var(--line-rose2);
+  border-color: var(--rose);
+}
+.struggles-checklist-item input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-52%);
+  font-size: 13px; color: var(--text);
+}
+
+.struggles-checklist-item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Cluster tags — quieted deliberately. They were the same visual weight
+   as the statement itself before; now they're near-invisible until
+   actually looked for (low opacity, no border, fades in on hover), so
+   the list reads as ten sentences first and an optional second layer
+   of pattern-noticing only if you go looking for it. */
+.struggles-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  opacity: .35;
+  transition: opacity .25s ease;
+}
+.struggles-checklist-item:hover .struggles-tags { opacity: .85; }
+.struggles-tag {
+  font-family: var(--fm);
+  font-size: .58rem;
+  letter-spacing: .07em;
+  color: var(--teal);
+  background: transparent;
+  border-radius: 20px;
+  padding: 2px 8px;
+  cursor: help;
+}

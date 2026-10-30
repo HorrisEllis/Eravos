@@ -1,0 +1,10 @@
+{
+  "id": "roadmap",
+  "dom_ids_exposed": [
+    "panel-roadmap"
+  ],
+  "kernel_hooks_called": [],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "category": "system",
+  "has_subtabs": false
+}

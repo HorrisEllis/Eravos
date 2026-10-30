@@ -1,0 +1,13 @@
+{
+  "name": "wire",
+  "version": "0.1.0",
+  "description": "Component/Hook/Wire/Consumer -- a composition layer built on WARP's real Cause/Drawbridge/Flow/Axiom. Decoupled as its own package.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/wire.test.js"
+  },
+  "license": "MIT",
+  "author": "James Brooks",
+  "dependencies": {},
+  "engines": { "node": ">=14" }
+}

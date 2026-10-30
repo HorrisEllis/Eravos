@@ -1,0 +1,27 @@
+{
+  "$note_UNVERIFIED": "PREPARED, NOT COMPILED OR RUN. No Android SDK/NDK available in the environment this was written in -- everything in android-app/ is correct as far as it can be reasoned through against Capacitor's and whisper.cpp's real, documented APIs, but none of it has been built or tested the way everything else in this project was. Verify by actually running `npx cap sync android` and building in real Android Studio before trusting it.",
+
+  "appId": "world.rheon.eravos",
+  "appName": "Eravos",
+  "webDir": "eravos",
+  "bundledWebRuntime": false,
+
+  "server": {
+    "androidScheme": "https"
+  },
+
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true
+  },
+
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 800,
+      "backgroundColor": "#180f2b"
+    }
+  },
+
+  "_integration_note": "webDir points at the real eravos/ folder in this repo as-is -- Capacitor serves the existing static web app directly, no rebuild of Eravos itself needed. clarity-engine.js and clarity-config/ are already inside eravos/shared/, so they ship automatically. The native Whisper plugin (android-app/app/src/main/java/com/eravos/whisper/) is what needs real native wiring -- see WhisperPlugin.kt's own header."
+}

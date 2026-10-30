@@ -1,0 +1,25 @@
+{
+  "id": "canvas",
+  "dom_ids_exposed": [
+    "canvas-enhance-output",
+    "canvas-mode",
+    "canvas-text",
+    "file-input",
+    "file-list",
+    "panel-canvas",
+    "upload-zone"
+  ],
+  "kernel_hooks_called": [
+    "click",
+    "copyEl",
+    "enhanceCanvas",
+    "getEl",
+    "getElementById",
+    "handleFileUpload",
+    "saveToVault",
+    "sendToCodex"
+  ],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "category": "creating",
+  "has_subtabs": false
+}

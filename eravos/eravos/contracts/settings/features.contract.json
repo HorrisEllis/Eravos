@@ -1,0 +1,11 @@
+{
+  "id": "features",
+  "dom_ids_exposed": [
+    "features-index-list",
+    "settings-pane-features"
+  ],
+  "kernel_hooks_called": [],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "parent": "settings",
+  "admin_only": false
+}

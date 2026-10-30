@@ -1,0 +1,47 @@
+<!--
+  PREPARED, NOT VERIFIED -- see PREPARED-NOT-VERIFIED.md at the repo
+  root. This is the manifest section a real `npx cap add android`
+  scaffold generates automatically merged with -- these are the
+  ADDITIONS needed beyond Capacitor's own defaults, for real
+  Android permissions this app genuinely needs:
+    - RECORD_AUDIO: the whole reason for this app existing
+    - CAMERA: video calls (Eravos already requests this via
+      getUserMedia in the browser layer; a real native app needs the
+      OS-level permission too, requested at runtime per Android's
+      real runtime-permission model, not just declared here)
+    - FOREGROUND_SERVICE + FOREGROUND_SERVICE_MICROPHONE: the real,
+      specific reason a native app is worth building at all for this
+      use case -- keeps mic access alive if the app isn't in the
+      foreground, which a browser tab can never reliably do
+    - INTERNET: PeerJS's signaling server + the P2P connection itself
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+  <!-- Android 9+ (API 28+) requires FOREGROUND_SERVICE; Android 14+
+       (API 34+) additionally requires the specific microphone-type
+       declaration, or the OS will kill a background mic-using service.
+       Both declared since Eravos likely needs to support a real range
+       of real devices, not just the newest. -->
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+
+  <uses-feature android:name="android.hardware.camera" android:required="false" />
+  <uses-feature android:name="android.hardware.microphone" android:required="true" />
+
+  <application>
+    <!-- The foreground service that keeps Whisper transcription (and
+         the clarity audio chain) alive during a call even if the app
+         is backgrounded. Referenced, not yet implemented -- see
+         PREPARED-NOT-VERIFIED.md's real next-steps list. -->
+    <service
+      android:name=".ClarityForegroundService"
+      android:foregroundServiceType="microphone"
+      android:exported="false" />
+  </application>
+
+</manifest>

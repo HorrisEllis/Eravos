@@ -1,0 +1,102 @@
+{
+  "id": "lattice",
+  "uuid": "eravos-lattice-core-0001-0000-000000000002",
+  "version": "0.21.0",
+  "owner": "eravos/tabs/lattice",
+  "lifecycle": "Implemented",
+  "spec": "spec/alk-lattice.spec",
+  "parent": "eravos-kernel",
+  "children": [
+    "eravos-lattice-dimensions-0001-0000-000000000001",
+    "eravos-alk-boot-0001-0000-000000000000"
+  ],
+  "category": "space",
+  "has_subtabs": false,
+  "dom_ids_exposed": [
+    "panel-lattice",
+    "lat-resonances",
+    "lat-dims",
+    "lat-empty",
+    "lat-health",
+    "lat-diag-out"
+  ],
+  "kernel_hooks_called": [
+    "renderLattice",
+    "renderLatticeTab",
+    "LATTICE_REFRESH_EVENTS",
+    "ALK_INGEST_EVENTS"
+  ],
+  "consumes": [
+    "call:transcript_line",
+    "rupture:save",
+    "growth:save",
+    "codex:save",
+    "vault:save",
+    "spar:turn"
+  ],
+  "emits": [
+    "alk.lattice.node",
+    "alk.lattice.resonance",
+    "alk.lattice.evicted",
+    "alk:lattice-changed"
+  ],
+  "requires": [
+    "window.ALK (shared/alk/alk-boot.js)"
+  ],
+  "dimensions": [
+    "lexical",
+    "signal",
+    "needs",
+    "intent",
+    "affect",
+    "prosody",
+    "grammar",
+    "field",
+    "temporal"
+  ],
+  "resonance_classes": [
+    "FULL_RESONANCE",
+    "SAME_NEED_DIFFERENT_WORDS",
+    "SAME_WORDS_DIFFERENT_FEELING",
+    "SAME_INTENT_DIFFERENT_NEED",
+    "SAME_VOICE",
+    "SURFACE_ONLY",
+    "INTENT_ONLY",
+    "AFFECT_ONLY"
+  ],
+  "failure_modes": [
+    "ALK stack did not boot -> tab renders a NAMED failure, never a blank 'no data' state",
+    "unknown dimension requested -> MultiLattice constructor throws, listing known ids",
+    "utterance without string text -> add() throws",
+    "node cap reached -> oldest evicted, alk.lattice.evicted emitted, never silent",
+    "a dimension producing zero edges is reported in health().silentDimensions"
+  ],
+  "invariants": [
+    "§1.2 an unobserved latent dimension (uncertainty >= 0.45) is EXCLUDED from affect comparison, never scored as measured-zero",
+    "§5.3 affect compares the per-utterance DELTA, not the smoothed cumulative state",
+    "§5.3 temporal forms edges but does NOT vote on classification -- within a session nearly every pair is adjacent",
+    "§0.4 bounded by construction: maxNodes default 500, eviction announced",
+    "§10.1 one write authority -- only the kernel's ALK_INGEST_EVENTS wire calls ALK.ingest()"
+  ],
+  "retired": "buildLatticeData() top-60 word-frequency renderer. Kept addressable as renderLatticeFlat_RETIRED_v0_3_17() per §17.3 rather than deleted silently.",
+  "status": "implemented -- boots clean, 7 dimensions live, measured signal ratio 0.471 on a 7-line relational transcript. Top resonance found: 'We keep circling the same thing' <-> 'I miss you, I feel so alone' on needs+intent, seven ticks apart -- SAME_NEED_DIFFERENT_WORDS, the class no word lattice can see.",
+  "adaptive_thresholds": {
+    "why": "A fixed threshold on a corpus-dependent metric asserts a constant that is really a variable — the same §0.1 error as a fixed jitter threshold across different voices. Lexical Jaccard at 0.15 links almost nothing across short utterances and almost everything across long ones.",
+    "how": "Each dimension learns the distribution of scores IT produces for THIS pair and links at the 85th percentile, over a rolling 600-sample window.",
+    "warmup": "40 samples. Below that it uses the declared constant and health() says adaptive:false — it does not guess while cold (§1.1).",
+    "clamped": "Floor 0.6x and ceiling 2.5x the declared value, and health() reports WHICH bound was hit — a threshold pinned at a bound wanted to go further and was stopped (§12.5).",
+    "no_ratchet": "Scores are observed BEFORE the threshold test, so the distribution includes pairs that did not link. A threshold learned only from its own successes would climb forever.",
+    "exception": "intent is categorical (0 or 1) and keeps its declared value — adapting a two-valued metric is meaningless, and the exception is named rather than left to produce nonsense.",
+    "evidence": "A learned threshold is marked with ~ in every pair’s evidence string, so a link can always be traced to the number that actually admitted it (§16.2)."
+  },
+  "field_dimension": {
+    "what": "Emergence relational field — trajectory, decay score, rupture severity, meaning charge.",
+    "different_in_kind": "Every other dimension compares two MOMENTS. This compares the STATE THE RELATIONSHIP WAS IN when each was said. Two moments can share no words, no need, no intent and no feeling-movement and still belong together because the field was in the same place — which none of the other eight can see.",
+    "trajectory_dominates": "A trajectory mismatch caps the score at 0.25 rather than being averaged away. DECAYING and REPAIRING are opposite motions, and identical decay scores must not make them look similar.",
+    "abstains": "Emergence is attached, not vendored. With it absent the dimension returns null and reports SILENT — no reading, no edge, never a fabricated match. Same discipline as prosody with no mic.",
+    "read_at_ingest": "The node records the state the relationship was ACTUALLY in when it was said, not the state it is in now when you look back."
+  },
+  "ingest_sources": 14,
+  "ingest_rule": "An event is ingested if it carries HUMAN LANGUAGE OR A STATED INNER STATE. Transport is not — presence pings, sync frames, acks and call invites say nothing about the relationship, and feeding them in would dilute every dimension with noise that always co-occurs.",
+  "found_by_audit": "The app emits 45 event types and only 6 reached the lattice. The two most-used were not among them: every chat message and every feeling set were invisible to it. Now 14."
+}

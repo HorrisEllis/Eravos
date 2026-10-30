@@ -1,0 +1,28 @@
+{
+  "id": "relational",
+  "dom_ids_exposed": [
+    "panel-relational",
+    "pulse-conn",
+    "pulse-conn-val",
+    "pulse-desire",
+    "pulse-desire-val",
+    "pulse-growth",
+    "pulse-growth-val",
+    "pulse-history",
+    "pulse-output",
+    "pulse-safe",
+    "pulse-safe-val",
+    "rel-domain",
+    "rel-stage",
+    "relational-output"
+  ],
+  "kernel_hooks_called": [
+    "generatePulseInsight",
+    "generateRelationalInsight",
+    "saveRelationalPulse",
+    "updatePulse"
+  ],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "category": "relational",
+  "has_subtabs": false
+}

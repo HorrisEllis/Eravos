@@ -1,0 +1,33 @@
+{
+  "id": "select-grammar",
+  "uuid": "eravos-select-grammar-0001-0000-000000000001",
+  "version": "0.11.0",
+  "owner": "shared/eravos-select-grammar.js",
+  "lifecycle": "Implemented",
+  "spec": "spec/PHASEMAP-v3.md",
+  "parent": "eravos-grammar-store-0001-0000-000000000001",
+  "category": "foundation",
+  "dom_ids_exposed": [".sg-offer"],
+  "kernel_hooks_called": ["eravosGrammar.propose", "renderGrammarTab", "showToast"],
+  "write_authority": "none — GrammarStore owns everything. This adds one entry path (§10.1).",
+  "offer_rule": {
+    "min_chars": 3, "max_chars": 60, "max_words": 6,
+    "requires_letters": true,
+    "never_in": "input, textarea, contenteditable — selecting inside a field you are writing in is editing, not proposing",
+    "never_duplicate": "a phrase already proposed, shared or retired is not re-offered; the reason names which state"
+  },
+  "failure_modes": [
+    "no grammar store -> propose() throws; health() reports 'no-grammar-store'",
+    "phrase already exists -> not offered, reason names the existing state and id",
+    "onPropose throws -> named in console, the proposal still lands"
+  ],
+  "invariants": [
+    "§1.1 STILL NOT AUTOMATIC — a person selects and presses a button. Nothing reads frequency, nothing suggests candidates, health().inferred is structurally 0.",
+    "a selection can never make a term shared — propose() lands in `proposed`, and only the other side's takeUp() promotes it",
+    "the affordance NEVER steals focus: mousedown default is prevented, no modal, no scroll, no caret move",
+    "dismissed by Escape, by scrolling, or by changing the selection",
+    "§17.5 origin is recorded as 'selection', so provenance is traceable",
+    "§12.5 the noise is MEASURED: shownButIgnored and offerRate are reported, and status flips to 'noisy — tighten the rule' when offers outrun actions. An affordance that fires when nobody wanted it is a bug, not a discovery feature."
+  ],
+  "status": "implemented — 17/17 in test/select-grammar.test.mjs. Suite 186/186 + lints. DOM positioning and the selectionchange handler need a real-browser pass; the offer rule, which is where the noise question is decided, is fully tested."
+}

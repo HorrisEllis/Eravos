@@ -1,0 +1,46 @@
+<!-- eravos tab: desires · category: relational · feature id: desires -->
+<div class="panel" id="panel-desires">
+  <div class="ht-page">
+    <div class="ht-head">
+      <div><div class="ht-title">Desires &amp; boundaries</div>
+        <div class="ht-sub" id="ds-sub"></div></div>
+      <button class="ht-icon" id="ds-new" title="Add something to consider">+</button>
+    </div>
+
+    <div class="ds-rules">
+      <p><strong>Neither of you goes first.</strong> Your answers stay sealed until you've
+        both answered that one — so nobody is answering in response to the other.</p>
+      <p><strong>Only mutual interest is ever shown.</strong> If one of you says no, the other
+        learns it isn't a match and nothing else. Not who said what. Not how close it was.</p>
+      <p><strong>A limit is absolute.</strong> No discussion, no revisiting here, no counter-offer.
+        You can take anything off the table at any moment, with no reason, and it's immediate —
+        they're never told what it was.</p>
+    </div>
+
+    <div class="ht-form" id="ds-form" hidden>
+      <input id="ds-item" placeholder="something to consider together" maxlength="120" autocomplete="off">
+      <div class="ht-row"><button class="ht-btn" id="ds-add">Add it</button>
+        <button class="ht-btn ghost" id="ds-cancel">Not now</button></div>
+    </div>
+
+    <!-- Real, direct request: give people a starting point, not just a
+         blank box. Adds through the exact same items()/saveItems()
+         mechanism as typing one in by hand -- the sealed-until-both-
+         answer, mutual-only-reveal, absolute-limit engine (window.
+         eravosDesires) doesn't know or care where an item came from. -->
+    <div class="ht-section">
+      <button class="ht-icon" id="ds-browse-toggle" style="width:auto;padding:8px 16px;border-radius:8px;font-size:.82rem">✦ Browse ideas together</button>
+      <div class="small" style="color:var(--dim);margin-top:8px;line-height:1.6">
+        A starting menu, not a checklist to get through. Add anything that's even a maybe —
+        it stays sealed and private until you've both weighed in, same as anything you type yourself.
+      </div>
+      <div id="ds-browse-panel" class="ds-browse-panel" hidden></div>
+    </div>
+
+    <div class="ht-section"><div class="ht-label">to answer</div><div class="ht-list" id="ds-todo"></div></div>
+    <div class="ht-section"><div class="ht-label">sealed — waiting on them</div><div class="ht-list" id="ds-sealed"></div></div>
+    <div class="ht-section"><div class="ht-label">both of you</div><div class="ht-list" id="ds-mutual"></div></div>
+    <details class="ht-shelved"><summary class="small">My limits</summary><div class="ht-list" id="ds-limits"></div></details>
+    <details class="ht-diag"><summary class="small">Diagnostics</summary><pre id="ds-health" class="small"></pre></details>
+  </div>
+</div>

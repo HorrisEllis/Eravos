@@ -1,0 +1,22 @@
+<!-- eravos tab: sparring · category: relational -->
+<!-- served by api/server.js at GET /api/tabs/sparring -->
+<!-- Just a chat window now — no solo free-write mode, no Oracle. The
+     floating "Invite to Spar" button (index.html, persistent shell) is
+     the entry point; this tab is where the conversation happens once
+     a match is accepted. -->
+<div class="panel" id="panel-sparring">
+
+    <div class="card" style="margin-bottom:24px;border-color:var(--line-fire)">
+      <div class="card-title">⚔ SPAR — turn-based, real time</div>
+      <p class="small italic" style="margin-bottom:14px;color:var(--dim)">Throw your words, hit send — like hitting a chess clock. Your partner has their per-turn window to answer and send back. Keeps alternating until the match runs out.</p>
+      <div id="spar-duo-connection-hint" class="small" style="display:none;color:var(--rose);margin-bottom:10px;padding:8px 10px;border:1px solid var(--line-fire2);border-radius:8px;background:var(--tint-fire2)">⚠ Not connected right now — a match needs a live connection. Check Settings → System, or just wait; it connects on its own once you're both online.</div>
+      <div id="spar-duo-match-body"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📜 SPAR HISTORY</div>
+      <div id="spar-history-list" class="fc gap10" style="max-height:340px;overflow-y:auto">
+        <div class="small italic text-center" style="padding:30px;color:var(--dim)">No spar sessions yet.</div>
+      </div>
+    </div>
+  </div>

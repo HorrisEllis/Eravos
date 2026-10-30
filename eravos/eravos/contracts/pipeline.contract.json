@@ -1,0 +1,27 @@
+{
+  "id": "pipeline",
+  "uuid": "eravos-relational-pipeline-0001-0000-000000000001",
+  "version": "0.22.0",
+  "owner": "shared/eravos-pipeline.js",
+  "lifecycle": "Implemented",
+  "parent": "eravos-kernel",
+  "category": "foundation",
+  "summary": "One route for relational data whatever it came from. Consent for external sources is enforced at the only door.",
+  "the_four_measures": {
+    "invariant": "what persists — words in >=80% of everything said, needs that recur across months. Slow, and means a lot when it changes.",
+    "sigma": "deviation from a baseline that is YOURS. Not \"is this high\" but \"is this high FOR YOU\" — a z-score against a rolling window. Why jitter thresholds are per-speaker and lattice thresholds are per-corpus.",
+    "delta": "change between two points. What moved, and how far.",
+    "divergence": "THE FOURTH, and the one the lattice is actually built on: disagreement between measures taken AT THE SAME TIME. Same need, different words. Same words, different feeling. Not persistence, not deviation, not change — two instruments reading one moment differently, and that gap is usually where the information is."
+  },
+  "invariants": [
+    "CONSENT IS THE ONLY DOOR. ingest() THROWS on an external record without a live grant from BOTH sides — §\"broken by design, an error not silent degradation\". An adapter cannot bypass it because the adapter never touches the store.",
+    "ONE side is not consent, and the refusal names who is missing.",
+    "Consent EXPIRES after 90 days. Consent that never expires is consent nobody is giving any more.",
+    "Either side revokes alone, instantly.",
+    "The SERVER never stores relational data. /pipeline/ingest parks records in memory, drained on read — a server-side store would be a second copy outside the device.",
+    "§17.5 every record carries provenance: source, external flag, adapter, original id.",
+    "Re-reading is idempotent: the platform id wins, else content alone."
+  ],
+  "found_by_test": "My first fingerprint bucketed time to the minute. Two reads forty seconds apart straddled a boundary and produced two records — a continuous scraper would have flooded the lattice with the same conversation. There is no bucket size without that edge, so time is ignored entirely when no platform id exists. The trade-off (two genuine \"ok\"s collapse) is the right way round.",
+  "status": "implemented — 22/22 in test/pipeline.test.mjs"
+}

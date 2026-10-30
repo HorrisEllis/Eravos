@@ -1,0 +1,25 @@
+{
+  "id": "rituals",
+  "dom_ids_exposed": [
+    "panel-rituals",
+    "ritual-duration",
+    "ritual-intention",
+    "ritual-mode",
+    "ritual-output",
+    "ritual-timer-display",
+    "timer-set"
+  ],
+  "kernel_hooks_called": [
+    "copyEl",
+    "generateRitual",
+    "getEl",
+    "pauseTimer",
+    "resetTimer",
+    "saveToVault",
+    "sendToCodex",
+    "startTimer"
+  ],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "category": "creating",
+  "has_subtabs": false
+}

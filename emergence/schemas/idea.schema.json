@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "emergence/schemas/idea.schema.json",
+  "title": "Emergence — Idea",
+  "description": "The real shape returned by idea-store's add() (a real WARP Gate, guarded by the idea:text-required hard Axiom) and read by list()/search()/findById(). Refactored from build-tools/rheon-idea-os/storage/IdeaStore.js -- see components/idea-store/component.spec for the full lineage.",
+  "type": "object",
+  "required": ["id", "ts", "text", "projectId", "tags", "source"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "description": "8 hex chars, crypto.randomBytes(4). Not content-addressed (unlike the underlying storage) -- a stable handle you use as a target.id." },
+    "ts": { "type": "integer", "description": "Unix millisecond timestamp, Date.now() at add() time." },
+    "text": { "type": "string", "minLength": 1, "description": "Required, trimmed, non-empty -- enforced by the real idea:text-required hard Axiom, not a post-hoc check." },
+    "projectId": { "type": ["string", "null"], "default": null },
+    "tags": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "source": { "type": "string", "default": "api", "description": "'cli' | 'api' by the original convention, not enforced as an enum here." }
+  }
+}

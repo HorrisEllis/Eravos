@@ -1,0 +1,23 @@
+{
+  "id": "callaudio",
+  "uuid": "eravos-callaudio-0001-0000-000000000001",
+  "version": "0.19.0",
+  "owner": "shared/eravos-callaudio.js",
+  "lifecycle": "Implemented",
+  "parent": "eravos-kernel",
+  "spec": "spec/PHASEMAP-v4.md",
+  "summary": "\"I cannot hear my partner.\" Six real fixes now. shared/clarity-engine.js's real gate/EQ/makeup-gain/limiter DSP chain is merged in here (Phase R, spec/PHASEMAP-v4.md) as startProcessing()/stopProcessing() -- config-driven from the same shared/clarity-config/*.json files, including the accent-boost profile. startCaptions() is the one real SpeechRecognition instance for call transcription -- eravos-kernel.js's toggleCallTranscription() (the real, UI-wired feature behind #btn-transcribe, feeding the lattice) delegates to it instead of running a second, competing recognizer. startAutoGain()/stopAutoGain() adjust the makeup gain automatically -- real RMS analysis distinguishing voiced speech from silence between words, an exponentially-weighted rolling average so a single loud/quiet moment never yanks the level, smoothed toward a target loudness the same way every other live adjustment in this module is. Starts automatically the moment real processing does (see eravos-kernel.js's attachRemoteStream()) -- not a manual step.",
+  "invariants": [
+    "REPLAY THE LAST 15 SECONDS is the highest-leverage one. You did not mishear because the codec was bad; you missed it because a bus went past. Memory only, rolling, dies with the call — a recording of your partner that outlives the conversation is a different thing, and not one anybody consented to. Buffers the DSP-processed stream when processing is active, not raw audio.",
+    "CAPTIONS are the real fallback when audio is genuinely bad. Local only, never synced: a caption is a GUESS about what someone said, and a guess must not be transmitted as though it were what they said.",
+    "The DEFAULT profile is what a meeting app would never pick — no noise suppression, no AGC. Noise suppression eats breath and the near-silence at the end of a sentence, often the part carrying the most.",
+    "usedtx=0 on purpose: discontinuous transmission cuts quiet passages, and quiet is where most of this conversation lives.",
+    "§1.2 SDP with no Opus is returned UNCHANGED with the reason — mangling the offer would break the call outright.",
+    "no MediaRecorder, no Blob, no writeFile anywhere in the module — asserted by a source grep",
+    "startProcessing()/stopProcessing() never mutate or replace the original stream -- returns a NEW MediaStream, same guarantee clarity-engine.js made."
+  ],
+  "not_verified": [
+    "the replay buffer, DSP chain, and captions need real Web Audio and a real mic in production use -- verified in this session via headless Chrome with fake media devices, not a physical device pass yet"
+  ],
+  "status": "implemented — covered by test/callaudio-expressions.test.mjs (23 assertions) + a real, direct end-to-end verification this session (headless Chrome, fake media devices): startProcessing()+startReplayBuffer() both confirmed genuinely running together via attachRemoteStream(), replay() confirmed returning real buffered audio samples (was previously non-functional -- startReplayBuffer() had never been called from any real call site, a genuine bug found and fixed in the same pass as the clarity-engine.js merge), detachStreams() confirmed correctly tearing down both DSP processing and the replay buffer."
+}

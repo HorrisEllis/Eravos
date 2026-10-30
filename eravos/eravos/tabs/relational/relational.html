@@ -1,0 +1,61 @@
+<!-- eravos tab: relational · category: relational -->
+<!-- served by api/server.js at GET /api/tabs/relational -->
+<div class="panel" id="panel-relational">
+    <div class="g2" style="margin-bottom:18px">
+      <div class="card">
+        <div class="card-title">🤝 RELATIONAL INTELLIGENCE</div>
+        <label class="fl">Relationship Stage</label>
+        <select id="rel-stage" style="margin-bottom:10px">
+          <option value="early">Early / Emerging</option>
+          <option value="established">Established Partnership</option>
+          <option value="long">Long-Term / Deep Roots</option>
+          <option value="transition">Transition / Change</option>
+          <option value="repair">Repair / Rebuilding</option>
+          <option value="solo">Self-Relationship</option>
+        </select>
+        <label class="fl">Current Relational Domain</label>
+        <select id="rel-domain" style="margin-bottom:10px">
+          <option value="connection">Connection & Closeness</option>
+          <option value="independence">Healthy Independence</option>
+          <option value="creativity">Creative Collaboration</option>
+          <option value="conflict">Conflict & Repair</option>
+          <option value="erotic">Erotic / Intimate</option>
+          <option value="growth">Individual Growth</option>
+          <option value="vision">Shared Vision</option>
+          <option value="daily">Daily Life & Logistics</option>
+        </select>
+        <button class="btn p" onclick="generateRelationalInsight()">✦ Relational Insight</button>
+        <div id="relational-output" class="ai-out mt12" style="min-height:100px;font-size:.9rem"><em class="small">...</em></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🌡 RELATIONSHIP PULSE</div>
+        <div class="fc gap12">
+          <div>
+            <label class="fl">Connection (1–10): <span id="pulse-conn-val">7</span></label>
+            <input type="range" id="pulse-conn" min="1" max="10" value="7" oninput="updatePulse()">
+          </div>
+          <div>
+            <label class="fl">Safety (1–10): <span id="pulse-safe-val">7</span></label>
+            <input type="range" id="pulse-safe" min="1" max="10" value="7" oninput="updatePulse()">
+          </div>
+          <div>
+            <label class="fl">Desire / Aliveness (1–10): <span id="pulse-desire-val">7</span></label>
+            <input type="range" id="pulse-desire" min="1" max="10" value="7" oninput="updatePulse()">
+          </div>
+          <div>
+            <label class="fl">Growth (1–10): <span id="pulse-growth-val">7</span></label>
+            <input type="range" id="pulse-growth" min="1" max="10" value="7" oninput="updatePulse()">
+          </div>
+          <button class="btn p" onclick="saveRelationalPulse()">💾 Save Pulse</button>
+          <button class="btn g" onclick="generatePulseInsight()">✦ Interpret Pulse</button>
+          <div id="pulse-output" class="ai-out" style="min-height:60px;font-size:.88rem;display:none"><em class="small">...</em></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📅 PULSE HISTORY</div>
+      <div id="pulse-history" class="ga" style="max-height:300px;overflow-y:auto">
+        <div class="small italic text-center" style="padding:20px;grid-column:1/-1">No pulse readings saved yet.</div>
+      </div>
+    </div>
+  </div>

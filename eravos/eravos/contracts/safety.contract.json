@@ -1,0 +1,31 @@
+{
+  "id": "safety",
+  "uuid": "eravos-safety-patterns-0001-0000-000000000001",
+  "version": "0.16.0",
+  "owner": "shared/eravos-safety.js",
+  "lifecycle": "Implemented",
+  "parent": "eravos-kernel",
+  "category": "system",
+  "summary": "Surfaces patterns a person might not have named yet, and keeps help within reach. Local only.",
+  "the_four_rules": [
+    "NEVER SYNCED. No bus, no emitSync, no fetch, no socket — the module has no transport at all, and a test greps the source to prove it. If a partner could learn the app had flagged something, the person it flagged is in more danger than before.",
+    "NEVER DIAGNOSES. It does not say \"you are being abused\" and it does not say \"you are abusive\". A test bans a vocabulary list from every pattern string, and asserts each one ends in a QUESTION rather than a conclusion.",
+    "RESOURCES ARE ALWAYS AVAILABLE, never triggered at someone. Settings, any time, whether or not anything was noticed.",
+    "DISMISSAL IS PERMANENT AND SILENT. One per pattern, forever. No escalate/remind/re-ask method exists, and a test asserts that."
+  ],
+  "never_does": [
+    "reads message content — a classifier over private messages is surveillance with a kind face",
+    "writes to shared_ or outbox namespaces",
+    "hardcodes a phone number that will rot",
+    "raises anything when the counts cannot be read — it fails closed"
+  ],
+  "thresholds": "Set high on purpose. A test feeds a bad week (3 ruptures, 2 could-not-says) and asserts NOTHING fires. A false positive here is a real harm and it burns the credibility of the one time it matters.",
+  "invariants": [
+    "health() reports synced:0, hasTransport:false, readsMessageContent:false, diagnoses:false",
+    "each pattern shows the count that produced it (§17.5)",
+    "at most one notice per session, never a list",
+    "a non-numeric count is ignored rather than coerced"
+  ],
+  "found_by_test": "Two patterns ended in soft conclusions rather than questions — \"Some things are not wanted, and that is an answer too.\" The test caught both. Softening a conclusion is still making one.",
+  "status": "implemented — 21/21 in test/safety.test.mjs"
+}

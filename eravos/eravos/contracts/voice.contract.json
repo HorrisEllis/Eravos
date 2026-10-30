@@ -1,0 +1,61 @@
+{
+  "id": "voice",
+  "uuid": "eravos-voice-module-0001-0000-000000000003",
+  "version": "0.4.0",
+  "owner": "eravos/tabs/voice",
+  "lifecycle": "Implemented",
+  "spec": "spec/voice-dimension.spec",
+  "parent": "eravos-kernel",
+  "children": [
+    "eravos-voice-prosody-0001-0000-000000000001",
+    "eravos-voice-observer-0001-0000-000000000002"
+  ],
+  "category": "space",
+  "has_subtabs": false,
+  "dom_ids_exposed": [
+    "panel-voice",
+    "voice-prosody-readout",
+    "voice-health"
+  ],
+  "kernel_hooks_called": [
+    "mountVoiceModule",
+    "unmountVoiceModule",
+    "voiceHealth"
+  ],
+  "consumes": [
+    "call:transcript_line",
+    "lattice:utterance"
+  ],
+  "emits": [
+    "alk.voice.prosody",
+    "alk.voice.abstained",
+    "alk.audio.frame",
+    "alk.verbal.analysis.tone"
+  ],
+  "requires": [
+    "bus:AlkBus",
+    "latent:LatentModel"
+  ],
+  "optional": [
+    "audioEngine:{snapshot()->{pitch,amplitude,zcr,spectralCentroid}}"
+  ],
+  "failure_modes": [
+    "missing bus -> mount() throws, names module + missing dependency",
+    "latent without observe() -> mount() throws, wrong vendor version",
+    "audioEngine without snapshot() -> mount() throws",
+    "unvoiced / silence -> abstains, emits alk.voice.abstained, ZERO observations",
+    "audioEngine.snapshot() throws -> caught, emitted as alk.voice.abstained, sampler survives"
+  ],
+  "idempotent": [
+    "mount",
+    "unmount"
+  ],
+  "invariants": [
+    "§1.1 no anomaly claimed before the speaker baseline is warm (5 readings)",
+    "§1.2 abstention is announced on the bus, never silent",
+    "§5.12 render() is optional -- removing the UI does not affect execution",
+    "§10.1 this module owns AUDIO. It never writes the text path's channels."
+  ],
+  "status": "implemented -- 23/23 tests passing. Adds SUPPRESSION, which the text-only path left at uncertainty 0.500 (no producer at all). Measured: 0.500 -> 0.116 after one voiced utterance, -> 0.040 after four. Ported from Rheon Voice v7 analysis-engine.js pitchEngine/oscillationEngine and audio-engine.js's autocorrelation F0 / RMS / ZCR / spectral-centroid extractors. Replaces the previous lattice.contract.json state of 'mechanically extracted -- hooks not yet scoped/typed in kernel' for the voice surface.",
+  "module_version": "0.1.0"
+}

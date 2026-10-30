@@ -1,0 +1,17 @@
+Leaflet v1.9.4
+https://leafletjs.com/
+License: BSD-2-Clause
+https://github.com/Leaflet/Leaflet/blob/main/LICENSE
+
+Vendored (not CDN-loaded) to keep this app's own library code self-hosted,
+per 01-ARCHITECTURE.md §0 ("always self-hosted"). Obtained via
+`npm install leaflet` and copying dist/leaflet.js, dist/leaflet.css, and
+dist/images/ verbatim — no build step, no modifications.
+
+Note the one real exception this doesn't cover: Leaflet renders map TILES
+it doesn't generate itself. Unless a tile server is also self-hosted
+(e.g. TileServer GL, planned as future work — see 04-PHASEMAP.md Phase 2),
+tile images are fetched from a public provider (OpenStreetMap's tile
+servers by default) at runtime, in the end user's own browser. That's a
+narrow, named exception to §0, not an oversight — recorded as a decision
+per §17.3, same as any other exception to a non-negotiable would be.

@@ -1,0 +1,138 @@
+<!-- eravos settings sub-tab: system -->
+<!-- served by api/server.js at GET /api/tabs/settings/subtabs/system -->
+<div id="settings-pane-system" style="display:none">
+
+      <!-- ── LOVE INBOX (Raven only) ────────────────────────────────────── -->
+      <div class="card" id="love-inbox-card" style="margin-bottom:18px;display:none">
+        <div class="card-title">💌 Love Inbox</div>
+        <div id="love-inbox-list"></div>
+      </div>
+
+      <!-- ── DUO SPAR MODE removed ─────────────────────────────────────────
+           Controlled whether solo spar prompts were "duo-flavored" —
+           solo mode itself is gone now (Sparring rebuilt as just a
+           chat window, no prompt system at all; a match's "reason" is
+           user-typed during setup instead). This toggle had nothing
+           left to affect. -->
+
+      <!-- Legacy compat — hidden stubs still read by the live P2P code path -->
+      <div style="display:none">
+        <div id="p2p-settings-status"></div>
+        <input type="text" id="my-room-code" readonly>
+        <input type="text" id="partner-room-code">
+        <div id="rtc-log"></div>
+        <div id="p2p-indicator-dot"></div>
+        <span id="rtc-status"></span>
+        <div id="p2p-dot-badge"></div>
+        <span id="my-room-code-display"></span>
+        <span id="partner-id-display"></span>
+      </div>
+
+      <!-- Co-Creation Connection -->
+      <div class="card" style="margin-bottom:18px">
+        <div class="flex jb ac" style="margin-bottom:10px">
+          <div class="card-title" style="margin:0">🔗 Co-Creation Connection</div>
+          <div style="display:flex;align-items:center;gap:5px;padding:3px 10px;border:1px solid var(--tint-teal-strong);border-radius:12px;background:var(--tint-teal)">
+            <span id="p2p-indicator-dot-sys" style="width:6px;height:6px;border-radius:50%;background:var(--dim);transition:background .4s,box-shadow .4s;flex-shrink:0"></span>
+            <span id="rtc-status-sys" class="small" style="color:var(--dim);font-family:var(--fm);font-size:.6rem;letter-spacing:.1em">NOT CONNECTED</span>
+          </div>
+        </div>
+        <p class="small" style="color:var(--dim);margin-bottom:10px;line-height:1.55">Auto-connects when both are online, via your own self-hosted relay — no PeerJS, no third-party signaling or TURN. Nothing to configure here; it just connects.</p>
+        <div class="fc gap4" style="margin-bottom:10px">
+          <div class="flex jb ac"><span class="small" style="color:var(--dim)">My ID</span><span id="my-room-code-display-sys" class="small" style="font-family:var(--fm);color:var(--amber);letter-spacing:.1em">—</span></div>
+          <div class="flex jb ac"><span class="small" style="color:var(--dim)">Partner ID</span><span id="partner-id-display-sys" class="small" style="font-family:var(--fm);color:var(--dim);letter-spacing:.1em">—</span></div>
+        </div>
+        <div id="rtc-log-sys" class="small" style="color:var(--dim);font-family:var(--fm);font-size:.62rem;min-height:14px"></div>
+      </div>
+
+      <!-- ── ACCOUNT & PARTNER (personal — reachable by either role) ──────
+           Moved from Settings > Admin (§16.1): inviting/redeeming/
+           decoupling/deleting YOUR OWN account are things about your own
+           account, not administration of someone else's. A partner-role
+           account had no way to redeem an invite while this lived behind
+           the admin gate — the pairing feature only worked in one
+           direction. The one action that stays admin-only — removing the
+           OTHER person's account — is still in Settings > Admin. -->
+      <div class="card" id="acct-partner-card" style="margin-bottom:18px;border-left:2px solid var(--rose)">
+        <div class="card-title">⚠ ACCOUNT &amp; PARTNER</div>
+        <p class="small" style="color:var(--dim);margin-bottom:14px;line-height:1.7">Every button here takes a full export first and hands it to you on the way out — nothing below can lose something without giving it back.</p>
+
+        <div id="acct-partner-row-sys" class="fc gap8" style="margin-bottom:16px"></div>
+
+        <div class="flex gap10 wrap" style="margin-bottom:10px">
+          <button class="btn p" onclick="openInvitePartner()">✦ Invite your partner</button>
+          <button class="btn p" onclick="toggleRedeemInvite()">✦ Enter invite code</button>
+        </div>
+        <!-- Only makes sense while single -- eravosPairing.scan() (called
+             by redeemInviteCode() in eravos-kernel.js) already refuses to
+             run at all once paired, so this just keeps the field out of
+             the way rather than inviting a confusing error click. -->
+        <div id="redeem-row-sys" style="display:none;margin-bottom:10px">
+          <input type="text" id="redeem-input-sys" class="iv-link" placeholder="paste their invite link or code" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();applyRedeemInvite();}">
+          <div class="flex gap10 wrap" style="margin-top:8px">
+            <button class="btn p" onclick="applyRedeemInvite()">Connect with their code</button>
+          </div>
+          <div class="login-error" id="redeem-error-sys" style="display:none;margin-top:6px"></div>
+        </div>
+
+        <div class="flex gap10 wrap">
+          <button class="btn g" onclick="decoupleFromPartner()">🔗 Decouple from partner</button>
+        </div>
+        <p class="small" style="color:var(--dim);margin-top:10px;line-height:1.6"><strong>Decouple</strong> clears the pairing only — their account and both your journals stay. To remove the other account entirely, an admin can do that from Settings &gt; Admin.</p>
+
+        <div class="flex gap10 wrap" style="margin-top:18px">
+          <button class="btn g" onclick="deleteMyAccount()" style="border-color:var(--rose);color:var(--rose)">✖ Delete my account</button>
+        </div>
+        <p class="small" style="color:var(--dim);margin-top:10px;line-height:1.6">Deletes <em>everything</em> on this device — your vault, codex, feelings, ruptures, the lattice, all of it. You will be asked to type your account name first, and the export downloads before anything is touched.</p>
+        <div id="acct-danger-msg-sys" class="small" style="margin-top:10px;min-height:16px;color:var(--amber)"></div>
+      </div>
+
+      <!-- Display -->
+      <div class="card" style="margin-bottom:18px">
+        <div class="card-title">⚙ Display</div>
+        <label class="fl">Accent Color</label>
+        <input type="color" id="accent-color" value="#ff6a00" onchange="setAccent(this.value)" style="height:34px;padding:2px;border-radius:6px;cursor:pointer;background:var(--glass);border:1px solid var(--border);margin-bottom:12px"><br>
+        <label class="fl">Fire Particles</label>
+        <select id="particle-density" style="margin-bottom:12px">
+          <option value="low">Low</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High</option>
+          <option value="off">Off</option>
+        </select>
+        <button class="btn" onclick="resetDefaults()">↩ Reset Defaults</button>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--tint-fire)">
+          <div style="font-family:var(--fm);font-size:.6rem;letter-spacing:.15em;color:var(--cyan);margin-bottom:6px">SERVICE WORKER CACHE</div>
+          <p class="small" style="color:var(--dim);margin-bottom:8px">Clear if the UI seems stale after an update.</p>
+          <div class="flex gap8 wrap">
+            <button class="btn g" onclick="erosClearCacheUI()">🗑 Clear Cache</button>
+            <span id="sw-cache-status" class="small" style="color:var(--dim);align-self:center"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── BACKUP & RESTORE ─────────────────────────────────────────────── -->
+      <div class="card" id="backup-restore-card" style="margin-bottom:18px">
+        <div class="card-title">💾 Backup &amp; Restore</div>
+        <p class="small" style="color:var(--dim);margin-bottom:12px;line-height:1.55">
+          Your data lives in this browser, tied to this exact address (host + port).
+          If you ever open Eravos from a different port or a different machine,
+          it looks empty — it isn't lost, it's just a different storage bucket.
+          Export a backup before switching how you host this, and Import it after.
+        </p>
+        <div class="flex gap10 wrap">
+          <button class="btn p" onclick="exportFullBackup()">⬇ Export Backup</button>
+          <button class="btn g" onclick="document.getElementById('backup-import-input').click()">⬆ Import Backup</button>
+          <input type="file" id="backup-import-input" accept="application/json" style="display:none" onchange="importFullBackup(this)">
+        </div>
+        <div id="backup-status" class="small" style="margin-top:10px;color:var(--teal);min-height:16px"></div>
+      </div>
+
+      <!-- ── VERSION ──────────────────────────────────────────────────────── -->
+      <div class="card" id="version-card" style="margin-bottom:18px">
+        <div class="card-title">🏷 Version</div>
+        <div class="small" style="color:var(--dim);line-height:1.6">
+          <span id="eravos-version-display" style="font-family:var(--fm);color:var(--amber)">…</span> — one number for the whole project (spec and code both), not independent counters per file. <code>0.&lt;phase&gt;.&lt;patch&gt;</code> while in development; <strong>1.0.0</strong> is reserved for every phase done and the real-world checks this environment can't run itself (the two-device P2P test, real Android hardware) actually confirmed, not just the automated suite. See the spec's README for the full scheme.
+        </div>
+      </div>
+
+    </div>

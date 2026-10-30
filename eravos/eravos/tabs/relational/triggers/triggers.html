@@ -1,0 +1,66 @@
+<!-- eravos tab: triggers · category: relational -->
+<!-- served by api/server.js at GET /api/tabs/triggers · lives at tabs/relational/triggers/triggers.html -->
+<div class="panel" id="panel-triggers">
+  <div class="g2">
+    <div class="fc gap16">
+
+      <div class="card" style="border-color:var(--line-teal-strong)">
+        <div class="card-title">🌊 TRIGGERED</div>
+        <p class="small italic" style="color:var(--dim);margin-bottom:16px">Hold for about a second to send. It's on purpose — an accidental tap shouldn't be able to fire this.</p>
+        <button id="triggered-hold-btn"
+          onmousedown="triggerHoldStart(event)" onmouseup="triggerHoldCancel()" onmouseleave="triggerHoldCancel()"
+          ontouchstart="triggerHoldStart(event)" ontouchend="triggerHoldCancel()" ontouchcancel="triggerHoldCancel()">
+          <div id="triggered-hold-fill"></div>
+          <span>🌊 Hold to signal</span>
+        </button>
+        <div id="trigger-log-prompt" class="card" style="display:none;margin-top:14px;background:var(--glass2)">
+          <div class="small" style="color:var(--dim);margin-bottom:8px">Want to log that moment, now that it's passed?</div>
+          <textarea id="trigger-log-note" rows="2" placeholder="Optional note..."></textarea>
+          <div class="flex gap8 mt8">
+            <button class="btn g" style="font-size:.75rem" onclick="logLastTriggeredMoment(document.getElementById('trigger-log-note').value)">💾 Log it</button>
+            <button class="btn g" style="font-size:.75rem" onclick="document.getElementById('trigger-log-prompt').style.display='none'">Skip</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📖 MY TRIGGER MAP</div>
+        <p class="small" style="color:var(--dim);margin-bottom:14px;line-height:1.6">Written in your own words — never AI-generated. Share only what you choose to; unshared entries stay private.</p>
+        <div id="trigger-map-list" class="fc" style="margin-bottom:16px"></div>
+
+        <div id="trigger-form" class="fc gap10" style="border-top:1px solid var(--border2);padding-top:14px">
+          <label class="fl">Name it</label>
+          <input type="text" id="trigger-label" placeholder="A short name for this, your own words">
+          <label class="fl">Body signs (comma-separated, optional)</label>
+          <input type="text" id="trigger-body-signs" placeholder="tight chest, can't make eye contact...">
+          <label class="fl">How to hold me</label>
+          <textarea id="trigger-how-to-hold" rows="2" placeholder="What you want your partner to do"></textarea>
+          <label class="fl">What not to do (optional)</label>
+          <input type="text" id="trigger-what-not" placeholder="">
+          <label class="fl">For myself, first (comma-separated, optional)</label>
+          <input type="text" id="trigger-self-soothing" placeholder="steps you take for yourself">
+          <button class="btn p" onclick="saveTriggerEntry()">💾 Save Entry</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc gap16">
+      <div class="card">
+        <div class="card-title">💗 HOW TO HOLD THEM</div>
+        <p class="small" style="color:var(--dim);margin-bottom:14px">Your partner's shared entries — reference material available before an activation happens, not just during one.</p>
+        <div id="partner-trigger-map-list" class="fc"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick-select modal — optional, skippable per spec ("sending blank is valid") -->
+  <div id="trigger-quick-select-modal">
+    <div id="trigger-quick-select-box">
+      <div class="priming-title" style="margin-bottom:14px">Which one? (optional)</div>
+      <div id="trigger-quick-select-list" class="fc" style="margin-bottom:14px"></div>
+      <div class="flex gap10">
+        <button class="btn g fw" onclick="sendTriggeredSignalBlank()">Skip — just send</button>
+      </div>
+    </div>
+  </div>
+</div>

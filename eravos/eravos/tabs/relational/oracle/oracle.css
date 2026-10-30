@@ -1,0 +1,8 @@
+/* tabs/relational/oracle/oracle.css
+ * Oracle-specific styling. The Oracle panel composes the shared design
+ * system entirely (.card, .btn, .fc, .g2, .ai-out from
+ * shared/eravos-kernel.css) — there's no oracle-only visual language,
+ * so this file is intentionally near-empty rather than padded with
+ * unearned rules (§0.5/§16.4). Add oracle-specific rules here as they
+ * come up; don't reach back into eravos-kernel.css for them.
+ */

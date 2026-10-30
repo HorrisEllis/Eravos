@@ -1,0 +1,38 @@
+{
+  "id": "triggers",
+  "location": "tabs/relational/triggers/ (triggers.html, triggers.css, triggers.js)",
+  "dom_ids_exposed": [
+    "panel-triggers",
+    "triggered-hold-btn",
+    "triggered-hold-fill",
+    "trigger-log-prompt",
+    "trigger-log-note",
+    "trigger-map-list",
+    "trigger-form",
+    "trigger-label",
+    "trigger-body-signs",
+    "trigger-how-to-hold",
+    "trigger-what-not",
+    "trigger-self-soothing",
+    "partner-trigger-map-list",
+    "trigger-quick-select-modal",
+    "trigger-quick-select-box",
+    "trigger-quick-select-list"
+  ],
+  "owned_hooks": [
+    "renderTriggerMap", "editTriggerEntry", "saveTriggerEntry",
+    "deleteTriggerEntry", "toggleShareTriggerEntry",
+    "renderPartnerTriggerMap", "triggerHoldStart", "triggerHoldCancel",
+    "triggerHoldComplete", "populateTriggerQuickSelect",
+    "openTriggerQuickSelect", "closeTriggerQuickSelect",
+    "sendTriggeredSignal", "sendTriggeredSignalBlank",
+    "logLastTriggeredMoment"
+  ],
+  "shared_hooks_called": [
+    "DB", "S", "emitSync", "showToast", "_userKey",
+    "_triggerMap", "_triggerMapSet", "_partnerTriggerMap"
+  ],
+  "notes": "Phase 2 (03-FEATURE-SPECS.md \u00a7Triggers, 02-DATA-SCHEMAS.md TriggerMapEntry/TriggeredSignal). The receiving side \u2014 showTriggeredOverlay() and the trigger:shared_entry/trigger:unshare/triggered:signal syncStream gates \u2014 lives in shared/eravos-kernel.js, cross-cutting, since a TriggeredSignal has to interrupt regardless of whether this tab is open, same reasoning as Urgent poke. Checked before assumed this time, learned from the poke/feelingToOracle mistakes: everything in this file is verified reachable only from this tab's own onclick handlers. Deliberately NOT reusing showUrgentPoke()'s alarm-red styling for the receiving overlay \u2014 spec explicitly calls for calm, not alarm; gets its own teal/soft treatment (.triggered-overlay in shared/eravos-kernel.css).",
+  "category": "relational",
+  "has_subtabs": false
+}

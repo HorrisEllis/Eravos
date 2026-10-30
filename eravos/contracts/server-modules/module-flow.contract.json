@@ -1,0 +1,44 @@
+{
+  "id": "module-flow",
+  "version": "1.0.0",
+  "location": "eravos/server-modules/module-flow.js",
+  "owner": "eravos-serve.js and every real server-module it boots (ddns-client.js today; the voice/video modules to follow use this same bus, not a second one)",
+  "summary": "The real, shared server-side event bus. Built directly on WARP's own Cause/Drawbridge/Flow/FlowLog primitives (../warp, a real sibling project) rather than a new implementation -- one shared Flow instance, so any module's Drawbridge/observer is genuinely on the same bus as every other module's.",
+
+  "provides": {
+    "emit(type, data)": "Constructs a real Cause and dispatches it through the shared Flow. Also appends the real Cause (type/data/uuid/ts) to a real, persisted JSONL file (data/module-flow/events.jsonl) -- this file's own addition, layered on top of WARP's FlowLog, which is correctly, intentionally in-memory-only (confirmed directly by reading warp/core/FlowLog.js). Returns whatever flow.emit() returns (void unless an async Drawbridge is on the path).",
+    "register(signature, handler, opts?)": "The one, exclusive owner of a Cause type. handler(cause) -> Cause[] | null, matching Drawbridge's own real pure-transform contract (no side effects beyond what it returns). Throws synchronously on signature collision -- inherited directly from Flow.register(), not re-implemented.",
+    "on(type, observerFn)": "A real, non-exclusive subscriber. Multiple observers may listen to the same Cause type; register() may not. observerFn's own errors are caught and swallowed by Flow itself (confirmed directly in Flow.emit()'s real code) -- an observer's bug can never break the emitting module.",
+    "readHistory(limit?)": "Reads the real, persisted JSONL event log back from disk. Returns [] (not a throw) if the file doesn't exist yet -- a fresh install with no events logged is a valid, real state, not an error."
+  },
+
+  "invariants": [
+    "Exactly one Flow instance exists per process (module-level singleton, not a class other files instantiate their own copy of) -- two modules calling register()/on() are provably on the same bus.",
+    "register() for an already-claimed signature always throws, synchronously, before any handler runs -- §14.3 (signature collision is a hard error), inherited from Flow itself, never caught/suppressed by this file.",
+    "emit() never throws for 'nobody is listening' -- confirmed directly in Flow.emit()'s real code: an unclaimed Cause is recorded (drawbridgeClaimed: null) and pushed to flow.pending, not dropped and not an error. A module emitting a genuinely informational event doesn't need to know or care whether anything observes it yet.",
+    "Every real emit() call is persisted to disk before flow.emit() runs -- a crash mid-dispatch still leaves the real event in the durable log."
+  ],
+
+  "failure_modes": [
+    { "case": "Two modules call register() for the same signature", "behavior": "Second call throws '[warp/Flow] Signature collision: <signature>' synchronously. Caller's own try/catch decides what happens next -- this file does not swallow it." },
+    { "case": "data/module-flow/ is not writable", "behavior": "emit() still dispatches the real Cause through Flow (observers/drawbridges still run) -- only the disk persistence step fails, logged via console.warn, never thrown up to the caller. A module's real-time behavior is never blocked by a logging failure." },
+    { "case": "events.jsonl contains a corrupted/partial line (e.g. truncated by an unclean shutdown mid-write)", "behavior": "readHistory() skips that one line (JSON.parse failure -> filtered out via Boolean), returns every other real entry -- one bad line never loses the rest of the real history." }
+  ],
+
+  "permissions": "In-process only -- this is a same-Node-process module, not a network-reachable service. No authentication concept applies; anything requiring this module already had require() access to the whole server process.",
+
+  "real_events_in_use": {
+    "ddns:updated": { "emitted_by": "server-modules/ddns-client.js", "data_shape": "{ hostname: string, ip: string, previousIp: string|null }", "when": "A real, successful provider update where the IP genuinely changed from the last known value -- not re-emitted on every check if the IP is unchanged (see ddns-client.js's own real no-op path)." },
+    "ddns:update_failed": { "emitted_by": "server-modules/ddns-client.js", "data_shape": "{ hostname: string, reason: string, httpStatus?: number }", "when": "Either the provider rejected the update (badauth/!yours/abuse/nohost, or any non-200) or the update request itself failed (network error, timeout)." }
+  },
+
+  "provenance": {
+    "generated_by": "Claude, this session",
+    "why_warp_and_not_a_new_bus": "Direct instruction: 'use warp for any new files.' warp/ already exists as a real, tested, zero-dependency sibling project implementing exactly this Cause/Drawbridge/Flow/FlowLog pattern (confirmed by reading warp/core/index.js and warp/index.js directly before writing this file) -- building a second, parallel event-bus implementation would have violated §16.5 (delete before you add) and §0.5 (complexity must earn its existence: a second bus does not earn its existence when a real one already exists).",
+    "real_mistakes_made_and_fixed_before_this_shipped": [
+      "Assumed FlowLog's constructor accepted { dir }. Verified directly (constructor() takes no arguments) before shipping -- fixed to layer real, separate JSONL persistence around FlowLog instead of inventing a constructor option WARP doesn't have.",
+      "First fix for the above reassigned log.record() at runtime to add persistence -- a real §5.3/§5.9 violation (a monkey patch reaching into WARP's own FlowLog internals). Caught and reverted before shipping; persistence now lives entirely in emit(), code this file actually owns.",
+      "ddns-client.js's own previousIp field read state.lastIp AFTER reassigning it to the new IP, which would have reported the new IP as its own previous value. Caught by re-reading the code before testing, fixed by capturing the real old value first."
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+<!-- eravos tab: struggles · category: relational -->
+<!-- served by api/server.js at GET /api/tabs/struggles · lives at tabs/relational/struggles/struggles.html -->
+<div class="panel" id="panel-struggles">
+
+  <div id="struggles-trust-gate" class="card" style="display:none">
+    <div class="card-title">💗 A QUESTION FIRST</div>
+    <p style="font-size:1rem;line-height:1.8;margin-bottom:20px">Would you trust me to share your struggles so that I can make sure your partner can support you in the ways you deserve?</p>
+    <div class="flex gap12 wrap">
+      <button class="btn p" onclick="answerStrugglesTrustGate(true)">Yes, let's do this</button>
+      <button class="btn g" onclick="answerStrugglesTrustGate(false)">Not right now</button>
+    </div>
+  </div>
+
+
+    <div class="g2">
+      <div class="fc gap16">
+        <div class="card">
+          <div class="card-title" style="margin:0 0 10px">📋 WHAT I'M WORKING THROUGH</div>
+          <p class="struggles-checklist-intro">No number of these checked says anything about who you are — just what's been true for you sometimes. Read them slowly; there's no clock on this.</p>
+          <div id="struggles-checklist"></div>
+          <label class="small mt12" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding-top:10px;border-top:1px solid var(--border2)">
+            <input type="checkbox" id="struggles-share-checklist" onchange="toggleStrugglesChecklistShare(this.checked)">
+            💗 Share this with my partner
+          </label>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📖 MY STORY</div>
+          <p class="small italic" style="color:var(--dim);margin-bottom:10px">Personal by default. Share only when you choose to.</p>
+          <textarea id="struggles-story" rows="5" placeholder="Tell it in your own words, in your own time..."></textarea>
+          <div class="small mt8" id="struggles-story-share-status" style="color:var(--dim)">🔒 Private</div>
+          <div class="flex gap8 mt10 wrap">
+            <button class="btn g" style="font-size:.78rem" onclick="saveStrugglesStory()">💾 Save privately</button>
+            <button class="btn p" style="font-size:.78rem" onclick="shareStrugglesStory()">💗 Share with partner</button>
+            <button class="btn g" style="font-size:.78rem" onclick="unshareStrugglesStory()">Unshare</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="fc gap16">
+        <div class="card">
+          <div class="card-title">💗 WHAT MY PARTNER HAS SHARED</div>
+          <div id="partner-struggles-checklist" class="fc gap6"></div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="font-size:.72rem">📖 THEIR STORY</div>
+          <div id="partner-struggles-story" class="small" style="color:var(--dim);font-style:italic;line-height:1.6">Nothing shared yet.</div>
+        </div>
+      </div>
+    </div>
+  </div>

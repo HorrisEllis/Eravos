@@ -1,0 +1,24 @@
+{
+  "id": "unmet-needs",
+  "uuid": "eravos-unmet-needs-0001-0000-000000000001",
+  "version": "0.23.0",
+  "owner": "shared/alk/unmet-needs.js",
+  "lifecycle": "Implemented",
+  "parent": "eravos-kernel",
+  "category": "relational",
+  "summary": "A need that keeps arriving while nothing addresses it. The accumulation, not the instance.",
+  "why": "htl.js populates `unmet` only from emo.dominant, and those circuits are 40-90% face-cue driven. On text-only input GRIEF tops out at 0.15 against a 0.2 threshold, so `unmet` stayed permanently EMPTY. I recorded that as a limitation and moved on. That was wrong: an empty `unmet` is not a missing field, it is the highest-value signal in the app going unrecorded. A need named once is information; a need that arrives again and again while nothing addresses it is accumulation, and accumulation nobody names is what resentment is made of.",
+  "no_vendored_edit": "htl.js is vendored unmodified and hashed (86dc863a7fbc) so its provenance is verifiable. Editing it to add a text term would break that for one feature. This is SOVEREIGN instead: a text-native producer on its own channel that MERGES alongside htl output rather than replacing it. sources.circuits and sources.text stay separable (§17.5). When a camera is present htl still wins.",
+  "invariants": [
+    "detects on TEXT ALONE — 10 needs, evidence-based, every detection carries the words that produced it",
+    "a need expressed as a LACK is both active and unmet; a need expressed as PRESENT is active and NOT unmet",
+    "ADDRESSED comes only from an ACT — repair, care entry, commitment, conversation, manual. A reply is not an act and sentiment is definitely not. That is the point where guessing would be easiest and would quietly erase the very signal this exists to keep (§1.1).",
+    "the clock RESTARTS when something is done; the history is NOT erased (§0.3)",
+    "thresholds are not thin: 4+ occurrences across 21+ days. A bad fortnight does not stand, though it is still tracked and visible.",
+    "it DESCRIBES and asks. It never names resentment, never blames, and every surfaced item ends in a question. A banned-vocabulary test enforces it.",
+    "§0.4 occurrences bounded at 300; the count and span survive trimming"
+  ],
+  "found_by_test": "A strict `>` on the addressed boundary silently dropped an occurrence landing in the same millisecond as the act — someone logging a repair and immediately saying the thing again would lose it. Measured 4 where 5 were recorded. Inclusive now.",
+  "measured": "Six weeks of realistically-shaped input: CONNECTION surfaced at 4 occurrences over 55 days with three verbatim examples attached; UNDERSTANDING, INTERDEPENDENCE, AUTHENTICITY and RESPECT tracked below threshold and visible without being surfaced.",
+  "status": "implemented — 18/18 in test/unmet.test.mjs"
+}

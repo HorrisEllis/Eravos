@@ -1,0 +1,30 @@
+{
+  "id": "rupture",
+  "dom_ids_exposed": [
+    "panel-rupture",
+    "repair-actions",
+    "repair-ai-output",
+    "repair-flow",
+    "repair-rupture-context",
+    "repair-steps-list",
+    "rup-feeling",
+    "rup-need",
+    "rup-part",
+    "rup-sev-val",
+    "rup-severity",
+    "rup-status",
+    "rup-what",
+    "rupture-form",
+    "rupture-guidance",
+    "ruptures-list"
+  ],
+  "kernel_hooks_called": [
+    "getElementById",
+    "getRuptureGuidance",
+    "openRuptureForm",
+    "saveRupture"
+  ],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "category": "relational",
+  "has_subtabs": false
+}

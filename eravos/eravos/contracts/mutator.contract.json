@@ -1,0 +1,21 @@
+{
+  "id": "mutator",
+  "dom_ids_exposed": [
+    "mutation-strength",
+    "mutator-prompts",
+    "mutator-source",
+    "mutator-style",
+    "palette-output",
+    "palette-source",
+    "palette-swatches",
+    "panel-mutator"
+  ],
+  "kernel_hooks_called": [
+    "generateImagePrompts",
+    "generatePalette",
+    "mutatePrompts"
+  ],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "category": "creating",
+  "has_subtabs": false
+}

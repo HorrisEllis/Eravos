@@ -1,0 +1,85 @@
+<!-- eravos tab: admin · category: system -->
+<div class="panel" id="panel-admin">
+  <div class="fc gap18">
+
+    <div class="card">
+      <div class="card-title">🛠 ADMIN</div>
+      <p class="small" style="color:var(--dim);line-height:1.7;margin-bottom:8px">
+        People, connections, and data. Every destructive action takes a full export first —
+        nothing here can lose something without handing it back to you on the way out.
+      </p>
+      <div class="flex gap10 wrap mt8" id="adm-summary"></div>
+    </div>
+
+    <!-- PEOPLE -->
+    <div class="card">
+      <div class="card-title" style="color:var(--amber)">👤 PEOPLE</div>
+      <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">
+        Rename keeps a person's history with them. Replace does not — a different person
+        does not inherit someone else's logged feelings. The two are separate on purpose.
+      </p>
+      <div class="fc gap10" id="adm-users"></div>
+    </div>
+
+    <!-- CO-CREATION -->
+    <div class="card">
+      <div class="card-title" style="color:var(--teal)">🔗 CO-CREATION CONNECTION</div>
+      <p class="small" style="color:var(--dim);margin-bottom:12px;line-height:1.6">
+        Clears the pair: partner mirrors, shared namespace, outbox, pipeline code, invite
+        state, and the crypto identity keys so the next connection handshakes fresh.
+        <strong>Neither person's own journal, vault, codex or feeling history is touched</strong> —
+        those are individual, not shared.
+      </p>
+      <div id="adm-cocreation" class="fc gap8"></div>
+      <div class="flex gap10 wrap mt8">
+        <button class="btn ghost" onclick="admExportAll()">⬇ Export everything first</button>
+        <button class="btn danger" onclick="admClearCoCreation()">Disconnect co-creation</button>
+      </div>
+    </div>
+
+    <!-- SERVER ADDRESS -->
+    <div class="card">
+      <div class="card-title" style="color:var(--amber)">🌐 SERVER ADDRESS</div>
+      <p class="small" style="color:var(--dim);margin-bottom:14px;line-height:1.6">
+        What invite links and QR codes actually point to. Real, live-editable — changes here
+        write straight to the server's own config, no restart needed for the next invite you
+        generate. Leaving it blank falls back to whatever address your own browser is on right
+        now, which is only right if you're generating the invite from the same place a guest
+        would actually connect to.
+      </p>
+      <div id="adm-origin-current" class="small" style="color:var(--dim);margin-bottom:12px;font-family:var(--fm)">Checking…</div>
+      <div class="flex gap8 wrap" style="margin-bottom:12px" id="adm-origin-quick"></div>
+      <div class="flex gap10 wrap">
+        <input type="text" id="adm-origin-input" placeholder="https://anonymousservers.info" style="flex:1;min-width:220px">
+        <button class="btn p" onclick="admSetPublicOrigin()">Save</button>
+        <button class="btn ghost" onclick="admClearPublicOrigin()">Clear (auto-detect)</button>
+      </div>
+      <div id="adm-origin-status" class="small" style="margin-top:8px;min-height:16px"></div>
+    </div>
+
+    <!-- THEMES -->
+    <div class="card">
+      <div class="card-title">🎨 THEMES</div>
+      <p class="small" style="color:var(--dim);line-height:1.6;margin-bottom:10px">
+        One theme — the default 🔥 Original Fire. Every colour in every tab is a CSS
+        custom property, so nothing needed restyling.
+      </p>
+      <div class="flex gap10 wrap">
+        <button class="btn ghost" onclick="admPurgeThemes()">Purge retired theme state</button>
+      </div>
+      <div id="adm-themes" class="small mt8" style="color:var(--dim)"></div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="card" id="adm-result-card" style="display:none">
+      <div class="card-title" style="font-size:.75rem">📋 LAST OPERATION</div>
+      <pre id="adm-result" class="small" style="white-space:pre-wrap;line-height:1.55;max-height:340px;overflow:auto;color:var(--dim)"></pre>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="font-size:.75rem">🩺 DIAGNOSTICS</div>
+      <pre id="adm-health" class="small" style="white-space:pre-wrap;line-height:1.5;max-height:260px;overflow:auto;color:var(--dim)"></pre>
+    </div>
+
+  </div>
+</div>

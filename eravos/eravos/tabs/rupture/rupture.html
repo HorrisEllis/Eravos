@@ -1,0 +1,73 @@
+<!-- eravos tab: rupture · category: relational -->
+<!-- served by api/server.js at GET /api/tabs/rupture -->
+<div class="panel" id="panel-rupture">
+    <div class="card-title" style="margin-bottom:6px">⚡ Rupture &amp; repair</div>
+    <div id="rupture-stats-line" class="small" style="color:var(--dim);margin-bottom:14px"></div>
+
+    <!-- Team framing reminder -->
+    <div class="card" style="margin-bottom:18px;background:var(--tint-teal);border-color:var(--line-teal)">
+      <div style="font-family:var(--fd);font-size:.85rem;color:var(--teal);margin-bottom:8px">✦ The frame that changes everything</div>
+      <p class="small" style="color:var(--dim);line-height:1.75;margin:0">You are not opponents in this conflict.<br>You and your partner are on the same team — together against the problem.<br><em style="color:var(--amber)">Us vs. the problem. Never us vs. each other.</em></p>
+    </div>
+
+    <!-- Real, always-visible form -- was hidden behind a "+ Log Rupture"
+         toggle button before, same "reads as an empty box" issue already
+         found and fixed for Growth. Grammar/Hard Talk both show their
+         input fields immediately; this now matches that pattern. -->
+    <div class="g2" style="margin-bottom:8px">
+      <div>
+        <label class="fl">What happened</label>
+        <textarea id="rup-what" rows="3" placeholder="Describe the rupture or conflict briefly..."></textarea>
+        <label class="fl mt12">My feeling in it</label>
+        <input type="text" id="rup-feeling" placeholder="I felt...">
+        <label class="fl mt12">Severity: <span id="rup-sev-val">5</span>/10</label>
+        <input type="range" id="rup-severity" min="1" max="10" value="5" oninput="document.getElementById('rup-sev-val').textContent=this.value">
+      </div>
+      <div>
+        <label class="fl">My part in it</label>
+        <textarea id="rup-part" rows="2" placeholder="What was my contribution?"></textarea>
+        <label class="fl mt12">What would help repair this</label>
+        <textarea id="rup-need" rows="2" placeholder="What I need to feel safe again..."></textarea>
+        <label class="fl mt12">Status</label>
+        <select id="rup-status">
+          <option value="open">Open</option>
+          <option value="healing">Healing</option>
+          <option value="resolved">Resolved ✓</option>
+        </select>
+        <!-- The debt named in Phase G, paid here. `rup-status` stays a closed
+             list because relational-health derivations read it as a state
+             machine and free text would break every consumer — but "still
+             there, we just don't talk about it" fits none of the three, and
+             being made to pick the nearest wrong one is exactly what §1.2
+             warns about. So: a companion field ALONGSIDE the status, never
+             replacing it. The derivations keep their state machine; the person
+             keeps their own words. -->
+        <label class="fl mt12">In your words — if none of those quite fit</label>
+        <input type="text" id="rup-status-note" maxlength="160" autocomplete="off"
+               placeholder="e.g. still there, we just don't talk about it">
+      </div>
+    </div>
+    <div class="flex gap12 mt12 wrap" style="margin-bottom:24px">
+      <button class="btn p" onclick="saveRupture()">Log it</button>
+      <button class="btn g" onclick="getRuptureGuidance()">🔮 Get guidance</button>
+      <button class="btn g" onclick="clearRuptureForm()">Not now</button>
+    </div>
+    <div id="rupture-guidance" class="ai-out mt12" style="display:none;font-size:.9rem;margin-bottom:24px"></div>
+
+    <!-- Repair flow — shows when a rupture is selected for repair -->
+    <div id="repair-flow" class="card" style="display:none;margin-bottom:18px;border-color:var(--tint-rose)">
+      <div class="flex jb ac mb12">
+        <div class="card-title" style="margin:0">🔧 REPAIR FLOW</div>
+        <button class="btn g" style="font-size:.72rem" onclick="document.getElementById('repair-flow').style.display='none'">✕</button>
+      </div>
+      <div id="repair-rupture-context" class="small italic" style="color:var(--dim);margin-bottom:14px;line-height:1.6"></div>
+      <div class="fc gap10" id="repair-steps-list"></div>
+      <div id="repair-ai-output" class="ai-out mt12" style="min-height:80px;display:none"></div>
+      <div class="flex gap10 mt12 wrap" id="repair-actions"></div>
+    </div>
+
+    <!-- Rupture list -->
+    <div id="ruptures-list" class="fc gap12">
+      <div class="small italic text-center" style="padding:40px;color:var(--dim)">No ruptures logged. Conflicts are opportunities for deeper connection.</div>
+    </div>
+  </div>

@@ -1,0 +1,29 @@
+<!-- eravos tab: meaning · category: creating -->
+<!-- served by api/server.js at GET /api/tabs/meaning · lives at tabs/meaning/meaning.html -->
+<div class="panel" id="panel-meaning">
+  <div class="card" style="margin-bottom:18px">
+    <div class="card-title">💗 ADD TO THE ARCHIVE</div>
+    <div class="meaning-upload-zone" onclick="document.getElementById('meaning-file-input').click()"
+      ondragover="_meaningDragOver(event)" ondragleave="_meaningDragLeave(event)" ondrop="_meaningDrop(event)">
+      <div style="font-size:1.6rem;margin-bottom:8px">📷🎥🎨</div>
+      <div class="small" style="color:var(--dim)">Drag photos, video, or art here — or tap to choose</div>
+      <input type="file" id="meaning-file-input" accept="image/*,video/*" multiple style="display:none" onchange="handleMeaningFileSelect(this.files)">
+    </div>
+    <label class="fl mt14">Or write a journal entry</label>
+    <textarea id="meaning-journal-text" rows="2" placeholder="A moment worth keeping, in your own words..."></textarea>
+    <button class="btn p mt8" onclick="addMeaningJournalEntry()">💗 Add Journal Entry</button>
+  </div>
+
+  <div class="flex gap8 mb14 wrap">
+    <button class="btn g meaning-filter-btn active" data-type="all" onclick="setMeaningFilter('all')">All</button>
+    <button class="btn g meaning-filter-btn" data-type="photo" onclick="setMeaningFilter('photo')">📷 Photos</button>
+    <button class="btn g meaning-filter-btn" data-type="video" onclick="setMeaningFilter('video')">🎥 Video</button>
+    <button class="btn g meaning-filter-btn" data-type="art" onclick="setMeaningFilter('art')">🎨 Art</button>
+    <button class="btn g meaning-filter-btn" data-type="journal" onclick="setMeaningFilter('journal')">📔 Journal</button>
+    <button class="btn g meaning-filter-btn" data-type="message" onclick="setMeaningFilter('message')">💗 Feeling Shares</button>
+    <button class="btn g meaning-filter-btn" data-type="love_note" onclick="setMeaningFilter('love_note')">💌 Love Notes</button>
+    <button class="btn g meaning-filter-btn" data-type="poem" onclick="setMeaningFilter('poem')">📜 Poems</button>
+  </div>
+
+  <div id="meaning-grid"></div>
+</div>

@@ -1,0 +1,582 @@
+'use strict';
+/**
+ * engines/tunnel.js — zero-config automatic tunnel
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Gets your server reachable from the internet with zero manual config,
+ * no VPS, no port forwarding, no registrar.
+ *
+ * Strategy (tries in order, uses first that works):
+ *
+ *   1. Direct — you have a public IP and open ports → just use it
+ *   2. UPnP   — router supports UPnP → auto port-forward from inside LAN
+ *   3. PCP/NAT-PMP — modern router protocol (same idea, better than UPnP)
+ *   4. Cloudflare Tunnel (free) — if CF token provided, auto-tunnel
+ *   5. Ngrok (free tier) — if token provided, auto-tunnel
+ *   6. Loophole / serveo / localhost.run — zero-config SSH tunnels, no account
+ *   7. Playit.gg — free gaming tunnel, works for any TCP/UDP
+ *
+ * Also:
+ *   - Detects CGNAT automatically (checks if public IP differs from router IP)
+ *   - Auto-heals: if tunnel drops, tries next strategy
+ *   - Exposes tunnel URL to all other engines via IPC event tunnel:ready
+ *   - Writes tunnel URL into DNS TXT record so peers can find you
+ *
+ * HTTP API (proxied at /ui/tunnel/*):
+ *   GET  /tunnel/status      current tunnel strategy + URL
+ *   GET  /tunnel/strategies  all strategies, which are working
+ *   POST /tunnel/config      configure tokens for premium strategies
+ *   POST /tunnel/restart     force re-probe and reconnect
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+const http    = require('http');
+const https   = require('https');
+const net     = require('net');
+const dgram   = require('dgram');
+const cp      = require('child_process');
+const crypto  = require('crypto');
+const fs      = require('fs');
+const path    = require('path');
+const { ipc, conf, log, claimPort, isInit, NAME, ROOT } = require('./_engine');
+
+const DEFAULTS = {
+  listenPort:    7801,
+  targetPort:    8080,    // the local port to expose (proxy HTTP)
+  targetHost:    '127.0.0.1',
+  retryMs:       30000,   // retry failed strategies every 30s
+
+  // Optional tokens — tunnel works without these, but these unlock better strategies
+  cloudflareToken: '',    // from the Cloudflare Zero Trust dashboard: Networks > Tunnels > your tunnel > install connector
+  cloudflareHostname: '', // REQUIRED with the token — the public hostname the named tunnel serves (a named tunnel never prints one)
+  ngrokToken:      '',    // from dashboard.ngrok.com
+  playitToken:     '',    // from playit.gg
+};
+
+if (isInit()) {
+  conf.init(DEFAULTS);
+  log('tunnel: wrote default conf');
+  process.exit(0);
+}
+
+let cfg = conf.load(DEFAULTS);
+
+// ─── state ────────────────────────────────────────────────────────────────────
+
+let currentTunnel = null;  // { strategy, url, pid?, process? }
+let probeResults  = {};    // strategy → { ok, detail }
+let _probing      = false; // lock: prevent simultaneous probe runs
+
+// ─── helpers ──────────────────────────────────────────────────────────────────
+
+function httpsGet(url, timeoutMs = 6000) {
+  return new Promise((resolve, reject) => {
+    const mod = url.startsWith('https') ? https : http;
+    const req = mod.get(url, { timeout: timeoutMs }, res => {
+      let b = '';
+      res.on('data', d => b += d);
+      res.on('end', () => resolve(b.trim()));
+    });
+    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error('timeout')); });
+  });
+}
+
+async function getPublicIp() {
+  for (const url of ['https://api.ipify.org', 'https://checkip.amazonaws.com', 'https://icanhazip.com']) {
+    try {
+      const ip = await httpsGet(url, 4000);
+      if (/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)) return ip;
+    } catch {}
+  }
+  return null;
+}
+
+function portOpen(host, port, timeoutMs = 3000) {
+  return new Promise(resolve => {
+    const sock = new net.Socket();
+    sock.setTimeout(timeoutMs);
+    sock.on('connect', () => { sock.destroy(); resolve(true); });
+    sock.on('error',   () => resolve(false));
+    sock.on('timeout', () => { sock.destroy(); resolve(false); });
+    sock.connect(port, host);
+  });
+}
+
+function runProcess(cmd, args, opts = {}) {
+  return cp.spawn(cmd, args, { stdio: ['ignore', 'pipe', 'pipe'], ...opts });
+}
+
+// ─── strategy 1: direct ───────────────────────────────────────────────────────
+
+async function tryDirect() {
+  const ip = await getPublicIp();
+  if (!ip) return { ok: false, detail: 'no public IP' };
+
+  // check if our target port is reachable from outside
+  // (best-effort — may false-negative behind NAT)
+  const reachable = await portOpen(ip, cfg.targetPort, 4000);
+  if (reachable) {
+    return { ok: true, url: `http://${ip}:${cfg.targetPort}`, ip, detail: 'direct public IP' };
+  }
+
+  // check CGNAT: if router internal IP doesn't match what the internet sees, we're behind CGNAT
+  return { ok: false, detail: `port ${cfg.targetPort} not reachable from internet (NAT/firewall)`, ip };
+}
+
+// ─── strategy 2: UPnP ────────────────────────────────────────────────────────
+// Sends a UPnP SSDP discovery + AddPortMapping to the router
+
+async function tryUpnp() {
+  return new Promise(resolve => {
+    const SSDP_ADDR = '239.255.255.250';
+    const SSDP_PORT = 1900;
+    const msg = Buffer.from(
+      'M-SEARCH * HTTP/1.1\r\n' +
+      `HOST: ${SSDP_ADDR}:${SSDP_PORT}\r\n` +
+      'MAN: "ssdp:discover"\r\n' +
+      'MX: 3\r\n' +
+      'ST: urn:schemas-upnp-org:device:InternetGatewayDevice:1\r\n\r\n'
+    );
+    const sock = dgram.createSocket('udp4');
+    let found = false;
+
+    sock.on('message', async (data) => {
+      if (found) return;
+      const resp = data.toString();
+      const locMatch = resp.match(/LOCATION:\s*(.+)/i);
+      if (!locMatch) return;
+      const loc = locMatch[1].trim();
+
+      try {
+        const desc = await httpsGet(loc, 4000);
+        const controlUrlMatch = desc.match(/<controlURL>([^<]+WANIPConn[^<]*)<\/controlURL>/i)
+          || desc.match(/<controlURL>([^<]+)<\/controlURL>/i);
+        if (!controlUrlMatch) return;
+
+        const baseUrl = new URL(loc);
+        const controlPath = controlUrlMatch[1].startsWith('/') ? controlUrlMatch[1] : '/' + controlUrlMatch[1];
+        const controlUrl  = `${baseUrl.protocol}//${baseUrl.host}${controlPath}`;
+
+        // Send AddPortMapping SOAP
+        const soap = `<?xml version="1.0"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"
+            s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <s:Body>
+    <u:AddPortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">
+      <NewRemoteHost></NewRemoteHost>
+      <NewExternalPort>${cfg.targetPort}</NewExternalPort>
+      <NewProtocol>TCP</NewProtocol>
+      <NewInternalPort>${cfg.targetPort}</NewInternalPort>
+      <NewInternalClient>${cfg.targetHost}</NewInternalClient>
+      <NewEnabled>1</NewEnabled>
+      <NewPortMappingDescription>nexus</NewPortMappingDescription>
+      <NewLeaseDuration>86400</NewLeaseDuration>
+    </u:AddPortMapping>
+  </s:Body>
+</s:Envelope>`;
+
+        const soapRes = await new Promise((res, rej) => {
+          const u    = new URL(controlUrl);
+          const data = Buffer.from(soap);
+          const req  = http.request({
+            hostname: u.hostname, port: u.port || 80, path: u.pathname,
+            method: 'POST',
+            headers: {
+              'Content-Type':   'text/xml; charset=utf-8',
+              'SOAPAction':     '"urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"',
+              'Content-Length': data.length,
+            },
+          }, r => { let b = ''; r.on('data', d => b += d); r.on('end', () => res({ status: r.statusCode, body: b })); });
+          req.on('error', rej);
+          req.write(data);
+          req.end();
+        });
+
+        if (soapRes.status === 200 || soapRes.body?.includes('AddPortMappingResponse')) {
+          found = true;
+          sock.close();
+          const ip = await getPublicIp();
+          resolve({ ok: true, url: `http://${ip}:${cfg.targetPort}`, detail: 'UPnP port mapping added', controlUrl });
+        }
+      } catch (e) {
+        log(`upnp soap failed: ${e.message}`, 'WARN');
+      }
+    });
+
+    sock.bind(() => {
+      sock.send(msg, SSDP_PORT, SSDP_ADDR);
+    });
+
+    setTimeout(() => {
+      if (!found) { try { sock.close(); } catch {} resolve({ ok: false, detail: 'no UPnP gateway responded' }); }
+    }, 5000);
+    sock.on('error', () => resolve({ ok: false, detail: 'UPnP socket error' }));
+  });
+}
+
+// ─── strategy 3: localhost.run (zero-config SSH tunnel, free, no account) ────
+
+async function tryLocalhostRun() {
+  return new Promise(resolve => {
+    const args = [
+      '-o', 'StrictHostKeyChecking=no',
+      '-o', 'ServerAliveInterval=30',
+      '-o', 'ExitOnForwardFailure=yes',
+      '-R', `80:${cfg.targetHost}:${cfg.targetPort}`,
+      'nokey@localhost.run',
+      '--',
+      'client-key-path=/dev/null',
+    ];
+
+    let proc;
+    try {
+      proc = runProcess('ssh', args);
+    } catch {
+      return resolve({ ok: false, detail: 'ssh not available' });
+    }
+
+    let output = '';
+    const timer = setTimeout(() => {
+      resolve({ ok: false, detail: 'localhost.run timeout' });
+    }, 15000);
+
+    proc.stdout.on('data', d => {
+      output += d.toString();
+      const urlMatch = output.match(/https?:\/\/[a-z0-9-]+\.lhr\.life/);
+      if (urlMatch) {
+        clearTimeout(timer);
+        currentTunnel = { strategy: 'localhost.run', url: urlMatch[0], process: proc };
+        proc.on('exit', () => { if (currentTunnel?.strategy === 'localhost.run') autoHeal(); });
+        resolve({ ok: true, url: urlMatch[0], detail: 'localhost.run SSH tunnel' });
+      }
+    });
+    proc.stderr.on('data', d => {
+      output += d.toString();
+      const urlMatch = output.match(/https?:\/\/[a-z0-9-]+\.lhr\.life/);
+      if (urlMatch) {
+        clearTimeout(timer);
+        currentTunnel = { strategy: 'localhost.run', url: urlMatch[0], process: proc };
+        proc.on('exit', () => { if (currentTunnel?.strategy === 'localhost.run') autoHeal(); });
+        resolve({ ok: true, url: urlMatch[0], detail: 'localhost.run SSH tunnel' });
+      }
+    });
+    proc.on('error', e => { clearTimeout(timer); resolve({ ok: false, detail: `ssh error: ${e.message}` }); });
+  });
+}
+
+// ─── strategy 4: serveo (another zero-config SSH tunnel) ─────────────────────
+
+async function tryServeo() {
+  return new Promise(resolve => {
+    const subdomain = `nexus${crypto.randomBytes(3).toString('hex')}`;
+    const args = [
+      '-o', 'StrictHostKeyChecking=no',
+      '-o', 'ServerAliveInterval=30',
+      '-R', `${subdomain}:80:${cfg.targetHost}:${cfg.targetPort}`,
+      'serveo.net',
+    ];
+
+    let proc;
+    try { proc = runProcess('ssh', args); }
+    catch { return resolve({ ok: false, detail: 'ssh not available' }); }
+
+    let output = '';
+    const timer = setTimeout(() => resolve({ ok: false, detail: 'serveo timeout' }), 15000);
+
+    const onData = d => {
+      output += d.toString();
+      const m = output.match(/Forwarding HTTP traffic from (https?:\/\/[^\s]+)/);
+      if (m) {
+        clearTimeout(timer);
+        currentTunnel = { strategy: 'serveo', url: m[1], process: proc };
+        proc.on('exit', () => { if (currentTunnel?.strategy === 'serveo') autoHeal(); });
+        resolve({ ok: true, url: m[1], detail: 'serveo SSH tunnel' });
+      }
+    };
+    proc.stdout.on('data', onData);
+    proc.stderr.on('data', onData);
+    proc.on('error', e => { clearTimeout(timer); resolve({ ok: false, detail: `serveo: ${e.message}` }); });
+  });
+}
+
+// ─── strategy 5: Cloudflare Tunnel (best — permanent URL, free with token) ───
+
+// A NAMED tunnel never prints a *.trycloudflare.com URL — that hostname
+// belongs to quick tunnels only. This waited for one anyway, so it always
+// hit the 20s timeout and fell through to quick, even with a valid token.
+// Confirmed against the log: "trying cloudflare" and "trying cloudflare-quick"
+// are stamped in the same millisecond only because the token was empty; fill
+// the token in and you'd have waited 20s to reach the same place.
+// A named tunnel's hostname is configuration, not output.
+async function tryCloudflare() {
+  if (!cfg.cloudflareToken) return { ok: false, detail: 'no cloudflare token' };
+  if (!cfg.cloudflareHostname) {
+    return { ok: false, detail: 'cloudflareToken is set but cloudflareHostname is not — a named tunnel serves a hostname you configure in the Cloudflare dashboard; this cannot discover it' };
+  }
+  const url = 'https://' + cfg.cloudflareHostname.replace(/^https?:\/\//, '').replace(/\/+$/, '');
+
+  const proc = runProcess('cloudflared', ['tunnel', '--no-autoupdate', 'run', '--token', cfg.cloudflareToken]);
+
+  const registered = await new Promise(resolve => {
+    let output = '';
+    const timer = setTimeout(() => resolve(false), 25000);
+    const onData = d => {
+      output += d.toString();
+      // What cloudflared actually prints when an edge connection comes up.
+      if (/Registered tunnel connection|Connection [a-f0-9-]+ registered/i.test(output)) {
+        clearTimeout(timer); resolve(true);
+      }
+    };
+    proc.stdout.on('data', onData);
+    proc.stderr.on('data', onData);
+    proc.on('error', () => { clearTimeout(timer); resolve(false); });
+    proc.on('exit', () => { clearTimeout(timer); resolve(false); });
+  });
+
+  if (!registered) {
+    try { proc.kill(); } catch {}
+    return { ok: false, detail: 'cloudflared never registered an edge connection (not installed, bad token, or no egress)' };
+  }
+
+  // §17.10 verify before promote. A registered tunnel proves cloudflared
+  // reached Cloudflare — NOT that Cloudflare reaches Eravos. The ingress rule
+  // can point at the wrong port and every one of those still looks healthy.
+  let reachable = false;
+  for (let i = 0; i < 5 && !reachable; i++) {
+    try { reachable = /"?ok"?|eravos/i.test(await httpsGet(url + '/_health', 6000)); } catch {}
+    if (!reachable) await new Promise(r => setTimeout(r, 2000));
+  }
+  if (!reachable) {
+    try { proc.kill(); } catch {}
+    return { ok: false, url, detail: `tunnel is up but ${url}/_health did not answer — check the ingress rule points at ${cfg.targetHost}:${cfg.targetPort}` };
+  }
+
+  currentTunnel = { strategy: 'cloudflare', url, process: proc };
+  proc.on('exit', () => { if (currentTunnel?.strategy === 'cloudflare') autoHeal(); });
+  return { ok: true, url, detail: 'Cloudflare named tunnel — stable hostname, verified reachable' };
+}
+
+// ─── strategy 6: Cloudflare Quick Tunnel (no token needed) ───────────────────
+
+async function tryCloudflareQuick() {
+  return new Promise(resolve => {
+    const proc = runProcess('cloudflared', [
+      'tunnel', '--no-autoupdate',
+      '--url', `http://${cfg.targetHost}:${cfg.targetPort}`,
+    ]);
+    let output = '';
+    const timer = setTimeout(() => resolve({ ok: false, detail: 'cloudflared quick tunnel timeout' }), 20000);
+    const onData = d => {
+      output += d.toString();
+      const m = output.match(/https:\/\/[a-z0-9-]+\.trycloudflare\.com/);
+      if (m) {
+        clearTimeout(timer);
+        currentTunnel = { strategy: 'cloudflare-quick', url: m[0], process: proc };
+        proc.on('exit', () => { if (currentTunnel?.strategy === 'cloudflare-quick') autoHeal(); });
+        resolve({ ok: true, url: m[0], detail: 'Cloudflare Quick Tunnel (temp URL, no account)' });
+      }
+    };
+    proc.stdout.on('data', onData);
+    proc.stderr.on('data', onData);
+    proc.on('error', () => resolve({ ok: false, detail: 'cloudflared not installed — download from cloudflare.com/products/tunnel' }));
+  });
+}
+
+// ─── strategy 7: ngrok ───────────────────────────────────────────────────────
+
+async function tryNgrok() {
+  if (!cfg.ngrokToken) return { ok: false, detail: 'no ngrok token' };
+  return new Promise(resolve => {
+    const proc = runProcess('ngrok', ['http', String(cfg.targetPort), '--log=stdout', '--log-format=json']);
+    let timer = setTimeout(() => resolve({ ok: false, detail: 'ngrok timeout' }), 15000);
+    proc.stdout.on('data', d => {
+      try {
+        const lines = d.toString().split('\n').filter(Boolean);
+        for (const line of lines) {
+          const obj = JSON.parse(line);
+          if (obj.url && obj.url.startsWith('https')) {
+            clearTimeout(timer);
+            currentTunnel = { strategy: 'ngrok', url: obj.url, process: proc };
+            proc.on('exit', () => { if (currentTunnel?.strategy === 'ngrok') autoHeal(); });
+            resolve({ ok: true, url: obj.url, detail: 'ngrok tunnel' });
+            return;
+          }
+        }
+      } catch {}
+    });
+    proc.on('error', () => resolve({ ok: false, detail: 'ngrok not installed' }));
+  });
+}
+
+// ─── probe all strategies ─────────────────────────────────────────────────────
+
+const STRATEGIES = [
+  { name: 'direct',             fn: tryDirect },
+  { name: 'upnp',               fn: tryUpnp },
+  { name: 'cloudflare',         fn: tryCloudflare },
+  { name: 'cloudflare-quick',   fn: tryCloudflareQuick },
+  { name: 'ngrok',              fn: tryNgrok },
+  { name: 'localhost.run',      fn: tryLocalhostRun },
+  { name: 'serveo',             fn: tryServeo },
+];
+
+async function probeAndConnect() {
+  if (_probing) return; // already probing — skip duplicate call
+  _probing = true;
+  try {
+  log('tunnel: probing strategies…');
+  if (currentTunnel?.process) {
+    try { currentTunnel.process.kill(); } catch {}
+    currentTunnel = null;
+  }
+
+  for (const s of STRATEGIES) {
+    log(`tunnel: trying ${s.name}`);
+    try {
+      const result = await s.fn();
+      probeResults[s.name] = result;
+      if (result.ok) {
+        currentTunnel = currentTunnel || { strategy: s.name, url: result.url };
+        log(`tunnel: ${s.name} → ${result.url}`);
+        onTunnelReady(result.url, s.name);
+        return result;
+      }
+    } catch (e) {
+      probeResults[s.name] = { ok: false, detail: e.message };
+    }
+  }
+
+  log('tunnel: all strategies failed — will retry', 'WARN');
+  return { ok: false };
+  } finally {
+    _probing = false;
+  }
+}
+
+function onTunnelReady(url, strategy) {
+  // broadcast to all engines
+  ipc.send('tunnel:ready', { url, strategy });
+
+  // write into DNS so peers can discover us
+  ipc.send('route', {
+    type:  'zone:update',
+    name:  '_nexus-tunnel',
+    type2: 'TXT',
+    value: url,
+    ttl:   60,
+  }, 'dns');
+
+  // tell proxy to update its public URL
+  ipc.send('route', { type: 'tunnel:url', url }, 'proxy');
+
+  log(`tunnel ready: ${url} via ${strategy}`);
+}
+
+function autoHeal() {
+  log('tunnel: connection lost — reconnecting…', 'WARN');
+  currentTunnel = null;
+  setTimeout(() => probeAndConnect().catch(() => {}), 3000);
+}
+
+// ─── HTTP API ──────────────────────────────────────────────────────────────────
+
+function readBody(req) {
+  return new Promise(resolve => {
+    let b = '';
+    req.on('data', d => b += d);
+    req.on('end', () => { try { resolve(JSON.parse(b)); } catch { resolve({}); } });
+    req.on('error', () => resolve({}));
+  });
+}
+
+function json(res, status, obj) {
+  const body = JSON.stringify(obj, null, 2);
+  res.writeHead(status, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+  res.end(body);
+}
+
+const server = http.createServer(async (req, res) => {
+  const method = req.method;
+  const url    = req.url.split('?')[0];
+  const body   = ['POST','PUT'].includes(method) ? await readBody(req) : {};
+
+  try {
+    if (method === 'GET' && url === '/tunnel/status') {
+      return json(res, 200, {
+        active:   !!currentTunnel,
+        tunnel:   currentTunnel ? { strategy: currentTunnel.strategy, url: currentTunnel.url } : null,
+        targetPort: cfg.targetPort,
+      });
+    }
+
+    if (method === 'GET' && url === '/tunnel/strategies') {
+      return json(res, 200, {
+        strategies: STRATEGIES.map(s => ({
+          name:      s.name,
+          result:    probeResults[s.name] || null,
+          isCurrent: currentTunnel?.strategy === s.name,
+        })),
+      });
+    }
+
+    if (method === 'POST' && url === '/tunnel/config') {
+      if (body.cloudflareToken) cfg.cloudflareToken = body.cloudflareToken;
+      if (body.ngrokToken)      cfg.ngrokToken      = body.ngrokToken;
+      if (body.targetPort)      cfg.targetPort      = body.targetPort;
+      conf.save(cfg);
+      return json(res, 200, { ok: true });
+    }
+
+    if (method === 'POST' && url === '/tunnel/restart') {
+      probeAndConnect().catch(() => {});
+      return json(res, 200, { ok: true, message: 'probing tunnel strategies…' });
+    }
+
+    json(res, 404, { error: 'not found' });
+  } catch (e) {
+    log(`tunnel error: ${e.message}`, 'ERROR');
+    json(res, 500, { error: e.message });
+  }
+});
+
+server.on('error', err => {
+  if (err.code === 'EADDRINUSE') {
+    const next = (cfg.listenPort) + 1;
+    log(`port ${(cfg.listenPort)} in use — trying :${next}`, 'WARN');
+    setTimeout(() => server.listen(next, () => { log(`on :${next}`); claimPort(next); }), 300);
+  } else { throw err; }
+});
+server.listen(cfg.listenPort, () => {
+  log(`tunnel engine on :${cfg.listenPort}`);
+  claimPort(cfg.listenPort);
+});
+
+// ─── IPC ──────────────────────────────────────────────────────────────────────
+
+ipc.on('ip:changed', () => {
+  // IP changed — re-probe in case direct/UPnP now works
+  setTimeout(() => probeAndConnect().catch(() => {}), 5000);
+});
+
+ipc.on('tunnel:get', payload => {
+  ipc.send('tunnel:reply', {
+    requestId: payload?.requestId,
+    tunnel: currentTunnel ? { strategy: currentTunnel.strategy, url: currentTunnel.url } : null,
+  });
+});
+
+ipc.on('status:ping', payload => {
+  ipc.send('status:pong', { requestId: payload?.requestId, engine: NAME, alive: true, ts: Date.now() });
+});
+
+// ─── startup ──────────────────────────────────────────────────────────────────
+
+// Start probing after 3s (let other engines spin up first)
+setTimeout(() => probeAndConnect().catch(e => log(e.message, 'WARN')), 3000);
+
+// Re-probe on interval (in case something changes)
+setInterval(() => {
+  if (!currentTunnel) probeAndConnect().catch(() => {});
+}, cfg.retryMs);
+
+log('tunnel engine ready');

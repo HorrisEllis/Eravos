@@ -1,0 +1,26 @@
+<!-- eravos tab: ideas · category: creating -->
+<!-- served by api/server.js at GET /api/tabs/ideas -->
+<div class="panel" id="panel-ideas">
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-title">💡 IDEA GENERATOR</div>
+      <div class="flex gap12 wrap ac">
+        <input type="text" id="idea-seed" placeholder="Seed topic (optional)..." style="max-width:300px">
+        <select id="idea-category" style="max-width:200px">
+          <option value="romance">Romance & Eros</option>
+          <option value="creativity">Art & Creativity</option>
+          <option value="adventure">Adventure</option>
+          <option value="growth">Growth & Healing</option>
+          <option value="ritual">Rituals</option>
+          <option value="writing">Writing & Poetry</option>
+          <option value="music">Music & Sound</option>
+          <option value="selfcare">Self-Love</option>
+          <option value="cocreation">Co-Creation</option>
+          <option value="wild">Wild & Emergent</option>
+        </select>
+        <input type="number" id="idea-count" value="6" min="1" max="20" style="width:65px">
+        <button class="btn p" onclick="generateIdeas()">✦ Generate</button>
+      </div>
+    </div>
+    <div id="ideas-grid" class="ga"></div>
+    <div id="ideas-load" style="display:none;text-align:center;padding:40px;color:var(--dim);font-style:italic">Summoning ideas...</div>
+  </div>

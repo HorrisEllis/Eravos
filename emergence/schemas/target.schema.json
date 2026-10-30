@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "emergence/schemas/target.schema.json",
+  "title": "Emergence — Target",
+  "description": "What cfr-creator pulls the physics field toward. Optional on every tick() call -- omit it and the field runs untargeted, claiming no convergence. If omitted mid-session, the previous tick's target is reused (the real feedback mechanism -- see loop.js). Matches cfr-creator/component.spec and cfr-creator/index.js exactly.",
+  "type": "object",
+  "required": ["id", "type"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "By convention, prefixed with the type: 'end-state:repair-complete', 'idea:a1b2c3', 'person:raven'. Not enforced by code -- a convention, not a constraint. If it's a real idea, use idea-store's real id (idea-store/index.js's add() return value)."
+    },
+    "type": {
+      "type": "string",
+      "enum": ["end-state", "idea", "person"],
+      "description": "What kind of thing this target represents. Purely descriptive -- cfr-creator treats all three identically (gravitational attractor). The distinction exists for your own reasoning about what you're pursuing, not for different physics."
+    },
+    "mass": {
+      "type": "number",
+      "minimum": 0,
+      "default": 1,
+      "description": "How strongly the field is pulled toward this target. Empirically characterized (not guessed): mass=3 converges unreliably within a reasonable tick budget (physics.js's field.curl genuinely competes with gravity at range -- checked DEFAULT_CONFIG). mass=15 converges reliably within ~60 ticks. See cfr-creator/component.spec's known_gap for the full empirical basis."
+    }
+  }
+}

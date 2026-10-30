@@ -1,0 +1,87 @@
+<!-- eravos settings sub-tab: admin -->
+<!-- served by api/server.js at GET /api/tabs/settings/subtabs/admin -->
+<div id="settings-pane-admin" style="display:none">
+      <!-- §16.1 gap fix: invite/redeem/decouple/delete-my-own-account are
+           PERSONAL actions (about your own account), not administration of
+           someone else's. Gating the whole card behind role:'admin' meant
+           a partner-role account had no way to redeem an invite AT ALL —
+           the pairing feature only worked in one direction (the admin
+           could invite, but nobody without the admin role could ever
+           redeem). Those four moved to Settings > System > Account &
+           Partner, which either role can reach. The one action here that
+           genuinely IS administration — deleting the OTHER person's
+           account — stays admin-gated. -->
+      <div class="card" style="margin-bottom:16px;border-left:2px solid var(--rose)">
+        <div class="card-title">⚠ PARTNER ACCOUNT (admin)</div>
+        <p class="small" style="color:var(--dim);margin-bottom:14px;line-height:1.7">Inviting, redeeming an invite, decoupling, and deleting your own account live in Settings &gt; System &gt; Account &amp; Partner now — those are things about your own account, reachable either role. This card keeps the one action that's genuinely admin: removing the other person's account from this device. Every button here still takes a full export first.</p>
+
+        <div id="acct-partner-row" class="fc gap8" style="margin-bottom:16px"></div>
+
+        <div class="flex gap10 wrap">
+          <button class="btn g" onclick="removePartnerAccount()">🗑 Remove partner account</button>
+        </div>
+        <p class="small" style="color:var(--dim);margin-top:10px;line-height:1.6"><strong>Remove</strong> deletes their account and their data from this device.</p>
+        <div id="acct-danger-msg" class="small" style="margin-top:10px;min-height:16px;color:var(--amber)"></div>
+      </div>
+
+      <details class="card" style="margin-bottom:16px">
+        <summary class="card-title" style="cursor:pointer">🔗 Relay (advanced)</summary>
+        <p class="small" style="color:var(--dim);margin:10px 0;line-height:1.7">By default the relay is derived from the page you are on — same host, same port, <code>/relay</code>. That is correct for one-port serving and cannot drift from the server. Only touch this if the relay genuinely lives somewhere else.</p>
+        <div id="relay-current" class="small" style="font-family:var(--fm);color:var(--amber);margin-bottom:10px"></div>
+        <input type="text" id="relay-url-override" placeholder="ws:// or wss:// — leave blank to derive" autocomplete="off" style="width:100%">
+        <div class="flex gap10 wrap mt8">
+          <button class="btn g" onclick="saveRelayOverride()">Save</button>
+          <button class="btn g" onclick="clearRelayOverride()">Back to derived</button>
+        </div>
+      </details>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">❉ SUPPORT</div>
+        <p class="small" style="color:var(--dim);margin-bottom:12px;line-height:1.7">Always here, whether or not the app has noticed anything. Opening this is not recorded and changes nothing.</p>
+        <div id="support-resources"></div>
+        <label style="display:flex;align-items:center;gap:12px;cursor:pointer;margin-top:14px">
+          <input type="checkbox" id="safety-notices-toggle" onchange="eravosSafety&&eravosSafety.setEnabled(this.checked)" style="width:18px;height:18px;accent-color:var(--fire);cursor:pointer">
+          <span style="color:var(--text);font-size:.85rem">Let Eravos mention a pattern if it sees one</span>
+        </label>
+        <p class="small" style="color:var(--dim);margin-top:8px;line-height:1.6">Local only — nothing about this is ever sent to your partner, and there is no code path that could. Turning it off hides notices, not this page.</p>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">🔐 ACCOUNT ACCESS</div>
+        <p class="small" style="color:var(--dim);margin-bottom:14px">Control registration and reset account passwords.</p>
+        <label style="display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:16px">
+          <input type="checkbox" id="reg-enabled-toggle-admin" onchange="setRegistrationEnabled(this.checked)" style="width:18px;height:18px;accent-color:var(--fire);cursor:pointer">
+          <span style="color:var(--text);font-size:.85rem">Enable "Create Account" on login screen</span>
+        </label>
+        <div class="flex gap12 wrap">
+          <button class="btn g" onclick="resetAccountPassword('admin')">🔄 Reset my password</button>
+          <button class="btn g" onclick="resetAccountPassword('partner')">🔄 Reset partner password</button>
+        </div>
+        <div id="admin-msg-tab" class="small" style="margin-top:10px;min-height:16px;color:var(--teal)"></div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">💾 SHARED DATABASE</div>
+        <p class="small" style="color:var(--dim);margin-bottom:14px">In Co-Creation mode, data is written to a shared namespace synced through your own self-hosted relay. Export or inspect the current shared state as a portable <code>.erav</code> file — works even when you're not both online at once.</p>
+        <div class="flex gap10 wrap">
+          <button class="btn g" onclick="exportSharedDB()">⬇ Export .erav</button>
+          <button class="btn g" onclick="document.getElementById('erav-file-input').click()">⬆ Import .erav</button>
+          <input type="file" id="erav-file-input" accept=".erav,application/json" style="display:none" onchange="importEravFromFile(this)">
+          <button class="btn g" onclick="inspectSharedDB()">🔍 Inspect</button>
+        </div>
+        <div id="erav-import-status" class="small" style="margin-top:10px;color:var(--teal);min-height:16px"></div>
+        <pre id="shared-db-inspect" class="small" style="display:none;margin-top:12px;background:var(--bg2);padding:10px;border-radius:8px;overflow-x:auto;font-size:.65rem;max-height:200px;overflow-y:auto;color:var(--cyan)"></pre>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📜 TICKER PHRASES</div>
+        <p class="small" style="color:var(--dim);margin-bottom:12px;line-height:1.6">Edit the scrolling text that runs beneath the feelings bar. One phrase per line. Leave blank to restore defaults.</p>
+        <textarea id="ticker-editor" rows="10"
+          style="font-family:var(--fm);font-size:.76rem;line-height:1.75;letter-spacing:.04em;margin-bottom:10px"
+          placeholder="✦ One phrase per line&#10;✦ Each becomes a ticker item&#10;✦ Leave blank to restore defaults"></textarea>
+        <div class="flex gap10 wrap">
+          <button class="btn p" onclick="saveTicker()">💾 Save Ticker</button>
+          <button class="btn g" onclick="resetTicker()">↺ Reset to Defaults</button>
+        </div>
+        <div id="ticker-save-status" class="small" style="color:var(--teal);margin-top:8px;min-height:16px"></div>
+      </div>
+    </div>

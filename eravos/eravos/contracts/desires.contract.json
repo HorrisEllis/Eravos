@@ -1,0 +1,28 @@
+{
+  "id": "desires",
+  "uuid": "eravos-desires-engine-0001-0000-000000000001",
+  "version": "0.14.0",
+  "owner": "shared/eravos-desires.js",
+  "lifecycle": "Implemented",
+  "parent": "eravos-kernel",
+  "category": "relational",
+  "feature_id": "desires",
+  "toggle": "feat_desires — gated for real by shared/eravos-features.js",
+  "summary": "What you each want and do not, without either going first.",
+  "invariants": [
+    "SEALED until both have answered THAT item — nobody answers in response to the other",
+    "only MUTUAL interest is revealed; a no returns \"not-a-match\" and nothing else, in either direction",
+    "never \"they said maybe to the thing you wanted\" — that is leverage, not information",
+    "a limit is absolute: no discuss, no revisit, no counter-offer anywhere in the engine",
+    "withdraw() is instant, unilateral, needs no reason, and they are never told what it was",
+    "unanswered is a real state, never treated as a soft yes or soft no",
+    "your answer history is yours and is never shown to them — changing your mind is not evidence",
+    "§17.3 pressureMechanics is 0 and a test asserts no notify/remind/nudge/streak/score method exists"
+  ],
+  "failure_modes": [
+    "no storage -> constructor throws, refuses to operate blind",
+    "unknown state/owner/answer -> throws, listing the valid ones",
+    "empty or over-long input -> throws, naming the limit"
+  ],
+  "status": "implemented — covered by test/features-new.test.mjs (36 assertions across the registry and all three engines)"
+}

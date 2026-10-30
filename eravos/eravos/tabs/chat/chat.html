@@ -1,0 +1,73 @@
+<!-- eravos tab: chat · category: communication -->
+<div class="panel" id="panel-chat">
+  <div class="chat-page">
+
+    <div class="chat-head">
+      <div class="chat-with">
+        <span id="chat-partner-name">…</span>
+      </div>
+      <div class="chat-head-acts">
+        <button class="chat-icon" id="chat-search-toggle" title="Search this thread">⌕</button>
+        <button class="chat-icon" id="chat-call-audio" title="Call">📞</button>
+        <button class="chat-icon" id="chat-call-video" title="Video call">🎥</button>
+      </div>
+    </div>
+
+    <input class="chat-search" id="chat-search" placeholder="search what you've said to each other" hidden>
+
+    <div class="chat-flow" id="chat-flow"></div>
+
+    <div class="chat-presence" id="chat-presence"></div>
+
+    <div class="chat-compose">
+      <button class="chat-icon chat-add" id="chat-add" title="Send something from Eravos">+</button>
+      <button class="chat-icon chat-media-btn" id="chat-media-btn" title="Send a photo or video">📷</button>
+      <input type="file" id="chat-media-input" accept="image/*,video/*" hidden>
+      <!-- Phase O: record and send, not live. §8.5's own "size-bounded
+           with a stated limit, said before you record" -- the time
+           limit shows in this button's own title, not discovered after
+           the fact. -->
+      <button class="chat-icon chat-record-btn" id="chat-record-voice-btn" title="Record a voice message (up to 2 min)">🎙️</button>
+      <button class="chat-icon chat-record-btn" id="chat-record-video-btn" title="Record a video message (up to 1 min)">📹</button>
+      <button class="chat-icon chat-emoji-btn" id="chat-emoji-btn" title="Emoji">😊</button>
+      <textarea class="chat-input" id="chat-input" rows="1" placeholder="say it however it comes out"></textarea>
+      <button class="chat-icon chat-send" id="chat-send" title="Send">→</button>
+    </div>
+
+    <!-- Real recording panel -- shown while recording and in the real
+         review-before-send state. Never auto-sends: re-record or
+         discard are always real, available options before Send. -->
+    <div class="chat-record-panel" id="chat-record-panel" hidden>
+      <div class="chat-record-live" id="chat-record-live" hidden>
+        <span class="chat-record-dot"></span>
+        <span id="chat-record-timer">0:00</span>
+        <span class="small" id="chat-record-limit-note" style="color:var(--dim)"></span>
+        <button class="btn g" id="chat-record-stop" style="margin-left:auto;font-size:.78rem">⏹ Stop</button>
+      </div>
+      <div class="chat-record-review" id="chat-record-review" hidden>
+        <video id="chat-record-video-preview" hidden controls></video>
+        <audio id="chat-record-audio-preview" hidden controls></audio>
+        <label class="chat-record-transcript-toggle small">
+          <input type="checkbox" id="chat-record-transcript-check">
+          Include a local transcript — optional, never required
+        </label>
+        <div id="chat-record-transcript-preview" class="small" style="color:var(--dim)" hidden></div>
+        <div class="flex gap8">
+          <button class="btn p" id="chat-record-send" style="font-size:.82rem">Send</button>
+          <button class="btn g" id="chat-record-again" style="font-size:.82rem">Re-record</button>
+          <button class="btn g" id="chat-record-discard" style="font-size:.82rem">Discard</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-emoji-sheet" id="chat-emoji-sheet" hidden></div>
+    <div class="chat-attach-sheet" id="chat-attach-sheet" hidden></div>
+
+    <details class="chat-diag">
+      <summary class="small">Diagnostics &amp; sharing</summary>
+      <div class="chat-prefs" id="chat-prefs"></div>
+      <pre id="chat-health" class="small"></pre>
+    </details>
+
+  </div>
+</div>

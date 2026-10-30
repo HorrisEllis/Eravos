@@ -1,0 +1,21 @@
+{
+  "id": "cocreation",
+  "uuid": "eravos-cocreation-settings-0001-0000-000000000001",
+  "version": "0.25.0",
+  "owner": "shared/eravos-cocreation.js",
+  "lifecycle": "Implemented",
+  "parent": "eravos-kernel",
+  "category": "relational",
+  "summary": "Every shared setting, asked once, at the only moment the questions are live.",
+  "invariants": [
+    "MINE vs OURS is the whole safety model. A `mine` setting is what I broadcast — I decide alone, either of us stops alone, and turning it on does NOT turn it on for them. An `ours` setting requires both.",
+    "set() has no parameter for the other person. One person cannot configure a pair.",
+    "an unanswered partner is NOT a yes — not answering is not an answer",
+    "either side ends a shared setting alone, instantly",
+    "PRESENCE DEFAULTS ON (v0.25.0, owner direction). I shipped it off, reasoning that watching a cursor is a lot — that reasoning was about a STRANGER. For two people who deliberately paired, off-by-default means the app starts cold and stays cold. The GUARANTEE did not change: still two-sided, still stoppable alone, still never persisted.",
+    "READ RECEIPTS STAY OFF. \"Seen at 11:04 and said nothing\" is a different kind of information from where a cursor is, and it is the one that gets used against people.",
+    "asked once; skipping is a real outcome and the defaults stand",
+    "every setting states WHAT IT COSTS under its label — a switch whose consequence you have to guess is not a choice"
+  ],
+  "status": "implemented — 27 assertions in test/cocreation.test.mjs"
+}

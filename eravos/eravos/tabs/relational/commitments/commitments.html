@@ -1,0 +1,33 @@
+<!-- eravos tab: commitments · category: relational -->
+<!-- served by api/server.js at GET /api/tabs/commitments · lives at tabs/relational/commitments/commitments.html -->
+<div class="panel" id="panel-commitments">
+  <div class="g2">
+    <div class="fc gap16">
+      <div class="card">
+        <div class="card-title">🤝 MAKE A COMMITMENT</div>
+        <p class="small italic" style="color:var(--dim);margin-bottom:14px">The record of what happened isn't overwritable — a missed commitment that later gets kept doesn't erase the miss, it adds to the history.</p>
+        <label class="fl">What are you committing to?</label>
+        <textarea id="commitment-text" rows="2" placeholder="In your own words..."></textarea>
+        <label class="fl mt12">How firm is it?</label>
+        <select id="commitment-level">
+          <option value="pinky_promise">🤙 Pinky promise</option>
+          <option value="promise" selected>🤝 Promise</option>
+          <option value="word">📜 My word</option>
+        </select>
+        <label class="fl mt12">Due date (optional)</label>
+        <input type="datetime-local" id="commitment-due">
+        <label class="fl mt12">Link to a planned event (optional)</label>
+        <select id="commitment-linked-event" onfocus="populateCommitmentEventLink()">
+          <option value="">No linked event</option>
+        </select>
+        <button class="btn p mt14" onclick="createCommitment()">🤝 Log Commitment</button>
+      </div>
+    </div>
+    <div class="fc gap16">
+      <div class="card">
+        <div class="card-title">📖 COMMITMENTS</div>
+        <div id="commitments-list" class="fc"></div>
+      </div>
+    </div>
+  </div>
+</div>

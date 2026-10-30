@@ -1,0 +1,367 @@
+<!-- eravos tab: roadmap · category: system -->
+<!-- §6.1 — generated from eravos-spec-v2 (04-PHASEMAP.md), not written as
+     aspiration. Every item below has the state the spec actually records. -->
+<div class="panel" id="panel-roadmap">
+    <div class="fc gap18">
+
+      <div class="card">
+        <div class="card-title">🗺 ERAVOS PHASEMAP</div>
+        <p class="small" style="color:var(--dim);line-height:1.7;margin-bottom:8px">Private relational intelligence platform · Bottom-up per §3.1 — no phase starts until the phase below it has a passing check. <strong>AI is last, by design</strong>, and never load-bearing.</p>
+        <div class="flex gap10 wrap mt8">
+          <span class="tag">A: Choice &amp; search ✓</span>
+          <span class="tag">B: Chat engine ✓</span>
+          <span class="tag">C: Chat surfaces ✓</span>
+          <span class="tag">D: Shared presence — verification open</span>
+          <span class="tag">E: Shared grammar</span>
+          <span class="tag">F: Fluid pass</span>
+          <span class="tag">G: Other-primitive retrofit</span>
+          <span class="tag">H: Voice &amp; video grammar</span>
+        </div>
+        <div style="font-family:var(--fm);font-size:.62rem;line-height:1.65;color:var(--dim);margin-top:12px;padding:8px 10px;border-left:2px solid var(--border2)">
+          Full text: <code>spec/PHASEMAP-v3.md</code>. The original product phases (0–5, from <code>04-PHASEMAP.md</code>) are unchanged and continue below — A–H sit alongside them, not instead of them.
+        </div>
+      </div>
+
+      <!-- THE DEPENDENCY ARGUMENT -->
+      <div class="card">
+        <div class="card-title" style="font-size:.75rem">⚖ WHY THIS ORDER</div>
+        <p class="small" style="color:var(--dim);line-height:1.7">Everything asked for — the popup composer, the add-menu, shared cursors, the shared grammar — sits on two things that did not exist. <strong>A message engine not owned by a surface</strong>: a popup that owns its own thread means two stores that disagree the first time both surfaces are open. And <strong>an option primitive that always offers "Other"</strong>: every prompt that would feed the grammar presented a closed list, so building the grammar first means the grammar only contains words a stranger chose. That is why A and B come before C. Not caution — the only order in which the later phases don't have to be rebuilt.</p>
+      </div>
+
+      <!-- PHASE A -->
+      <div class="card">
+        <div class="card-title" style="color:var(--teal)">✅ PHASE A — CHOICE &amp; SEARCH <span style="font-family:var(--fm);font-size:.65rem;color:var(--teal);font-weight:normal;margin-left:8px">COMPLETE · v0.6.0</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">A closed list is a claim about what a person is allowed to feel. Handed 62 options and none of them right, the common response is to pick the nearest wrong one — which then silently corrupts every derivation downstream that reads it. A confidently-recorded wrong value is worse than an absent one.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ The Other primitive — <code>shared/eravos-choice.js</code></div><div class="rm-desc">Every declared prompt offers "Other → in your words". No opt-out flag. Customs are remembered, offered <strong>first</strong> next time, private unless explicitly shared, archived rather than deleted.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Skip is real</div><div class="rm-desc">allowSkip defaults <strong>true</strong>. A skip records null — never a default, never the first option. Even allowSkip:false needs an explicit override, and the error says reconsider.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Feelings search bar, above the grid</div><div class="rm-desc">The vocabulary went 18 → 62 in Phase 1. Sixty-two tiles is more scanning than someone in distress should have to do to say how they are. Prefix matches first, no fuzzy guessing.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ selectFeeling() accepts a custom value</div><div class="rm-desc">It previously returned early on anything not in the built-in list — which would have made every "Other" tile silently do nothing.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE B -->
+      <div class="card">
+        <div class="card-title" style="color:var(--teal)">✅ PHASE B — CHAT ENGINE &amp; TRANSPORT <span style="font-family:var(--fm);font-size:.65rem;color:var(--teal);font-weight:normal;margin-left:8px">COMPLETE · v0.6.0</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">One engine, injectable store, exercisable with no DOM at all. Five gates on the <em>existing</em> syncStream — no new pipeline.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Attachments are references, not copies</div><div class="rm-desc">Eight kinds — vault, feeling, need, spar invite, codex, poem, canvas, grammar. Sending a vault piece sends a pointer, so it stays one artifact with one version rather than a duplicate that drifts.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Ephemeral means ephemeral</div><div class="rm-desc">Typing and cursor positions are never persisted — not capped, not trimmed, <strong>never written</strong>. A test asserts the store stays empty under a thousand cursor events. Someone's mouse path through a relational app is not a record anyone consented to keep.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Offline sends queue and say so</div><div class="rm-desc">Marked <code>queued</code>, kept in the thread, replayed by the Phase 1 outbox on reconnect. A transport throw is recorded <em>on the message</em>, not swallowed.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE C -->
+      <div class="card">
+        <div class="card-title" style="color:var(--teal)">✅ PHASE C — CHAT SURFACES <span style="font-family:var(--fm);font-size:.65rem;color:var(--teal);font-weight:normal;margin-left:8px">COMPLETE · v0.6.0</span></div>
+        <div class="fc gap10">
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Chat as its own page — <code>tabs/chat/</code></div><div class="rm-desc">Thread search, call button top right, add-menu, typing indicator, presence line.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Popup composer, mounted from every tab</div><div class="rm-desc">Same engine, same thread. Unread badge, add-menu, call button top-right of the menu, expand-to-full-page. A test opens both surfaces and asserts they cannot diverge.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Attachment pickers for all eight kinds</div><div class="rm-desc">A picker with nothing to offer <strong>says so</strong> rather than silently attaching nothing.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE D -->
+      <div class="card">
+        <div class="card-title" style="color:var(--amber)">🟠 PHASE D — SHARED PRESENCE <span style="font-family:var(--fm);font-size:.65rem;color:var(--amber);font-weight:normal;margin-left:8px">built · verification open</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">Navigating Eravos together. Off by default, opt-in on <strong>both</strong> sides — the engine never enables sharing because the other side asked.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Cursor sharing, throttled, self-expiring</div><div class="rm-desc">80ms throttle — 50 mouse moves in one tick send once, so a mouse path cannot flood the pipe carrying messages. A cursor older than 5s stops being reported and removes itself.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">Two-device verification</div><div class="rm-desc">Same discipline as Phase 1's exit criteria: cursor and tab presence across a real network, not a mocked one. This environment cannot run it.</div></div><span class="rm-badge critical">🔴 Blocking</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Co-navigation — "follow them"</div><div class="rm-desc">Opening the tab they are on. Opt-in, revocable in one tap.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Presence in the shell, not just in chat</div><div class="rm-desc">A quiet indicator that says <em>she's in the Vault</em> without you leaving the tab you're in.</div></div><span class="rm-badge high">🟠 High</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE E -->
+      <div class="card">
+        <div class="card-title" style="color:var(--rose)">🔴 PHASE E — SHARED GRAMMAR <span style="font-family:var(--fm);font-size:.65rem;color:var(--dim);font-weight:normal;margin-left:8px">manual path started</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">The vocabulary that means something specific between two people — words that carry more than the dictionary gives them.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ The manual path — type it, she sees it</div><div class="rm-desc">The <code>grammar</code> attachment kind. Typing a word and sending it makes it a shared artifact.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">Grammar store — two-sided by construction</div><div class="rm-desc">A word is not shared grammar because one person said it. It becomes shared when the other one takes it up. Both confirmations required, structurally.</div></div><span class="rm-badge critical">🔴 Critical</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Grammar tab — two columns, never merged</div><div class="rm-desc">What each entry means to each person <em>separately</em>, and when it entered. No single "correct" meaning.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Grammar as the lattice's eighth dimension</div><div class="rm-desc">Two moments using the same <em>shared</em> word resonate differently than two using the same ordinary word.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Manual entry from anywhere</div><div class="rm-desc">Select text in any tab → "this means something between us".</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--rose)"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">⚠ Deliberately NOT automatic</div><div class="rm-desc">A word does not become shared grammar because the lattice noticed it twice. Inferring private meaning from frequency is exactly the overreach §1.1 forbids — the system would be telling two people what their own words mean to them.</div></div><span class="rm-badge" style="background:var(--tint-fire);color:var(--rose)">Constraint</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE F -->
+      <div class="card">
+        <div class="card-title" style="color:var(--amber)">🟠 PHASE F — FLUID PASS <span style="font-family:var(--fm);font-size:.65rem;color:var(--dim);font-weight:normal;margin-left:8px">pilot shipped</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">Less boxes and deterministic. More fluid, custom.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Chat is the pilot</div><div class="rm-desc">No bubbles, no cards, no avatars, no per-message container. Speaker carried by indent and colour weight, time by spacing, attachments as a quiet reference line. Messages fade in rather than appear.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Extend to Feelings, Needs, Rupture</div><div class="rm-desc">The three most-used prompts.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Motion as information, not decoration</div><div class="rm-desc">State changes felt rather than announced by a toast.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Retire structural <code>.card</code>-in-<code>.card</code> nesting</div><div class="rm-desc">Where it's habit rather than a real grouping.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--rose)"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">⚠ Constraint that does not move</div><div class="rm-desc">01-ARCHITECTURE §2 — no tab defines its own palette. Every colour stays a kernel custom property. The fluid pass is layout, motion and typography; it is not a licence for hex.</div></div><span class="rm-badge" style="background:var(--tint-fire);color:var(--rose)">Constraint</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE G -->
+      <div class="card">
+        <div class="card-title" style="color:var(--amber)">🟠 PHASE G — RETROFIT THE OTHER PRIMITIVE <span style="font-family:var(--fm);font-size:.65rem;color:var(--dim);font-weight:normal;margin-left:8px">5 prompts wired, the rest open</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">Every remaining closed list is a prompt still telling someone their answer isn't available.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Rupture, Struggles, Boundaries</div><div class="rm-desc">What happened / what you needed; the struggles checklist; boundary types.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Compass and Onboarding</div><div class="rm-desc">Love languages, intimacy, values, gender, orientation. The spec already names these as free-text-first; this makes it structural instead of per-field.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">A lint that fails the build on an unrouted option list</div><div class="rm-desc">Any <code>&lt;select&gt;</code> or option list not going through <code>eravosChoice</code>. So this cannot regress by accident (§17.10).</div></div><span class="rm-badge high">🟠 High</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE H -->
+      <div class="card">
+        <div class="card-title" style="color:var(--amber)">🟠 PHASE H — VOICE &amp; VIDEO GRAMMAR <span style="font-family:var(--fm);font-size:.65rem;color:var(--amber);font-weight:normal;margin-left:8px">A/V layer built · grammar-surfacing open</span></div>
+        <div class="fc gap10">
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ WebRTC A/V calls</div><div class="rm-desc">Real, shipped since this item was last marked blocked — real invite/accept flow, screen-share ("couch party"), fullscreen. See <code>contracts/call.contract.json</code>.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Live transcription into the lattice</div><div class="rm-desc">The prosody module from v0.4.0 measures the voice; finalized transcript lines now feed <code>buildLatticeData()</code> live, per device, per mic — real, not the prosody-only state this was written against.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--dim)"></span><div><div class="rm-title">Grammar candidates surfaced AFTER a call, never during</div><div class="rm-desc">Two people talking should not be watched by a suggestion engine in real time. Both-sides confirmation before anything becomes grammar, same rule as Phase E. Genuinely still open.</div></div><span class="rm-badge medium">⬜ Open</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--dim)"></span><div><div class="rm-title">Platform constraint, not an oversight</div><div class="rm-desc">No Web Speech API on iOS Safari.</div></div><span class="rm-badge medium">⬜ Constraint</span></div>
+        </div>
+      </div>
+
+      <!-- PHASES R-X -->
+      <div class="card" style="border-color:var(--tint-fire)">
+        <div class="card-title" style="color:var(--fire)">🔶 PHASES R–X — REAL-TIME CALLING INFRASTRUCTURE <span style="font-family:var(--fm);font-size:.65rem;color:var(--fire);font-weight:normal;margin-left:8px">phase-mapped · R blocks all of S–X · none started</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">Full detail in <code>spec/PHASEMAP-v4.md</code> (this card is a summary, not a duplicate). Numbered R onward — I–Q already exist in that same file, not yet mirrored onto this tab; a real, separate, pre-existing gap, not something this pass tried to fully backfill.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ R — Reconciled the audio-processing duplication</div><div class="rm-desc"><code>clarity-engine.js</code>'s real DSP chain merged into <code>eravos-callaudio.js</code>. Found and fixed a real, separate bug in the process: the replay-last-15-seconds feature was never actually wired to start — verified live in a real browser, now genuinely working.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ S — Isolated the calling modules</div><div class="rm-desc">33 functions extracted out of the kernel monolith into <code>call.js</code>. Found and fixed a real, critical bug in the process: incoming calls would have broken entirely unless the person had already visited the Call tab.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">T — Guest accounts &amp; call invite codes</div><div class="rm-desc">Generate/copy/send a real, single-purpose, expiring code. Region set at account creation or when a guest joins — never gates entry, only feeds Phase U.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">U — Region-aware transcription pipeline</div><div class="rm-desc">Honest gap: no Whisper pipeline exists yet to redirect. Real region → locale table drives <code>SpeechRecognition</code>'s own <code>lang</code>, per device, independently.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">V — CC button, read-back, consent prompt</div><div class="rm-desc">The lattice persistence already exists (see Phase H above); this is the show/hide toggle, the history view, and a real accept-before-enabling modal.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">W — Deafen &amp; per-person volume</div><div class="rm-desc">Mute/hangup already real. Deafen is a real zeroed <code>GainNode</code> on the incoming stream, distinct from muting your own mic.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--dim)"><span class="rm-dot" style="background:var(--dim)"></span><div><div class="rm-title">X — The Discord-like UI, last</div><div class="rm-desc">§8.5, followed literally: the interaction contract is written after R–W are real, not before. A contract against code that doesn't exist yet is a guess wearing a contract's clothes.</div></div><span class="rm-badge medium">⬜ Last, by design</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE 0 -->
+      <div class="card">
+        <div class="card-title" style="color:var(--teal)">✅ PHASE 0 — REPO &amp; STRUCTURAL FOUNDATION <span style="font-family:var(--fm);font-size:.65rem;color:var(--teal);font-weight:normal;margin-left:8px">COMPLETE · tag v1-phase0-complete</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">Every tab now lives at <code>tabs/&lt;name&gt;/&lt;name&gt;.html</code>. Verified against a real server, not reviewed.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Tab-per-folder migration — all 25 tabs</div><div class="rm-desc">All tabs plus settings sub-tabs moved under their own folders and registered in the router's TAB_SPLIT_PATHS. Old flat <code>subtabs/</code> directory removed.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Split CSS/JS loading made non-fatal</div><div class="rm-desc">A tab can enter the router with only an <code>.html</code> file. No more forced-empty stub files just to satisfy the loader.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Bell wiring corrected</div><div class="rm-desc">Calls openMessagesPopout() directly; the dead openNotificationInbox() alias removed.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Verification against a real server</div><div class="rm-desc"><code>node --check</code> clean; all 25 TAB_SPLIT_PATHS entries and 4 settings sub-tabs resolve HTTP 200; zero stale path references; all contract JSON valid.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE 1 -->
+      <div class="card">
+        <div class="card-title" style="color:var(--amber)">🟠 PHASE 1 — FOUNDATION (DATA &amp; SYNC) <span style="font-family:var(--fm);font-size:.65rem;color:var(--amber);font-weight:normal;margin-left:8px">CODE-COMPLETE · one item left</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">Everything below is built and automated-tested. The tag <code>v1-foundation</code> is <strong>held</strong>, deliberately — the exit criteria call for two real devices, and claiming a code review is that test is exactly the gap §1.1 exists to prevent.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">Two-device exit test — THE ONLY OPEN ITEM</div><div class="rm-desc">Two browsers or two real devices: full session start → sync several FeelingEvents both directions → force a disconnect → confirm the outbox replay actually arrives. A real test, not a code review. Everything it depends on is built; this environment can't run it.</div></div><span class="rm-badge critical">🔴 Blocking tag</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Outbox + replay-on-reconnect</div><div class="rm-desc">Turned out to be a live silent-failure bug, not a missing design: <code>ErosPipeline</code> was called from 5 sites but never defined anywhere — every offline path threw a swallowed ReferenceError instead of queuing. Now real, per-role, replayed in order. 5 scenarios unit-tested. Found during consolidation: sendSafetyRequest() queued even on success, guaranteeing a duplicate resend.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Sync envelope migration → one Gate per <code>domain:action</code></div><div class="rm-desc">~25 message types onto a single syncStream. Found during migration: <strong>three sequential monkey-patches</strong> of handleP2PMessage, each shadowing the last — silent precedence, exactly what SISO Design Law 1 forbids. Two live bugs it caused: syncFeelingToPartner() sent a type no gate ever listened for, and "Send Love" checked two globals nothing ever assigned, so it always showed "Connect first" regardless of state.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ End-to-end encryption (X25519 + AES-256-GCM)</div><div class="rm-desc">Dependency-free X25519 in <code>shared/eravos-crypto.js</code>, cross-validated against @noble/curves over 20 keypairs before wiring. <strong>Stated honestly:</strong> static-key ECDH, not ratcheted — no per-session forward secrecy. Closes the previous gap where UI copy claimed encryption the code never did.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Solo mode actually hides partner-facing tools</div><div class="rm-desc">The mode-switch copy already claimed this; it wasn't enforced. Now it is, on login and on live switch.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ FeelingEvent vocabulary 18 → 62</div><div class="rm-desc">Verified: no duplicates, no malformed entries, existing name lookups unaffected. Known cosmetic debt, named not hidden: the dashboard mini-wheel now renders 62 thin slices.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Stand up the self-hosted relay (deployment, not app code)</div><div class="rm-desc">Hosting is settled: <strong>always self-hosted</strong>. Runtime config still points at the free public <code>0.peerjs.com</code> and <code>openrelay.metered.ca</code> — an acceptable bootstrap before the default was decided, no longer in line with it. Encryption protects message contents from a relay operator; it does not hide peer IDs or connection metadata. That is exactly what self-hosting fixes.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Session-scoped mutation tagging</div><div class="rm-desc">Distinct from the session <em>log</em>, which already exists. Still open.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Named gaps carried forward, not fixed here</div><div class="rm-desc">One-Way Message has receiving-side plumbing (<code>subtype === 'one_way'</code>) but no compose-side toggle anywhere. The BroadcastChannel same-device fallback can receive but has no sender wired to it at all.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE 2 -->
+      <div class="card">
+        <div class="card-title" style="color:var(--rose)">🔴 PHASE 2 — PRESENCE &amp; COMMUNICATION <span style="font-family:var(--fm);font-size:.65rem;color:var(--dim);font-weight:normal;margin-left:8px">Next up · tag v2-presence-comm</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">Exit criteria: a full Guided Feeling Flow run, both branches, producing correctly-linked FeelingEvent + RuptureLogEntry (+ NeedCard) records visible on both sides after sync. Bell popup opens without switching the active tab.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">Guided Feeling Flow (branching modal)</div><div class="rm-desc">Built early in this phase, not later: its real dependencies (Feelings, Needs, Rupture) all already exist, and waiting would stall the Safety Request item below for no dependency reason.</div></div><span class="rm-badge critical">🔴 Critical</span></div>
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">Triggered hold-button + Trigger Map</div><div class="rm-desc"><code>tabs/relational/triggers/</code>. Reuses Poke's existing hold-lock pattern; needs Phase 1's sync envelope for the real-time signal.</div></div><span class="rm-badge critical">🔴 Critical</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Communication Safety Request from the Guided Feeling Flow</div><div class="rm-desc">Depends on the flow above, so it lands slightly later within the phase without blocking the rest of it.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">RelationalMirror prompts</div><div class="rm-desc">Wired into both the Guided Feeling Flow and Rupture repair.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Compact inbox popup view</div><div class="rm-desc">Unread count, last N messages, one-line previews, "open full tab" link — replacing the popout's current reuse of the whole Messages tab markup.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Verify carried-forward features against the new envelope</div><div class="rm-desc">Three-tier Poke, one-way low-pressure messages, Love Letters, Needs Expression Card — all confirmed working, all need re-verifying against the Phase 1 migration.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Meetup event type + missed-event follow-up</div><div class="rm-desc">In Planner. Proposed on one side, shown in local timezone on the other.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Optional location sharing (Leaflet)</div><div class="rm-desc">Last in this phase, lowest priority of the set. Optional by design.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE 3 -->
+      <div class="card">
+        <div class="card-title" style="color:var(--amber)">🟠 PHASE 3 — ACCOUNTABILITY, MEANING &amp; SELF <span style="font-family:var(--fm);font-size:.65rem;color:var(--dim);font-weight:normal;margin-left:8px">tag v3-accountability-meaning-self</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">Exit criteria: every tab here is independently fully functional with <strong>zero AI calls</strong> — verified by disabling the AI bridge in Settings and confirming nothing breaks or shows an error state instead of its non-AI fallback.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Commitments &amp; Promises</div><div class="rm-desc"><code>tabs/relational/commitments/</code></div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Relational health derived view</div><div class="rm-desc">Genuinely last within this phase — needs Commitments, Rupture and Needs all logging real data first. Bottom-up even at this scale.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Meaning archive</div><div class="rm-desc"><code>tabs/meaning/</code>, including the auto-surfaced "add to archive?" prompt wired to Messages / Codex / Cocreate outputs.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Struggles tab</div><div class="rm-desc"><code>tabs/struggles/</code></div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Boundaries &amp; Intimacy</div><div class="rm-desc"><code>tabs/relational/boundaries/</code></div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Compass — Love Languages / Intimacy / Values</div><div class="rm-desc"><code>tabs/relational/compass/</code>, wired into Onboarding as the deferred-fill path. Never forced at signup. Free text over closed lists, always.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Sovereignty tab</div><div class="rm-desc"><code>tabs/sovereignty/</code></div></div><span class="rm-badge medium">🟡 Medium</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE 4 -->
+      <div class="card">
+        <div class="card-title" style="color:var(--teal)">🔵 PHASE 4 — VOICE, VIDEO &amp; LANGUAGE LATTICE <span style="font-family:var(--fm);font-size:.65rem;color:var(--teal);font-weight:normal;margin-left:8px">partially delivered ahead of schedule</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">The most technically complex phase, and the most dependent on the earlier ones — it needs Messages, Feelings, Oracle and Call all producing real data to feed the lattice.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Word Association Lattice + friction detection</div><div class="rm-desc">Delivered in 0.4.0 as the multidimensional lattice: seven independent dimensions over one node set, with friction analysis wired as the arousal producer. The signal/noise filter falls out of the structure rather than being a component.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Voice tab — prosody measurement</div><div class="rm-desc">jitter, shimmer and harmonics-to-noise. Adds <strong>suppression</strong>, the dimension written language has no producer for at all (uncertainty 0.500 → 0.040).</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">WebRTC voice/video calls</div><div class="rm-desc">Base call already exists — this is the A/V layer on top of it.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Conversation transcription (Web Speech API, on-device)</div><div class="rm-desc">Android Chrome + Desktop only. <strong>No Web Speech API on iOS Safari</strong> — a real platform constraint, not an oversight.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Lattice visualization (force-directed constellation)</div><div class="rm-desc">The data layer exists and is bounded; this is the view on top of it.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Emoji reaction bar during calls</div><div class="rm-desc">Depends on the A/V layer above.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Native wrapper (Capacitor / React Native)</div><div class="rm-desc">For Android DND bypass + iOS speech recognition. Long-term, explicitly not part of this repo's near-term scope.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE 5 -->
+      <div class="card">
+        <div class="card-title" style="color:var(--dim)">⬜ PHASE 5 — AI LAYER <span style="font-family:var(--fm);font-size:.65rem;color:var(--dim);font-weight:normal;margin-left:8px">last, by design · tag v5-ai-layer</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">Every "AI LAYER (deferred)" note across the feature specs lands here, collected in one phase rather than scattered — so the whole app's non-AI functionality is provably complete before any of it starts.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--dim)"></span><div><div class="rm-title">Ollama / Guardian bridge (preferred) + Claude API fallback</div><div class="rm-desc">The connection infrastructure already exists in Settings. This phase is about <em>using</em> it, not building it.</div></div><span class="rm-badge medium">⬜ Deferred</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--dim)"></span><div><div class="rm-title">Guidance layers over existing non-AI fallbacks</div><div class="rm-desc">Somatic guidance, needs-finder, grounding exercises, onboarding synthesis. The non-AI libraries built in earlier phases stay as the default; AI becomes an explicit upgrade action, never a replacement.</div></div><span class="rm-badge medium">⬜ Deferred</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--dim)"></span><div><div class="rm-title">Love-letter / poetry guidance — guide, never author</div><div class="rm-desc">Enforced structurally per the Oracle constitution: <strong>no "generate &amp; send" button anywhere, ever.</strong></div></div><span class="rm-badge medium">⬜ Deferred</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--dim)"></span><div><div class="rm-title">Pulse interpretation, repair suggestions, idea generation</div><div class="rm-desc">Self-care, sovereignty and date ideas. All optional, all with non-AI fallbacks already in place.</div></div><span class="rm-badge medium">⬜ Deferred</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--dim)"></span><div><div class="rm-title">Communication-style translation between partners</div><div class="rm-desc">The most AI-dependent and most speculative feature in the whole spec. Last within an already-last phase.</div></div><span class="rm-badge medium">⬜ Deferred</span></div>
+        </div>
+      </div>
+
+      <!-- SESSION REQUEST — 2026-08-13 -->
+      <div class="card" style="border-color:var(--violet)">
+        <div class="card-title" style="color:var(--violet)">🗒 MAPPED FROM THIS SESSION'S REQUEST <span style="font-family:var(--fm);font-size:.65rem;color:var(--dim);font-weight:normal;margin-left:8px">Phases 6–10, added 2026-08-13</span></div>
+        <p class="small" style="color:var(--dim);line-height:1.7">Everything asked for in this session, sorted into the existing phase convention rather than left as a flat list. One item turned out to already be built and verified while mapping this (Playwright/register-pipeline claim double-checked, see Phase 8); one item turned out not to exist at all anywhere in the stack (a user directory, see Phase 9) — both named honestly rather than assumed either way.</p>
+      </div>
+
+      <!-- PHASE 6 -->
+      <div class="card">
+        <div class="card-title" style="color:var(--rose)">🔴 PHASE 6 — MOBILE, VISUAL POLISH &amp; DIAGNOSTICS <span style="font-family:var(--fm);font-size:.65rem;color:var(--dim);font-weight:normal;margin-left:8px">not started</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">"Mobile friendly" was said about the whole app, not one tab — Chat is named first below because it was named first, not because the rest doesn't count.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">Chat — real mobile layout</div><div class="rm-desc">Named explicitly, twice. <code>tabs/chat/</code>'s two surfaces (full page + popup composer) both need a real small-screen pass, not just reflow.</div></div><span class="rm-badge critical">🔴 Critical</span></div>
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">App-wide mobile responsiveness pass</div><div class="rm-desc">"It all does." Every tab, not just Chat. Android permissions mapped per feature (mic, camera, notifications, storage) — ties into the already-named, already-deferred Native Android APK item below in "Named, Deliberately Not Scheduled."</div></div><span class="rm-badge critical">🔴 Critical</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Chat header icon set — call / video / search</div><div class="rm-desc">Current icons read as generic/stock against the rest of Eravos's visual language. Needs the same design-token discipline as everything else (kernel custom properties only, per Phase F's constraint).</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Diagnostics system</div><div class="rm-desc">A real system-health surface — distinct from the existing Console tab (which is a REPL/log, not a health check): connection state, storage size, sync lag, last error, per-module status at a glance.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Consolidate the floating buttons</div><div class="rm-desc">Named twice across the request. The chat popup launcher and any other fixed-position buttons collapse into one coherent affordance rather than several independent floating elements competing for the same corner of the screen.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Invite/QR screen CSS</div><div class="rm-desc">Confirmed still open after the URL fix landed: the background behind the QR code needs to be taller.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Remove the topbar's three buttons</div><div class="rm-desc">As requested. Needs a follow-up decision on where those three actions land instead (profile menu is the existing pattern for relocated header actions — see Exit button, below).</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Exit button under Profile options</div><div class="rm-desc">The user menu dropdown already has this pattern (Profile / DND / Sign Out) — Exit joins that list.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">Verify Create Account is actually reachable from login</div><div class="rm-desc">README/MAP.md both assert the register form "has existed and been complete this whole time" — but this was reported again this session as still missing. That gap between claim and lived experience is exactly what Phase 8's Playwright check exists to close, rather than trusting the code-review claim a second time.</div></div><span class="rm-badge critical">🔴 Critical</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE 7 -->
+      <div class="card">
+        <div class="card-title" style="color:var(--rose)">🔴 PHASE 7 — IDENTITY, DATA OWNERSHIP &amp; SYNC <span style="font-family:var(--fm);font-size:.65rem;color:var(--dim);font-weight:normal;margin-left:8px">not started</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">Stated directly: "privacy isn't [at] the cost of unreliable data persistence." Read as a real constraint on Phase 1's existing local-P2P-only default, not a request to weaken encryption.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">Profile expansion, wired into onboarding</div><div class="rm-desc">Profile is currently thin and disconnected from onboarding's own answers. Expanding it needs to mean one real record both flows read and write, not a second copy of the same fields.</div></div><span class="rm-badge critical">🔴 Critical</span></div>
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">Real cross-device persistence, per-field storage choice</div><div class="rm-desc">Device-only, account, or the co-creation (shared) database — chosen, not assumed. "I don't want data lost" stated directly, twice.</div></div><span class="rm-badge critical">🔴 Critical</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Encryption for anything leaving the device</div><div class="rm-desc">The X25519 + AES-256-GCM pipeline from Phase 1 already exists for P2P sync — this extends the same real primitive to whatever the account/co-creation storage tier above turns out to be, rather than a second, separate crypto path.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Paid tier — considered, not committed</div><div class="rm-desc">Explicit framing from the request: reliable storage is not a premium feature. If a paid tier is ever built, it gates something else — not "your data doesn't get lost."</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Profile image system</div><div class="rm-desc">A curated gallery (romantic / couples / cute / loving) plus custom upload, 256×256 max.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Move "I am available" out of Planner</div><div class="rm-desc">Currently lives in <code>tabs/planner/</code> (confirmed — the only file wiring <code>presence:availability</code>'s UI). Moves under the profile menu, opened from the avatar.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Single mode, distinct from Solo mode</div><div class="rm-desc">Solo already exists (Phase 1's mode enforcement). Single is a stricter variant requested on top of it: hides co-creation and couples UI entirely, not just defers pairing.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Unpaired "link up" opens Invite Partner directly</div><div class="rm-desc">Or is hidden outright once Single mode above exists — the request offered both, real decision still open.</div></div><span class="rm-badge high">🟠 High</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE 8 -->
+      <div class="card">
+        <div class="card-title" style="color:var(--rose)">🔴 PHASE 8 — ADMIN &amp; PLATFORM BACKEND (ENTERPRISE) <span style="font-family:var(--fm);font-size:.65rem;color:var(--dim);font-weight:normal;margin-left:8px">not started</span></div>
+        <p class="small" style="color:var(--dim);margin-bottom:16px;line-height:1.6;font-style:italic">Requested verbatim as its own roadmap addition, not just a feature ask — kept together here rather than scattered across other phases.</p>
+        <div class="fc gap10">
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">Full administrator panel — identity &amp; infrastructure</div><div class="rm-desc">Change the Eravos instance name, change the port, change the URL, a real file browser, a database storage browser/manager.</div></div><span class="rm-badge critical">🔴 Critical</span></div>
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">User management &amp; permissions system</div><div class="rm-desc">Including "change password on next login" — prompts the new password on screen and sends an email/app notification. Builds on Phase 1's existing role model (admin/partner) rather than a parallel one.</div></div><span class="rm-badge critical">🔴 Critical</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">WordPress-style editor stack</div><div class="rm-desc">Block editor, UI editor, tab editor, module builder with schema, schema definitions for new modules. Stated as "full enterprise grade admin backend for Eravos" — the largest single item in the request.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Analytics dashboard — anonymous, delta-based</div><div class="rm-desc">Improves Emergence over time from real usage deltas, not raw content. Emergence already exists as its own separate, tested project (see <code>MAP.md</code>) — this is a new, real integration point into it, not a duplicate analytics system.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Central config surface — Eravos, web server, relay</div><div class="rm-desc">Settings for each already exist in pieces (System settings, DEPLOY.md, the relay's own config) — this consolidates them under one real admin surface rather than several separate places to look.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Console fully inside Electron, renamed</div><div class="rm-desc">No PowerShell or cmd window ever shown. "Eravos Console," reachable only from Settings — <code>tabs/console/</code> already exists as the starting point.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">Real Playwright verification — login screen, register pipeline</div><div class="rm-desc">Directly requested: load the login screen, run register end-to-end, confirm an account actually gets created — a real browser test, not a code-review claim. Same discipline as Phase 1's two-device exit test and Phase D's two-device presence test — this environment can't run a real browser either, so this stays explicitly open rather than assumed passing.</div></div><span class="rm-badge critical">🔴 Blocking</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">install.exe packaging, persistent, v0.1.0</div><div class="rm-desc"><code>package.json</code> already has <code>electron-builder</code> wired (<code>npm run dist</code>) — this is validating and shipping that build, not starting from zero.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item medium"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">Reorganize Relationship &amp; Communication; Boundaries → Space</div><div class="rm-desc">Boundaries moves specifically into the Space tab, per the request.</div></div><span class="rm-badge medium">🟡 Medium</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE 9 -->
+      <div class="card">
+        <div class="card-title" style="color:var(--rose)">🔴 PHASE 9 — INVITE, MESSAGING &amp; NOTIFICATION UNIFICATION <span style="font-family:var(--fm);font-size:.65rem;color:var(--amber);font-weight:normal;margin-left:8px">1 of 6 shipped</span></div>
+        <div class="fc gap10">
+          <div class="roadmap-item" style="border-left:2px solid var(--teal)"><span class="rm-dot" style="background:var(--teal)"></span><div><div class="rm-title">✓ Redeeming a valid invite pairs immediately — inviter notified after</div><div class="rm-desc">Revised mid-session, by direct request: entering a valid code/link now pairs right away — no separate confirm step. The old Accept/Decline modal and inbox buttons are gone (dead code once redemption always auto-confirms). Instead, the inviter gets an already-resolved <code>subtype:'partner_invite'</code> notice in <code>eravors_inbox</code> — same store feeding the bell's badge, dropdown, and Messages modal — worded as a notice, not a request, pointing at Decouple as the real undo. Deduped by invite code, survives a reload. Trade-off named plainly: this removes the one check that used to catch a leaked/mis-sent code before histories merged — judged acceptable since <code>unpair()</code> already needs no permission from either side either. Verified against the real <code>Pairing</code> state machine (<code>receiveRequest()</code> → <code>confirm()</code> back-to-back reaches 'paired' with no UI in between); 524/524 existing tests still pass.</div></div><span class="rm-badge" style="background:var(--tint-teal);color:var(--teal)">✅ Done</span></div>
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">User index / directory — genuinely does not exist</div><div class="rm-desc">"Invite from username" needs somewhere to look a username up. Checked directly: there is no such lookup anywhere in this codebase — Eravos is a two-device, code/link/QR pairing model with no server-side user table and no username search at all. This is a real, structural gap, not a small addition, and it sits in tension with "always self-hosted" (Phase 1's non-negotiable): a username directory implies either a central directory service, or scoping "known users" to devices that have already exchanged a code once. Needs a real design decision before any code, named honestly here rather than quietly folded into the item above.</div></div><span class="rm-badge critical">🔴 Critical</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Feelings, Needs, Pokes routed through chat</div><div class="rm-desc">Currently three separate channels into <code>eravors_inbox</code> alongside chat's own <code>eravors_chat_thread</code> — "messages fully hooked into chat" means one real thread, not four things that happen to end up in the same inbox.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Chat "+" menu → 4×16 grid</div><div class="rm-desc">Extends the existing 9-kind <code>ATT_MENU</code> in <code>tabs/chat/chat.js</code>: emojis, voice messages, video, audio, feelings, poke, triggered, animated emojis, Steam-style spar invites, calendar invites, URLs, intimate/hand-holding emoji, erotic-within-reason content, and explicit relational signals (shh / I need space / I'm overwhelmed / I'm hurt / I feel abandoned, and similar).</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Chat wired into toasts consistently</div><div class="rm-desc">Some message types toast today (love, feeling, need, text via <code>receiveMessage()</code>); chat proper doesn't uniformly. One real rule, not per-type exceptions.</div></div><span class="rm-badge high">🟠 High</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">Self-hosted SMTP via mail.anonymousservers.info</div><div class="rm-desc">Password reset, partner-invite email, password verification, notifications, and opt-in abuse-pattern alerts. A dev SMTP inbox already exists in <code>data/smtp-dev-inbox/</code> — this is real outbound sending on top of that, not a first build.</div></div><span class="rm-badge high">🟠 High</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE 10 -->
+      <div class="card">
+        <div class="card-title" style="color:var(--rose)">🔴 PHASE 10 — COMMUNICATION SURFACE OVERHAUL (CHAT-FIRST CALLING) <span style="font-family:var(--fm);font-size:.65rem;color:var(--dim);font-weight:normal;margin-left:8px">not started</span></div>
+        <div class="fc gap10">
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">Chat becomes the default communication page</div><div class="rm-desc">The phone/video icons already exist in the chat header (<code>chat-call-audio</code>/<code>chat-call-video</code>, wired to the real call pipeline) — this is promoting Chat to the app's default landing surface for communication, not building new call buttons.</div></div><span class="rm-badge critical">🔴 Critical</span></div>
+          <div class="roadmap-item critical"><span class="rm-dot" style="background:var(--rose)"></span><div><div class="rm-title">Remove the old standalone Call tab screen</div><div class="rm-desc">Explicitly called outdated. Removed once the above lands, not before — nothing loses a working call path mid-transition.</div></div><span class="rm-badge critical">🔴 Critical</span></div>
+          <div class="roadmap-item high"><span class="rm-dot" style="background:var(--amber)"></span><div><div class="rm-title">New full-screen call UI</div><div class="rm-desc">Own profile photo centered with a live audio visualizer while talking (audio calls), or the full webcam feed (video calls) — Discord/Skype-style, described as "beautiful enterprise grade." Sits on top of the existing real WebRTC A/V layer from Phase H, not a new calling stack.</div></div><span class="rm-badge high">🟠 High</span></div>
+        </div>
+      </div>
+
+      <!-- OUT OF MAP -->
+      <div class="card">
+        <div class="card-title" style="font-size:.75rem">📌 NAMED, DELIBERATELY NOT SCHEDULED</div>
+        <p class="small" style="color:var(--dim);line-height:1.6;margin-bottom:10px">§0.3 — information is never lost, even when it is deliberately not scheduled. These are recorded rather than dropped.</p>
+        <div class="fc gap8 mt4">
+          <div style="padding:10px;border:1px solid var(--border2);border-radius:8px">
+            <div style="font-family:var(--fm);font-size:.65rem;color:var(--dim);margin-bottom:3px">Native Android APK</div>
+            <p class="small" style="color:var(--dim)">Permission-per-UUID mapping, SOS location + SMS.</p>
+          </div>
+          <div style="padding:10px;border:1px solid var(--border2);border-radius:8px">
+            <div style="font-family:var(--fm);font-size:.65rem;color:var(--dim);margin-bottom:3px">Cloud sync provider integration</div>
+            <p class="small" style="color:var(--dim)">Beyond the local P2P + optional encrypted export already covered in Phase 1.</p>
+          </div>
+          <div style="padding:10px;border:1px solid var(--border2);border-radius:8px">
+            <div style="font-family:var(--fm);font-size:.65rem;color:var(--dim);margin-bottom:3px">Solo-to-solo compatibility matching</div>
+            <p class="small" style="color:var(--dim)">A materially different product surface — many-user, not duo-sovereign. Needs its own spec before any phase map, not a slot in this one.</p>
+          </div>
+          <div style="padding:10px;border:1px solid var(--border2);border-radius:8px">
+            <div style="font-family:var(--fm);font-size:.65rem;color:var(--dim);margin-bottom:3px">Social-media DM import for pattern detection</div>
+            <p class="small" style="color:var(--dim)">Gated hard by explicit two-person consent, re-asked occasionally, and <strong>broken by design</strong> — an error, not silent degradation — if consent is ever forced rather than freely given.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- NON-NEGOTIABLES -->
+      <div class="card">
+        <div class="card-title" style="font-size:.75rem">⚖ NON-NEGOTIABLES CARRIED INTO EVERY PHASE</div>
+        <div class="fc gap8 mt4">
+          <div style="padding:10px;border:1px solid var(--border2);border-radius:8px;border-left:2px solid var(--amber)">
+            <div style="font-family:var(--fm);font-size:.65rem;color:var(--amber);margin-bottom:3px">Nothing is forced</div>
+            <p class="small" style="color:var(--dim)">Every prompt, check-in and reminder has a real skip path. No feature blocks the rest of the app. No decline is re-asked more than once a day. No relational tool activates without both people opting in.</p>
+          </div>
+          <div style="padding:10px;border:1px solid var(--border2);border-radius:8px;border-left:2px solid var(--amber)">
+            <div style="font-family:var(--fm);font-size:.65rem;color:var(--amber);margin-bottom:3px">Understanding without labels</div>
+            <p class="small" style="color:var(--dim)">Gender, orientation and values fields always accept free text over a closed list.</p>
+          </div>
+          <div style="padding:10px;border:1px solid var(--border2);border-radius:8px;border-left:2px solid var(--amber)">
+            <div style="font-family:var(--fm);font-size:.65rem;color:var(--amber);margin-bottom:3px">Always self-hosted</div>
+            <p class="small" style="color:var(--dim)">No infrastructure this app depends on runs on a third party's server, as a standing default. Applies to anything added later, not just what is already decided.</p>
+          </div>
+          <div style="padding:10px;border:1px solid var(--border2);border-radius:8px;border-left:2px solid var(--amber)">
+            <div style="font-family:var(--fm);font-size:.65rem;color:var(--amber);margin-bottom:3px">One write authority per field</div>
+            <p class="small" style="color:var(--dim)">No two devices ever race to write the same piece of state.</p>
+          </div>
+          <div style="padding:10px;border:1px solid var(--border2);border-radius:8px;border-left:2px solid var(--amber)">
+            <div style="font-family:var(--fm);font-size:.65rem;color:var(--amber);margin-bottom:3px">Ephemeral means ephemeral</div>
+            <p class="small" style="color:var(--dim)">Cursors and typing are never written. Not capped — never written.</p>
+          </div>
+          <div style="padding:10px;border:1px solid var(--border2);border-radius:8px;border-left:2px solid var(--amber)">
+            <div style="font-family:var(--fm);font-size:.65rem;color:var(--amber);margin-bottom:3px">Two-sided by construction</div>
+            <p class="small" style="color:var(--dim)">Shared grammar, cursor sharing, read receipts: one person cannot turn them on for both.</p>
+          </div>
+          <div style="padding:10px;border:1px solid var(--border2);border-radius:8px;border-left:2px solid var(--amber)">
+            <div style="font-family:var(--fm);font-size:.65rem;color:var(--amber);margin-bottom:3px">Signal, not diagnosis</div>
+            <p class="small" style="color:var(--dim)">The system records what someone said they meant. It never infers a "real" meaning behind their words.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>

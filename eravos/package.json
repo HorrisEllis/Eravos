@@ -1,0 +1,117 @@
+{
+  "name": "eravos-desktop",
+  "version": "0.30.2",
+  "description": "Eravos, all in one: the app, the co-creation relay, Emergence's space-distance signal, and real SMTP sending/dev-catcher, all in a single Electron process with a system tray.",
+  "private": true,
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "electron .",
+    "server-only": "node eravos-serve.js",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "world.rheon.eravos",
+    "productName": "Eravos",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron-main.js",
+      "electron-preload.js",
+      "eravos-serve.js",
+      "package.json",
+      "eravos/**/*",
+      "co-creation-relay/**/*",
+      "server-modules/**/*",
+      "!**/node_modules",
+      "!**/data",
+      "!**/*.lock",
+      "!**/test/**"
+    ],
+    "extraResources": [
+      {
+        "from": "../emergence",
+        "to": "emergence",
+        "filter": [
+          "**/*",
+          "!node_modules",
+          "!data",
+          "!test"
+        ]
+      },
+      {
+        "from": "../warp",
+        "to": "warp",
+        "filter": [
+          "**/*",
+          "!node_modules",
+          "!test"
+        ]
+      },
+      {
+        "from": "../wire",
+        "to": "wire",
+        "filter": [
+          "**/*",
+          "!node_modules",
+          "!test"
+        ]
+      },
+      {
+        "from": "../eravos-db",
+        "to": "eravos-db",
+        "filter": [
+          "**/*",
+          "!node_modules",
+          "!examples",
+          "!test"
+        ]
+      }
+    ],
+    "protocols": [
+      {
+        "name": "Eravos",
+        "schemes": [
+          "eravos"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "eravos/icons/icon-512.png",
+      "artifactName": "Eravos-Setup-${version}.exe"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.social-networking"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Network"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Eravos",
+      "deleteAppDataOnUninstall": false
+    }
+  }
+}

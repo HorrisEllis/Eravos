@@ -1,0 +1,24 @@
+<!-- eravos tab: vault · category: space -->
+<!-- served by api/server.js at GET /api/tabs/vault -->
+<div class="panel" id="panel-vault">
+    <div class="flex jb ac wrap gap12" style="margin-bottom:16px">
+      <div class="card-title" style="margin:0">🗂 THE VAULT</div>
+      <div class="flex gap12 wrap">
+        <select id="vault-filter" onchange="renderVault()">
+          <option value="all">All</option>
+          <option value="oracle">Oracle</option>
+          <option value="poem">Poetry</option>
+          <option value="ritual">Rituals</option>
+          <option value="cocreation">Co-Creation</option>
+          <option value="idea">Ideas</option>
+          <option value="note">Notes</option>
+          <option value="mythos">Mythos</option>
+        </select>
+        <button class="btn g" onclick="exportVault()">⬇ Export</button>
+        <button class="btn d" onclick="clearVault()">🗑 Clear</button>
+      </div>
+    </div>
+    <div id="vault-grid" class="fc gap12">
+      <div class="small italic text-center" style="padding:40px;color:var(--dim)">Your vault is empty.</div>
+    </div>
+  </div>

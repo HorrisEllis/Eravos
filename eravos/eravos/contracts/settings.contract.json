@@ -1,0 +1,15 @@
+{
+  "id": "settings",
+  "dom_ids_exposed": [
+    "panel-settings",
+    "stab-admin",
+    "stab-ai",
+    "stab-features",
+    "stab-general",
+    "stab-system"
+  ],
+  "kernel_hooks_called": [],
+  "status": "mechanically extracted — hooks not yet scoped/typed in kernel",
+  "category": "system",
+  "has_subtabs": true
+}
